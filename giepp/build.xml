@@ -1,0 +1,33 @@
+<project name="giepp" default="dist" basedir=".">
+    
+    <description>
+        Project Description
+    </description>
+ 
+    <!-- set global properties for this build -->
+    <property name="projectName" value="giepp"/>
+    <property name="classes" value="bin/"/>
+    <property name="dist" value="dist/"/>
+    <property name="doc" value="doc/"/>
+    <property name="sources" value="src/"/>
+    <property name="jar" value="giepp.jar"/>
+ 
+    <target name="init">
+       	<tstamp/>
+       	<echo message="Hello world! This is ANT!"/>
+        <mkdir dir="${dist}"/>
+        <mkdir dir="${doc}"/>
+    </target>
+    
+    <target name="dist" depends="init">
+        <tstamp/>
+        <jar destfile="${dist}/${jar}" basedir="${classes}"/>
+        <javadoc sourcepath="${sources}" destdir="${doc}"/>
+    </target>
+ 
+    <target name="clean" description="clean up" >
+        <delete dir="${dist}"/>
+        <delete dir="${doc}"/>
+    </target>
+    
+</project>
