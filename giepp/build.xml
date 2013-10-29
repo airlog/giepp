@@ -1,5 +1,4 @@
 <project name="giepp" default="dist" basedir=".">
-    
     <description>
         Project Description
     </description>
@@ -14,20 +13,29 @@
  
     <target name="init">
        	<tstamp/>
-       	<echo message="Hello world! This is ANT!"/>
+       	<mkdir dir="${classes}"/>
         <mkdir dir="${dist}"/>
-        <mkdir dir="${doc}"/>
     </target>
     
-    <target name="dist" depends="init">
+    <target name="dist" depends="init, giepp">
         <tstamp/>
-        <jar destfile="${dist}/${jar}" basedir="${classes}"/>
+        <jar destfile="${dist}/${jar}" basedir="${classes}"/>    
+    </target>
+ 
+    <target name="doc">
+        <mkdir dir="${doc}"/>
         <javadoc sourcepath="${sources}" destdir="${doc}"/>
+    </target>
+    
+    <target name="giepp" depends="init">
+        <javac srcdir="${sources}" destdir="${classes}" target="1.6" source="1.6"/>
     </target>
  
     <target name="clean" description="clean up" >
+        <delete dir="${classes}"/>
         <delete dir="${dist}"/>
         <delete dir="${doc}"/>
     </target>
     
 </project>
+
