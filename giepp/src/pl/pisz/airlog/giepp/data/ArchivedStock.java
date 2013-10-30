@@ -3,10 +3,10 @@ package pl.pisz.airlog.giepp.data;
 /** Obiekty tej klasy trzymają informacje potrzebne do rysowania wykresu archiwalnych notowań.**/
 public class ArchivedStock {
 
-	protected String name;
+	private String name;
 	private String date;
-	protected int minPrice;
-	protected int maxPrice;
+	private int minPrice;
+	private int maxPrice;
 	
 	public ArchivedStock(String name, int maxPrice, int minPrice) {
 		this.name = name; 
