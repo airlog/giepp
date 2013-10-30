@@ -73,19 +73,19 @@ public class GPWDataParser implements DataParser {
 	private ArchivedStock matchSingleStockArchive(String line) {
 		
 		Matcher m = patternArchive.matcher(line);
-		float max = 0.0f;
-		float min = 0.0f;
-		float end = 0.0f;
+		int max = 0;
+		int min = 0;
+		int end = 0;
 			 
 		if (m.find()) {
 			try{
-				max = Float.parseFloat(m.group(2).replaceAll(",","."));
+				max = Integer.parseInt(m.group(2).replaceAll(",",""));
 			}catch (Exception e) {}
 			try{
-				min = Float.parseFloat(m.group(3).replaceAll(",","."));
+				min = Integer.parseInt(m.group(3).replaceAll(",",""));
 			}catch (Exception e) {}
 			try{
-				end = Float.parseFloat(m.group(4).replaceAll(",","."));
+				end = Integer.parseInt(m.group(4).replaceAll(",",""));
 			}catch (Exception e) {}
 			
 			if (max == 0.0f) {
@@ -93,7 +93,7 @@ public class GPWDataParser implements DataParser {
 				min = end;
 			}
 
-//			System.out.print(m.group(1) + "\t"+ max +  "\t"+ min + "\n");
+		//	System.out.print(m.group(1) + "\t"+ max +  "\t"+ min + "\n");
 			return new ArchivedStock(m.group(1),max,min);
 		}
 		return null;
@@ -101,29 +101,29 @@ public class GPWDataParser implements DataParser {
 
 	private CurrentStock matchSingleStockCurrent(String line) {
 		Matcher m = patternCurrent.matcher(line);
-		float start = 0.0f;
-		float max = 0.0f;
-		float min = 0.0f;
-		float end = 0.0f;
+		int start = 0;
+		int max = 0;
+		int min = 0;
+		int end = 0;
 		float change = 0.0f;
 
 		if (m.find()) {
 			try{
-				start = Float.parseFloat(m.group(3).replaceAll(",","."));
+				start = Integer.parseInt(m.group(3).replaceAll(",",""));
 			}catch (Exception e) {}
 			try{
-				min = Float.parseFloat(m.group(4).replaceAll(",","."));
+				min = Integer.parseInt(m.group(4).replaceAll(",",""));
 			}catch (Exception e) {}
 			try{
-				max = Float.parseFloat(m.group(5).replaceAll(",","."));
+				max = Integer.parseInt(m.group(5).replaceAll(",",""));
 			}catch (Exception e) {}	
 			try{
-				end = Float.parseFloat(m.group(6).replaceAll(",","."));
+				end = Integer.parseInt(m.group(6).replaceAll(",",""));
 			}catch (Exception e) {}
 			try{
 				change = Float.parseFloat(m.group(7).replaceAll(",","."));
 			}catch (Exception e) {}
-//			System.out.print(m.group(1) + " " + m.group(2) +" " + start +" " + min +" " + max +" " + end + " " + change +"\n");
+	//		System.out.print(m.group(1) + " " + m.group(2) +" " + start +" " + min +" " + max +" " + end + " " + change +"\n");
 			return new CurrentStock(m.group(1),m.group(2),start,min,max,end,change);
 		}		
 		return null;
