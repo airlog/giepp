@@ -10,19 +10,34 @@ package pl.pisz.airlog.giepp.data;
 public class CurrentStock extends ArchivedStock{
 
 	private String time;
-	private int startPrice;	
-	private int endPrice;
-	private float change;
+	private Integer startPrice;	
+	private Integer endPrice;
+	private Float change;
 	
 	public CurrentStock(String name, String time, int startPrice, int minPrice, int maxPrice, int endPrice, float change) {
 		super(name,maxPrice,minPrice);
+	
 		this.time = time;
 		this.startPrice = startPrice; 
 		this.endPrice = endPrice; 
 		this.change = change;
 	}
-	public int getStartPrice() { return startPrice; }
-	public int getEndPrice() { return endPrice; }
-	public float getChange() { return change; }
-	public String getTime() {return time; }
+	
+	public Integer getStartPrice() {
+	    return startPrice;
+	}
+	
+	public Integer getEndPrice() {
+	    return endPrice;
+	}
+	
+	public Float getChange() {
+	    return change;
+	}
+	
+	public String getTime() {
+	    return time;
+	}
+
 }
+

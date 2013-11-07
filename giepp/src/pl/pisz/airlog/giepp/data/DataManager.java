@@ -36,4 +36,6 @@ public class DataManager {
 	public ArrayList<CurrentStock> getCurrent() throws IOException {
 		return parser.parseCurrent(source.retrieveCurrentData());
 	}
+
 }
+

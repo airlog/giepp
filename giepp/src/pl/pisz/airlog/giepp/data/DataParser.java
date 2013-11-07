@@ -9,3 +9,4 @@ public interface DataParser {
     public abstract ArrayList<CurrentStock> parseCurrent(String data);
     
 }
+
