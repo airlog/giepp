@@ -9,3 +9,4 @@ public interface DataSource {
     public abstract String retrieveArchiveData(int day, int month, int year) throws IOException, BadDate;
     
 }
+
