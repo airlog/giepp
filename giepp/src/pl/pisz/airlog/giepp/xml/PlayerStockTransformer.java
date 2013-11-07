@@ -4,8 +4,10 @@
 
 package pl.pisz.airlog.giepp.xml;
 
-import org.w3c.dom.Element;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import pl.pisz.airlog.giepp.game.PlayerStock;
 
@@ -14,6 +16,9 @@ import pl.pisz.airlog.giepp.game.PlayerStock;
  */
 public class PlayerStockTransformer
         implements Transformer<PlayerStock> {
+
+    private static final Integer    NODE_CHILDREN   = 3;
+    private static final String     INVALID_NODE    = "Not a valid PlayerStock's XML form"; 
 
     /** XML document to which transformed elements will be appended. */
     private Document xmlDocument;
@@ -44,14 +49,45 @@ public class PlayerStockTransformer
                 startPrice = this.newElement("startPrice");
         
         company.setTextContent( object.getCompanyName() );
-        amount.setTextContent( Integer.toString(object.getAmount()) );
-        startPrice.setTextContent( Integer.toString(object.getStartPrice()) );
+        amount.setTextContent( object.getAmount().toString() );
+        startPrice.setTextContent( object.getStartPrice().toString() );
         
         xmlObject.appendChild(company);
         xmlObject.appendChild(amount);
         xmlObject.appendChild(startPrice);
         
         return xmlObject;
+    }
+    
+    @Override
+    public PlayerStock transform(Element node)
+            throws IllegalArgumentException {
+        NodeList children = node.getChildNodes();
+        if (children.getLength() != PlayerStockTransformer.NODE_CHILDREN) {
+            throw new IllegalArgumentException(PlayerStockTransformer.INVALID_NODE
+                    + " (invalid children quantity)");
+        }
+        
+        Node companyNd = children.item(0), amountNd = children.item(1),
+                startPriceNd = children.item(2);
+        String  company = companyNd.getTextContent();
+        Integer amount, startPrice;
+        
+        try {
+            amount = Integer.parseInt(amountNd.getTextContent());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(PlayerStockTransformer.INVALID_NODE
+                    + " (bad amount value)");
+        }
+        
+        try {
+            startPrice = Integer.parseInt(startPriceNd.getTextContent());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(PlayerStockTransformer.INVALID_NODE
+                    + " (bad startPrice value)");
+        }
+        
+        return new PlayerStock(company, amount, startPrice);
     }
 
 }

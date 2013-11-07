@@ -15,6 +15,9 @@ public interface Transformer<T> {
      * @return  object serialized to XML
      */
     public abstract Element transform(T object);
+    
+    public abstract T transform(Element node)
+            throws IllegalArgumentException;
 
 }
 
