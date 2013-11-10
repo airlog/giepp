@@ -176,7 +176,7 @@ public class Game {
 			}
 		}
 		
-		saveFirst(3);
+		saveFirst(DAYS);
 		dataManager.saveArchival(archived);		
 	}
 	
@@ -188,7 +188,6 @@ public class Game {
 			while(value.size() > days){
 				value.remove(days);
 			}
-//			value.removeRange(days,value.size());
 		}		
 	}
 	
