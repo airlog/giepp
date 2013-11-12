@@ -1,4 +1,4 @@
-package pl.pisz.airlog.giepp.game;
+package pl.pisz.airlog.giepp.data;
 
 public class PlayerStock {
 	
@@ -28,5 +28,3 @@ public class PlayerStock {
 		this.startPrice = startPrice;
 	}
 }
-		
-		
