@@ -1,9 +1,7 @@
 package pl.pisz.airlog.giepp.data;
 
-import pl.pisz.airlog.giepp.data.gpw.GPWDataParser;
-import pl.pisz.airlog.giepp.data.gpw.GPWDataSource;
-
 import java.util.ArrayList;
+import java.util.TreeMap;
 import java.io.*;
 
 public class DataManager {
@@ -11,9 +9,9 @@ public class DataManager {
 	private DataParser parser;
 	private DataSource source;
 
-	public DataManager(){
-		parser = new GPWDataParser();
-		source = new GPWDataSource();
+	public DataManager(DataSource source, DataParser parser){
+		this.source = source;
+		this.parser = parser;
 	}
 	
 	public ArrayList<ArchivedStock> getArchival(int day, int month, int year) throws BadDate, IOException {
@@ -37,5 +35,27 @@ public class DataManager {
 		return parser.parseCurrent(source.retrieveCurrentData());
 	}
 
-}
+	public ArrayList<PlayerStock> getOwned(){		
+		return new ArrayList<PlayerStock>();
+	}
+	
+	public ArrayList<String> getObserved(){		
+		return null;
+	}
+	
+	public TreeMap<String,ArrayList<ArchivedStock>> getArchivalFromXML(){		
+		return null;
+	}
+	
+	public Stats getStats(){
+		return new Stats(2000000,2);
+	}
 
+	public void saveStats(Stats stats){}
+
+	public void saveObserved(ArrayList<String> observed){}
+
+	public void saveArchival(TreeMap<String,ArrayList<ArchivedStock>> archived){}
+	
+	public void saveOwned(ArrayList<PlayerStock> owned){}
+}
