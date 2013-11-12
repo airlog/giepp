@@ -28,7 +28,7 @@ public class OwnedStocksBuilder {
      * @param   document    document to which append
      */
     private Document appendRoot(Document document) {
-        document.appendChild(document.createElement("stocks"));
+        document.appendChild(document.createElement("stocks"));  // owned stocks XML file's root
     
         return document;
     }

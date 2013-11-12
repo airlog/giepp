@@ -23,7 +23,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
  
-import pl.pisz.airlog.giepp.game.PlayerStock;
+import pl.pisz.airlog.giepp.data.PlayerStock;
 
 import pl.pisz.airlog.giepp.xml.PlayerStockTransformer;
 import pl.pisz.airlog.giepp.xml.OwnedStocksBuilder;

@@ -9,7 +9,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import pl.pisz.airlog.giepp.game.PlayerStock;
+import pl.pisz.airlog.giepp.data.PlayerStock;
 
 /** Serializes {@link PlayerStock} objects to a designed XML file.
  * @see PlayerStock
