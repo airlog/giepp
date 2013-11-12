@@ -4,6 +4,7 @@
 
 package pl.pisz.airlog.giepp.xml;
 
+import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 
 /** High-level interface for transforming classes to XML. 
@@ -16,7 +17,7 @@ public interface Transformer<T> {
      */
     public abstract Element transform(T object);
     
-    public abstract T transform(Element node)
+    public abstract T transform(Node node)
             throws IllegalArgumentException;
 
 }

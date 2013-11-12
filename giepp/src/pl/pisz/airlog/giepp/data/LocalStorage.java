@@ -10,6 +10,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.xml.sax.SAXException;
 
+import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -22,9 +23,9 @@ public class LocalStorage {
 
     private static class FileHandle {
     
-        private Document            doc = null;
-        private DataInputStream     dis = null;
-        private DataOutputStream    dos = null;
+        protected Document            doc = null;
+        protected DataInputStream     dis = null;
+        protected DataOutputStream    dos = null;
             
         public FileHandle(Document doc, FileInputStream fis, FileOutputStream fos) {
             this.doc = doc;
@@ -47,22 +48,24 @@ public class LocalStorage {
             throws IOException {        
         boolean created = false;
         if (!file.exists()) {
+            System.err.println("Nie istnieje!");
             file.createNewFile();
             created = true;
         }
         
         FileInputStream fis = new FileInputStream(file);
-        FileOutputStream fos = new FileOutputStream(file);
+        FileOutputStream fos = new FileOutputStream(file, true);
         Document doc = null;
         try {
-            if (!created) doc = LocalStorage.DOCBUILDER.parse(fis);
+            if (!created) doc = LocalStorage.DOCBUILDER.parse(fis);  // FIXME: see issue 'Ugly XML' on GitHub
+            doc.normalize();
         } catch (SAXException e) {
             System.out.println(e);
         }
         
         return new FileHandle(doc, fis, fos);
     }
-    
+        
     private static void initBuilder(DocumentBuilderFactory dbf) throws IOException {
         try { 
             LocalStorage.DOCBUILDER = dbf.newDocumentBuilder();
@@ -77,9 +80,9 @@ public class LocalStorage {
             File observedStocks, File stats)
             throws IOException {        
         if (!LocalStorage.isInited()) LocalStorage.initBuilder(DocumentBuilderFactory.newInstance());        
-        FileHandle handle = LocalStorage.getFileHandle(ownedStocks);
+        FileHandle oh = LocalStorage.getFileHandle(ownedStocks);
         
-        return new LocalStorage(null, null, null, null);
+        return new LocalStorage(oh, null, null, null);
     }
 
     private FileHandle  stocksFile    = null;
@@ -94,21 +97,22 @@ public class LocalStorage {
         this.statsFile = stats;
     }
 
-    public ArrayList<PlayerStock> getOwned(){		
-	    if (this.stocksFile.doc == null) {
+    public ArrayList<PlayerStock> getOwned(){
+        if (this.stocksFile.doc == null) {  // document not yet created
 	        OwnedStocksBuilder osb = new OwnedStocksBuilder(LocalStorage.DOCBUILDER);
 	        this.stocksFile.doc = osb.newDocument();
+	        this.stocksFile.doc.normalize();
 	    }
 	    
 	    ArrayList<PlayerStock> stocks = new ArrayList<PlayerStock>();
-	    NodeList children = this.stocksFile.doc.getDocumentElement().getChildNodes();
-	    if (children.getLength() > 0) {
+	    NodeList children = this.stocksFile.doc.getDocumentElement().getElementsByTagName("playerStock");
+	    if (children.getLength() > 0) {  // if any nodes
 	        PlayerStockTransformer pst = new PlayerStockTransformer(this.stocksFile.doc);
 	        for (int i = 0; i < children.getLength(); i++) {
 	            try {
-	                PlayerStock stock = pst.transform((Element) children.item(i));
+	                PlayerStock stock = pst.transform((Node) children.item(i));
 	                stocks.add(stock);
-	            } catch (IllegalArgumentException e) {
+	            } catch (IllegalArgumentException e) {  // if sth went wrong
 	                System.err.println(e);
 	            }
 	        }

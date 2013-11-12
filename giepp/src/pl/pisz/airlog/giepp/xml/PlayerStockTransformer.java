@@ -60,7 +60,7 @@ public class PlayerStockTransformer
     }
     
     @Override
-    public PlayerStock transform(Element node)
+    public PlayerStock transform(Node node)
             throws IllegalArgumentException {
         NodeList children = node.getChildNodes();
         if (children.getLength() != PlayerStockTransformer.NODE_CHILDREN) {

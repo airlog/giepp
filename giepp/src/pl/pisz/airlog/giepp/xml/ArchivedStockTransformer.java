@@ -66,7 +66,7 @@ public class ArchivedStockTransformer
      * @see Transformer#transform(Element)
      */
     @Override
-    public ArchivedStock transform(Element node)
+    public ArchivedStock transform(Node node)
             throws IllegalArgumentException {
         NodeList children = node.getChildNodes();
         if (children.getLength() != ArchivedStockTransformer.NODE_CHILDREN) {
