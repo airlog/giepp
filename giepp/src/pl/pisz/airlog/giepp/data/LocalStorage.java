@@ -18,6 +18,7 @@ import org.w3c.dom.NodeList;
 import pl.pisz.airlog.giepp.xml.OwnedStocksBuilder;
 import pl.pisz.airlog.giepp.xml.PlayerStockTransformer;
 import pl.pisz.airlog.giepp.xml.StocksArchiveBuilder;
+import pl.pisz.airlog.giepp.xml.ArchivedStockTransformer;
 
 public class LocalStorage {
 
@@ -81,8 +82,9 @@ public class LocalStorage {
             throws IOException {        
         if (!LocalStorage.isInited()) LocalStorage.initBuilder(DocumentBuilderFactory.newInstance());        
         FileHandle oh = LocalStorage.getFileHandle(ownedStocks);
+        FileHandle ah = LocalStorage.getFileHandle(archiveStocks);
         
-        return new LocalStorage(oh, null, null, null);
+        return new LocalStorage(oh, ah, null, null);  // TODO: change this nulls
     }
 
     private FileHandle  stocksFile    = null;
@@ -105,7 +107,7 @@ public class LocalStorage {
 	    }
 	    
 	    ArrayList<PlayerStock> stocks = new ArrayList<PlayerStock>();
-	    NodeList children = this.stocksFile.doc.getDocumentElement().getElementsByTagName("playerStock");
+	    NodeList children = this.stocksFile.doc.getDocumentElement().getElementsByTagName("playerStock");  // TODO: remove magic string
 	    if (children.getLength() > 0) {  // if any nodes
 	        PlayerStockTransformer pst = new PlayerStockTransformer(this.stocksFile.doc);
 	        for (int i = 0; i < children.getLength(); i++) {
@@ -120,6 +122,35 @@ public class LocalStorage {
 	    
 	    return stocks;
 	}
+
+    public TreeMap<String, ArrayList<ArchivedStock>> getArchivalFromXML() {
+        if (this.archiveFile.doc == null) {  // document not yet created
+	        StocksArchiveBuilder asb = new StocksArchiveBuilder(LocalStorage.DOCBUILDER);
+	        this.archiveFile.doc = asb.newDocument();
+	        this.archiveFile.doc.normalize();
+	    }
+	    
+	    TreeMap<String, ArrayList<ArchivedStock>> map = new TreeMap<String, ArrayList<ArchivedStock>>();
+	    NodeList children = this.archiveFile.doc.getDocumentElement().getElementsByTagName("archivedStock");  // TODO: remove magic string
+	    if (children.getLength() > 0) {  // if any nodes
+	        ArchivedStockTransformer ast = new ArchivedStockTransformer(this.archiveFile.doc);
+	        for (int i = 0; i < children.getLength(); i++) {
+	            try {
+	                ArchivedStock stock = ast.transform(children.item(i));
+	                ArrayList<ArchivedStock> list = map.get(stock.getName());
+	                if (list == null) {  // no such key in the map
+	                    list = new ArrayList<ArchivedStock>();
+	                    map.put(stock.getName(), list);
+	                }
+	                list.add(stock);
+	            } catch (IllegalArgumentException e) {  // if sth went wrong
+	                System.err.println(e);
+	            }
+	        }
+	    }
+	    
+	    return map;
+    }
 
 }
 
