@@ -93,7 +93,7 @@ public class ArchivedStockTransformer
                     + " (bad maxPrice value)");
         }
         
-        ArchivedStock as = new ArchivedStock(name, minPrice, maxPrice);
+        ArchivedStock as = new ArchivedStock(name, maxPrice, minPrice);
         as.setDate(date);
         return as;
     }
