@@ -30,49 +30,6 @@ import pl.pisz.airlog.giepp.xml.StocksArchiveBuilder;
 import pl.pisz.airlog.giepp.xml.ArchivedStockTransformer;
 
 public class LocalStorage {
-
-    private static class FileHandle {
-    
-        protected Document            doc = null;
-        protected DataInputStream     dis = null;
-        protected DataOutputStream    dos = null;
-            
-        public FileHandle(Document doc, FileInputStream fis, FileOutputStream fos) {
-            this.doc = doc;
-            this.dis = new DataInputStream(new BufferedInputStream(fis));
-            this.dos = new DataOutputStream(new BufferedOutputStream(fos));
-        }
-        
-        @Override
-        protected final void finalize() throws Throwable {
-            this.dis.close();
-            this.dos.close();
-        }
-        
-        protected String convert(Document document) throws TransformerException {
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            StringWriter stringWriter = new StringWriter();
-            
-            transformer.setOutputProperty(OutputKeys.INDENT, "no");  // by default 0 but sets new lines
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-            transformer.transform(new DOMSource(document), new StreamResult(stringWriter));
-            
-            return stringWriter.getBuffer().toString();
-        }
-                        
-        public final void save() throws IOException {
-            String doc = null;
-            try {
-                doc = this.convert(this.doc);
-            } catch (TransformerException e) {
-                throw new IOException(e.toString());
-            }
-            
-            this.dos.writeUTF(doc);
-            this.dos.flush();
-        }
-        
-    }
     
     private static DocumentBuilder DOCBUILDER = null;
     
@@ -87,7 +44,6 @@ public class LocalStorage {
         }
         
         FileInputStream fis = new FileInputStream(file);
-        FileOutputStream fos = new FileOutputStream(file, true);
         Document doc = null;
         try {
             if (!created) doc = LocalStorage.DOCBUILDER.parse(fis);  // FIXME: see issue 'Ugly XML' on GitHub
@@ -95,8 +51,9 @@ public class LocalStorage {
         } catch (SAXException e) {
             System.out.println(e);
         }
+        fis.close();
         
-        return new FileHandle(doc, fis, fos);
+        return new FileHandle(doc, file);
     }
         
     private static void initBuilder(DocumentBuilderFactory dbf) throws IOException {
@@ -148,12 +105,15 @@ public class LocalStorage {
     }
     
     private int clearDocument(Document document) {
-        Element root = document.getDocumentElement();
-        NodeList children = root.getChildNodes();
+        Element root = document.getDocumentElement();        
+        Node node = root.getFirstChild();
         int removedCounter = 0;
-        for (int i = 0; i < children.getLength(); i++) {
-            root.removeChild(children.item(i));
+        
+        while (node != null) {
+            root.removeChild(node);
             removedCounter++;
+            
+            node = root.getFirstChild();
         }
         
         return removedCounter;
@@ -218,5 +178,42 @@ public class LocalStorage {
         this.stocksFile.save();
     }
 
+}
+
+class FileHandle {
+    
+    private     File        file = null;       
+    protected   Document    doc = null;
+            
+    public FileHandle(Document doc, File file) {
+        this.file = file;
+        this.doc = doc;
+    }
+                
+    protected String convert(Document document) throws TransformerException {
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        StringWriter stringWriter = new StringWriter();
+            
+        transformer.setOutputProperty(OutputKeys.INDENT, "no");  // by default 0 but sets new lines
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+        transformer.transform(new DOMSource(document), new StreamResult(stringWriter));
+            
+        return stringWriter.getBuffer().toString();
+    }
+                        
+    public final void save() throws IOException {
+        String doc = null;
+        try {
+            doc = this.convert(this.doc);
+        } catch (TransformerException e) {
+            throw new IOException(e.toString());
+        }
+            
+        BufferedWriter dos = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(file)));
+        dos.write(doc, 0, doc.length());
+        dos.close();
+    }
+        
 }
 

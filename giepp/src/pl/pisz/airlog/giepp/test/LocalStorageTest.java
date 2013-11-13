@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.TreeMap;
 
 import pl.pisz.airlog.giepp.data.LocalStorage;
@@ -32,12 +33,24 @@ public class LocalStorageTest {
                     stock.getName(), stock.getDate(), stock.getMinPrice(), stock.getMaxPrice()));
         }
     }
+    
+    private static void changeOwned(LocalStorage storage, List<PlayerStock> stocks)
+            throws IOException {
+        storage.saveOwned(stocks);
+    }
 
     public static void main(String args[]) throws Exception {
         LocalStorage storage = LocalStorage.newInstance(new File(args[0]), new File(args[1]), null, null);
         
         LocalStorageTest.printOwned(storage);
         LocalStorageTest.printArchive(storage);
+        
+        List<PlayerStock> owned = new LinkedList<PlayerStock>();
+        owned.add(new PlayerStock("ChangedCompany", 12, 25));
+        
+        LocalStorageTest.changeOwned(storage, owned);
+        
+        LocalStorageTest.printOwned(storage);
     }
 
 }
