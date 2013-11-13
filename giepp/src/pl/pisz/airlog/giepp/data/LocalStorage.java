@@ -2,11 +2,20 @@ package pl.pisz.airlog.giepp.data;
 
 import java.io.*;
 
+import java.util.List;
+import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.OutputKeys;
 
 import org.xml.sax.SAXException;
 
@@ -39,7 +48,30 @@ public class LocalStorage {
             this.dis.close();
             this.dos.close();
         }
-                
+        
+        protected String convert(Document document) throws TransformerException {
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            StringWriter stringWriter = new StringWriter();
+            
+            transformer.setOutputProperty(OutputKeys.INDENT, "no");  // by default 0 but sets new lines
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            transformer.transform(new DOMSource(document), new StreamResult(stringWriter));
+            
+            return stringWriter.getBuffer().toString();
+        }
+                        
+        public final void save() throws IOException {
+            String doc = null;
+            try {
+                doc = this.convert(this.doc);
+            } catch (TransformerException e) {
+                throw new IOException(e.toString());
+            }
+            
+            this.dos.writeUTF(doc);
+            this.dos.flush();
+        }
+        
     }
     
     private static DocumentBuilder DOCBUILDER = null;
@@ -99,12 +131,36 @@ public class LocalStorage {
         this.statsFile = stats;
     }
 
-    public ArrayList<PlayerStock> getOwned(){
+    private void assertStocksDocument() {
         if (this.stocksFile.doc == null) {  // document not yet created
 	        OwnedStocksBuilder osb = new OwnedStocksBuilder(LocalStorage.DOCBUILDER);
 	        this.stocksFile.doc = osb.newDocument();
 	        this.stocksFile.doc.normalize();
 	    }
+    }
+    
+    private void assertArchiveDocument() {
+        if (this.archiveFile.doc == null) {  // document not yet created
+	        StocksArchiveBuilder asb = new StocksArchiveBuilder(LocalStorage.DOCBUILDER);
+	        this.archiveFile.doc = asb.newDocument();
+	        this.archiveFile.doc.normalize();
+	    }
+    }
+    
+    private int clearDocument(Document document) {
+        Element root = document.getDocumentElement();
+        NodeList children = root.getChildNodes();
+        int removedCounter = 0;
+        for (int i = 0; i < children.getLength(); i++) {
+            root.removeChild(children.item(i));
+            removedCounter++;
+        }
+        
+        return removedCounter;
+    }
+
+    public ArrayList<PlayerStock> getOwned(){
+        this.assertStocksDocument();
 	    
 	    ArrayList<PlayerStock> stocks = new ArrayList<PlayerStock>();
 	    NodeList children = this.stocksFile.doc.getDocumentElement().getElementsByTagName("playerStock");  // TODO: remove magic string
@@ -124,11 +180,7 @@ public class LocalStorage {
 	}
 
     public TreeMap<String, ArrayList<ArchivedStock>> getArchivalFromXML() {
-        if (this.archiveFile.doc == null) {  // document not yet created
-	        StocksArchiveBuilder asb = new StocksArchiveBuilder(LocalStorage.DOCBUILDER);
-	        this.archiveFile.doc = asb.newDocument();
-	        this.archiveFile.doc.normalize();
-	    }
+	    this.assertArchiveDocument();
 	    
 	    TreeMap<String, ArrayList<ArchivedStock>> map = new TreeMap<String, ArrayList<ArchivedStock>>();
 	    NodeList children = this.archiveFile.doc.getDocumentElement().getElementsByTagName("archivedStock");  // TODO: remove magic string
@@ -150,6 +202,20 @@ public class LocalStorage {
 	    }
 	    
 	    return map;
+    }
+    
+    public void saveOwned(List<PlayerStock> stocks) throws IOException {
+        this.assertStocksDocument();
+        this.clearDocument(this.stocksFile.doc);
+        
+        Element root = this.stocksFile.doc.getDocumentElement();
+        PlayerStockTransformer pst = new PlayerStockTransformer(this.stocksFile.doc);
+        for (PlayerStock stock : stocks) {
+            Node node = pst.transform(stock);
+            root.appendChild(node);
+        }
+        
+        this.stocksFile.save();
     }
 
 }
