@@ -164,7 +164,26 @@ public class LocalStorage {
 	    return map;
     }
     
-    public void saveOwned(List<PlayerStock> stocks) throws IOException {
+    public void saveArchival(TreeMap<String,ArrayList<ArchivedStock>> archived)
+            throws IOException {
+        this.assertArchiveDocument();
+        this.clearDocument(this.archiveFile.doc);
+        
+        LinkedList<ArchivedStock> stocks = new LinkedList<ArchivedStock>();
+        for (ArrayList<ArchivedStock> array : archived.values()) stocks.addAll(array);
+        
+        Element root = this.archiveFile.doc.getDocumentElement();
+        ArchivedStockTransformer ast = new ArchivedStockTransformer(this.archiveFile.doc);
+        for (ArchivedStock stock : stocks) {
+            Node node = ast.transform(stock);
+            root.appendChild(node);
+        }
+        
+        this.archiveFile.save();
+    }
+    
+    public void saveOwned(List<PlayerStock> stocks)
+            throws IOException {
         this.assertStocksDocument();
         this.clearDocument(this.stocksFile.doc);
         

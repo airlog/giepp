@@ -38,6 +38,11 @@ public class LocalStorageTest {
             throws IOException {
         storage.saveOwned(stocks);
     }
+    
+    private static void changeArchive(LocalStorage storage, TreeMap<String, ArrayList<ArchivedStock>> stocks)
+            throws IOException {
+        storage.saveArchival(stocks);
+    }
 
     public static void main(String args[]) throws Exception {
         LocalStorage storage = LocalStorage.newInstance(new File(args[0]), new File(args[1]), null, null);
@@ -47,10 +52,17 @@ public class LocalStorageTest {
         
         List<PlayerStock> owned = new LinkedList<PlayerStock>();
         owned.add(new PlayerStock("ChangedCompany", 12, 25));
-        
+                
         LocalStorageTest.changeOwned(storage, owned);
+        LocalStorageTest.printOwned(storage);   
         
-        LocalStorageTest.printOwned(storage);
+        TreeMap<String, ArrayList<ArchivedStock>> tree = new TreeMap<String, ArrayList<ArchivedStock>>();
+        ArrayList stocks = new ArrayList<ArchivedStock>();
+        stocks.add(new ArchivedStock("ChangedCompany", 100, 125));
+        tree.put("ChangedCompany", stocks);
+        
+        LocalStorageTest.changeArchive(storage, tree);
+        LocalStorageTest.printArchive(storage);
     }
 
 }
