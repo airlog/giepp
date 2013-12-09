@@ -4,5 +4,9 @@
 	<string name="app_name">GiePP</string>
 	<string name="action_settings">Settings</string>
 	<string name="hello_world">Hello world!</string>
-
+	<string name="title_section1">Moje Konto</string>
+	<string name="title_section2">Notowania</string>
+	<string name="title_section3">Obserwowane</string>
+	<string name="title_section4">Statystyki</string>
+			
 </resources>
