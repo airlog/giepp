@@ -10,7 +10,10 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 public class MainActivity extends FragmentActivity {
 	
@@ -53,17 +56,28 @@ public class MainActivity extends FragmentActivity {
 	            // probably ignore this event
 	        }	    
 	    };
-	    actionBar.addTab(actionBar.newTab().setIcon(R.drawable.account).setTabListener(tabListener));
-	    actionBar.addTab(actionBar.newTab().setIcon(R.drawable.stock).setTabListener(tabListener));
-	    actionBar.addTab(actionBar.newTab().setIcon(R.drawable.observed).setTabListener(tabListener));
-	    actionBar.addTab(actionBar.newTab().setIcon(R.drawable.stats).setTabListener(tabListener));
+	    actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_tab_account).setTabListener(tabListener));
+	    actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_tab_records).setTabListener(tabListener));
+	    actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_tab_observed).setTabListener(tabListener));
+	    actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_tab_stats).setTabListener(tabListener));
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-//		getMenuInflater().inflate(R.menu.main, menu);
-	    return true;
+			    MenuInflater inflater = getMenuInflater();
+			    inflater.inflate(R.menu.main_menu, menu);
+			    return true;
+	}
+
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle presses on the action bar items
+	    switch (item.getItemId()) {
+	        case R.id.action_refresh:
+	        	Log.i("giepp","Odswiez");
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
 	}
 
 	
