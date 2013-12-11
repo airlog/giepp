@@ -9,6 +9,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
 import pl.pisz.airlog.giepp.desktop.menus.MainMenuBar;
+
+import pl.pisz.airlog.giepp.desktop.panels.RatingsPanel;
+
 import pl.pisz.airlog.giepp.desktop.util.HelperTools;
 
 /**
@@ -55,6 +58,7 @@ public class MainFrame
                String[] titles = new String[] {"Moje konto", "Notowania", "Obserwowane", "Statystyki"};
                JPanel[] panels = new JPanel[titles.length];
                for (int i = 0; i < titles.length; i++) panels[i] = HelperTools.newTextPanel(titles[i]);
+               panels[1] = new RatingsPanel();
                
                MainMenuBar mmb = new MainMenuBar();
                mmb.setMenuListener(new MainMenuBar.MainMenuListener() {
