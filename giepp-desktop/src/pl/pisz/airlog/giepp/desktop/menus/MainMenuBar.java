@@ -2,10 +2,12 @@ package pl.pisz.airlog.giepp.desktop.menus;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
 /**
  * @author Rafal
@@ -35,9 +37,11 @@ public class MainMenuBar
             
             mRefreshItem = new JMenuItem(ITEM_REFRESH);
             mRefreshItem.addActionListener(actionListener);
+            mRefreshItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
             
             mQuitItem = new JMenuItem(ITEM_QUIT);
             mQuitItem.addActionListener(actionListener);
+            mQuitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
             
             this.initComponent();
         }

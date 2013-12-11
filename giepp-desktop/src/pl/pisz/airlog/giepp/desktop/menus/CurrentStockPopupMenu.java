@@ -1,5 +1,8 @@
 package pl.pisz.airlog.giepp.desktop.menus;
 
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
@@ -10,27 +13,33 @@ import javax.swing.JPopupMenu;
 public class CurrentStockPopupMenu
         extends JPopupMenu {
 
-    private static final String ITEM_DEFAULT_STOCK  = "<firma>";
-    private static final String ITEM_BUY            = "Kup";
-    private static final String ITEM_SELL           = "Sprzedaj";
-    private static final String ITEM_OBSERVE        = "Obserwuj";
+    public static final String ITEM_DEFAULT_STOCK  = "<firma>";
+    public static final String ITEM_BUY            = "Kup";
+    public static final String ITEM_SELL           = "Sprzedaj";
+    public static final String ITEM_OBSERVE        = "Obserwuj";
     
     private JMenuItem mStockItem;
     private JMenuItem mBuyItem;
     private JMenuItem mSellItem;
     private JMenuItem mObserveItem;
     
-    public CurrentStockPopupMenu() {
+    public CurrentStockPopupMenu(ActionListener al) {
         super();
         
         mStockItem = new JMenuItem(ITEM_DEFAULT_STOCK);
         mStockItem.setEnabled(false);
         
         mBuyItem = new JMenuItem(ITEM_BUY);
+        mBuyItem.setMnemonic(KeyEvent.VK_K);
+        mBuyItem.addActionListener(al);
         
         mSellItem = new JMenuItem(ITEM_SELL);
+        mSellItem.setMnemonic(KeyEvent.VK_S);
+        mSellItem.addActionListener(al);
         
         mObserveItem = new JMenuItem(ITEM_OBSERVE);
+        mObserveItem.setMnemonic(KeyEvent.VK_O);
+        mObserveItem.addActionListener(al);
         
         this.initComponent();
     }

@@ -1,6 +1,7 @@
 package pl.pisz.airlog.giepp.desktop.widgets;
 
-import java.awt.event.MouseAdapter;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -21,7 +22,7 @@ import pl.pisz.airlog.giepp.desktop.menus.CurrentStockPopupMenu;
  */
 public class CurrentStockTable
         extends JTable
-        implements MouseListener {
+        implements ActionListener, MouseListener {
 
     public static class CurrentStockTableModel
             extends AbstractTableModel {
@@ -125,14 +126,20 @@ public class CurrentStockTable
         
     }
     
-    private CurrentStockPopupMenu mPopupMenu = new CurrentStockPopupMenu();
+    private CurrentStockPopupMenu mPopupMenu;
     
     public CurrentStockTable() {
         super();
         
+        mPopupMenu = new CurrentStockPopupMenu(this);
+        
         this.addMouseListener(this);
     }
 
+    @Override
+    public void actionPerformed(ActionEvent ae) {
+        System.out.println(ae);
+    }
     
     @Override
     public void mouseClicked(MouseEvent me) {}
