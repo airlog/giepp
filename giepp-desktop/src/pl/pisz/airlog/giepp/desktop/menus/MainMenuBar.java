@@ -18,12 +18,23 @@ public class MainMenuBar
             extends JMenu {
         
         private static final String NAME = "Plik";
-        private static final String ITEM_QUIT = "Wyjdź";
         
+        private static final String ITEM_NEW     = "Nowa gra";
+        private static final String ITEM_REFRESH = "Odśwież";
+        private static final String ITEM_QUIT    = "Wyjdź";
+        
+        private JMenuItem mNewItem;
+        private JMenuItem mRefreshItem;
         private JMenuItem mQuitItem;
         
         public FileMenu(ActionListener actionListener) {
             super(NAME);
+            
+            mNewItem = new JMenuItem(ITEM_NEW);
+            mNewItem.addActionListener(actionListener);
+            
+            mRefreshItem = new JMenuItem(ITEM_REFRESH);
+            mRefreshItem.addActionListener(actionListener);
             
             mQuitItem = new JMenuItem(ITEM_QUIT);
             mQuitItem.addActionListener(actionListener);
@@ -32,6 +43,9 @@ public class MainMenuBar
         }
         
         private void initComponent() {
+            this.add(mNewItem);
+            this.addSeparator();
+            this.add(mRefreshItem);
             this.addSeparator();
             this.add(mQuitItem);
         }
@@ -63,6 +77,14 @@ public class MainMenuBar
     }
     
     public static class MainMenuListener {
+        
+        public void onFileNew(ActionEvent ae) {
+            return;
+        }
+        
+        public void onFileRefresh(ActionEvent ae) {
+            return;
+        }
         
         public void onFileQuit(ActionEvent ae) {
             return;
@@ -103,6 +125,8 @@ public class MainMenuBar
         
         Object source = ae.getSource();
         if (source == mFileMenu.mQuitItem) mMenuListener.onFileQuit(ae);
+        else if (source == mFileMenu.mNewItem) mMenuListener.onFileNew(ae);
+        else if (source == mFileMenu.mRefreshItem) mMenuListener.onFileRefresh(ae);
         else if (source == mHelpMenu.mAboutItem) mMenuListener.onHelpAbout(ae);
     }
     
