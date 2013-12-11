@@ -42,7 +42,7 @@ public class DataManager {
 	}
 	
 	public ArrayList<String> getObserved() {		
-		return null;
+		return new ArrayList<String>();
 	}
 	
 	public TreeMap<String,ArrayList<ArchivedStock>> getArchivalFromXML(){		
@@ -50,7 +50,7 @@ public class DataManager {
 	}
 	
 	public Stats getStats(){
-		return new Stats(2000000,2);
+		return new Stats();
 	}
 
 	public void saveStats(Stats stats){}

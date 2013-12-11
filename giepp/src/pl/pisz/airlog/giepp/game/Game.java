@@ -1,22 +1,25 @@
 package pl.pisz.airlog.giepp.game;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeMap;
 
 import pl.pisz.airlog.giepp.data.ArchivedStock;
 import pl.pisz.airlog.giepp.data.BadDate;
-import pl.pisz.airlog.giepp.data.PlayerStock;
 import pl.pisz.airlog.giepp.data.CurrentStock;
-import pl.pisz.airlog.giepp.data.Stats;
 import pl.pisz.airlog.giepp.data.DataManager;
-import pl.pisz.airlog.giepp.data.LocalStorage;
-import pl.pisz.airlog.giepp.data.DataSource;
 import pl.pisz.airlog.giepp.data.DataParser;
+import pl.pisz.airlog.giepp.data.DataSource;
+import pl.pisz.airlog.giepp.data.LocalStorage;
+import pl.pisz.airlog.giepp.data.PlayerStock;
+import pl.pisz.airlog.giepp.data.Stats;
+import pl.pisz.airlog.giepp.data.gpw.GPWDataParser;
+import pl.pisz.airlog.giepp.data.gpw.GPWDataSource;
 
 public class Game {	
 
@@ -34,7 +37,7 @@ public class Game {
 	private ArrayList<CurrentStock> current;
 	private Date lastRefresh;	
 	private Calendar calendar;
-	
+		
 	public Game(DataSource dataSource, DataParser dataParser, LocalStorage localStorage) {
 		this.dataManager = new DataManager(dataSource, dataParser, localStorage);
 		this.current = new ArrayList<CurrentStock>();
@@ -130,13 +133,16 @@ public class Game {
 	    }
 	}
 
-	private void toMap(ArrayList<ArchivedStock> stock, int index) {
+	private void toMap(ArrayList<ArchivedStock> stock, TreeMap<String,Integer> downloaded_days) {
 		for (int i = 0 ; i < stock.size(); i++) {
 			ArrayList<ArchivedStock> found = archived.get(stock.get(i).getName());
 			if (found != null) {
-				found.add(index,stock.get(i));
+				int days = downloaded_days.get(stock.get(i).getName());
+				found.add(days,stock.get(i));
+				downloaded_days.put(stock.get(i).getName(), days+1);
 			}
 			else {
+				downloaded_days.put(stock.get(i).getName(), 1);
 				ArrayList<ArchivedStock> newStock = new ArrayList<ArchivedStock>();
 				archived.put(stock.get(i).getName(), newStock);
 				newStock.add(stock.get(i));
@@ -146,6 +152,9 @@ public class Game {
 
 	private void downloadArchived(int days){
 		int downloaded = 0;
+		int max = days*3;
+		int attempt = 0;
+		TreeMap<String,Integer> downloaded_days = new TreeMap<String,Integer>();
 		
 		calendar = Calendar.getInstance();
 		int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -170,14 +179,17 @@ public class Game {
 			try {
 				ArrayList<ArchivedStock> stock = dataManager.getArchival(day,month,year);
 				if (stock!=null) {
-					toMap(stock,downloaded);
+					toMap(stock,downloaded_days);
 					downloaded++;
 				}
 			} catch (IOException e) {
+				return;
 				//TODO ładne poradzenie sobie z wyjątkiem 
 			} catch (BadDate e){
 				//TODO ładne poradzenie sobie z wyjątkiem 
 			}
+			attempt++;
+			if (attempt == max) return; //aby funkcja sie zawsze skonczyla
 			day--;
 			if (day == 0) {
 				day=31;
@@ -268,6 +280,10 @@ public class Game {
 		observed.remove(name);
 	}
 	
+	public ArrayList<String> getObserved(){
+		return observed;
+	}
+	
 	public long getMoneyInStock() {
 		long sum = 0;
 		for (int i = 0; i < owned.size(); i++) {
@@ -291,5 +307,24 @@ public class Game {
 		}
 		return price;
 	}
-	
+
+	/** do testow **/
+	public static void main(String args[]) throws Exception{
+		File ownedStocks = File.createTempFile("owned", ".xml");
+		File archiveStocks = File.createTempFile("archived", ".xml");
+		File observedStocks = File.createTempFile("observed", ".xml");
+		File stats = File.createTempFile("stats", ".xml");
+		Game g = new Game(new GPWDataSource(),
+				new GPWDataParser(),LocalStorage.newInstance(ownedStocks, archiveStocks, observedStocks, stats));
+		g.refreshData();
+		Set<String> keys = g.getArchived().keySet();
+		
+		for(String k: keys){
+			ArrayList<ArchivedStock> l = g.getArchived().get(k);
+			
+			for(int i = 0; i<l.size(); i++)
+				System.out.println(k+": "+l.get(i).getDate()+": "+l.get(i).getMaxPrice());
+		}
+				
+	}
 }
