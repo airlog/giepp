@@ -14,14 +14,16 @@ import pl.pisz.airlog.giepp.data.PlayerStock;
 import pl.pisz.airlog.giepp.data.CurrentStock;
 import pl.pisz.airlog.giepp.data.Stats;
 import pl.pisz.airlog.giepp.data.DataManager;
-import pl.pisz.airlog.giepp.data.gpw.GPWDataSource;
-import pl.pisz.airlog.giepp.data.gpw.GPWDataParser;
+import pl.pisz.airlog.giepp.data.LocalStorage;
+import pl.pisz.airlog.giepp.data.DataSource;
+import pl.pisz.airlog.giepp.data.DataParser;
 
 public class Game {	
 
-	private final long MONEY_ON_START = 1000000;		//10 000 zl
-	private final int MAX_TIME = 900000;				//15 minut
-	private final int DAYS = 5;
+	private static final int MAX_TIME = 900000;				//15 minut
+	private static final int DAYS = 5;
+
+	public static final long MONEY_ON_START = 1000000;		//10 000 zl
 
 	private DataManager dataManager;
 	private Long money;
@@ -33,9 +35,12 @@ public class Game {
 	private Date lastRefresh;	
 	private Calendar calendar;
 	
-	public Game() {
-		dataManager = new DataManager(new GPWDataSource(), new GPWDataParser());
-		loadDataFromXML();
+	public Game(DataSource dataSource, DataParser dataParser, LocalStorage localStorage) {
+		this.dataManager = new DataManager(dataSource, dataParser, localStorage);
+		this.current = new ArrayList<CurrentStock>();
+		this.lastRefresh = new Date(0);
+		
+		this.loadDataFromXML();
 	}
 	
 	public void buy(String company, int amount) throws ActionException {
@@ -74,8 +79,12 @@ public class Game {
 			stock.setStartPrice(stock.getStartPrice()+price*amount);
 		}
 		
-		dataManager.saveStats(new Stats(money,restarts));
-		dataManager.saveOwned(owned);
+		try {
+		    dataManager.saveStats(new Stats(money,restarts));
+		    dataManager.saveOwned(owned);
+	    } catch (IOException e) {
+	        // FIXME: uwaga na błąd
+	    }
 	}
 
 	public void sell(String company, int amount) throws ActionException {
@@ -113,8 +122,12 @@ public class Game {
 			stock.setStartPrice(stock.getStartPrice()-price*amount);
 		}
 		
-		dataManager.saveStats(new Stats(money,restarts));
-		dataManager.saveOwned(owned);
+		try {
+		    dataManager.saveStats(new Stats(money,restarts));
+		    dataManager.saveOwned(owned);
+	    } catch (IOException e) {
+	        // FIXME: uwaga na błąd
+	    }
 	}
 
 	private void toMap(ArrayList<ArchivedStock> stock, int index) {
@@ -177,7 +190,11 @@ public class Game {
 		}
 		
 		saveFirst(DAYS);
-		dataManager.saveArchival(archived);		
+		try {
+		    dataManager.saveArchival(archived);		
+	    } catch (IOException e) {
+	        // FIXME: uwaga na błąd
+	    }
 	}
 	
 	public void saveFirst(int days){
@@ -192,16 +209,15 @@ public class Game {
 	}
 	
 	public void refreshData() {
-
-		downloadArchived(DAYS);
-		calendar = Calendar.getInstance();
+		this.downloadArchived(DAYS);
+		this.calendar = Calendar.getInstance();
 
 		try{
-			current = dataManager.getCurrent();
+			this.current = dataManager.getCurrent();
 		}catch (IOException e) {
 			//TODO ładne poradzenie sobie z wyjątkiem 
 		}
-		lastRefresh = calendar.getTime();
+		this.lastRefresh = calendar.getTime();
 	}
 	
 	/** Ustawia pola zgodnie z danymi z plikow XML  **/
@@ -222,26 +238,58 @@ public class Game {
 		this.restarts += 1;
 		this.money = MONEY_ON_START;
 	}
+	
 	public ArrayList<ArchivedStock> getArchived(String name){
 		return archived.get(name);
 	}
+	
 	public ArrayList<PlayerStock> getOwned(){
 		return owned;
 	}
+	
 	public long getMoney(){
 		return money;
 	}
+	
 	public TreeMap<String,ArrayList<ArchivedStock>> getArchived(){
 		return archived;
 	}
+	
 	public ArrayList<CurrentStock> getCurrent(){
 		return current;
 	}
+	
 	public void addToObserved(String name){
 		if (observed.indexOf(name) == -1)
 			observed.add(name);
 	}
+	
 	public void removeFromObserved(String name){
 		observed.remove(name);
 	}
+	
+	public long getMoneyInStock() {
+		long sum = 0;
+		for (int i = 0; i < owned.size(); i++) {
+			for (int j = 0; j < current.size(); j++) {
+				if (owned.get(i).getCompanyName().equals(current.get(j).getName())) {
+					sum += owned.get(i).getAmount() * current.get(j).getEndPrice();
+				}
+			}
+		}
+		return sum;
+	}
+	
+	public long getEndPrice(String companyName) {
+		int price = 0;
+
+		for (int i = 0; i < current.size(); i++) {
+			if ( companyName.equals(current.get(i).getName()) ) {
+				price = current.get(i).getEndPrice();
+				break;
+			}
+		}
+		return price;
+	}
+	
 }
