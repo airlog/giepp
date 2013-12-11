@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.table.TableModel;
 
 import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
 
@@ -19,11 +20,11 @@ public class RatingsPanel
     /**
      * 
      */
-    public RatingsPanel() {
+    public RatingsPanel(TableModel tableModel) {
         super(new BorderLayout(), false);
         
         mStockTable = new CurrentStockTable();
-        mStockTable.setModel(new CurrentStockTable.CurrentStockTableModel());
+        mStockTable.setModel(tableModel);
         
         this.initComponent();
     }

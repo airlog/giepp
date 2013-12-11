@@ -8,11 +8,15 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
+import pl.pisz.airlog.giepp.data.CurrentStock;
+
 import pl.pisz.airlog.giepp.desktop.menus.MainMenuBar;
 
 import pl.pisz.airlog.giepp.desktop.panels.RatingsPanel;
 
 import pl.pisz.airlog.giepp.desktop.util.HelperTools;
+
+import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
 
 /**
  * @author Rafal
@@ -52,13 +56,16 @@ public class MainFrame
      * @param args
      */
     public static void main(String[] args) {
+        final CurrentStockTable.CurrentStockTableModel currentStockModel = new 
+                CurrentStockTable.CurrentStockTableModel();
         SwingUtilities.invokeLater(new Runnable() {
            @Override
-           public void run() {
+           public void run() {               
                String[] titles = new String[] {"Moje konto", "Notowania", "Obserwowane", "Statystyki"};
                JPanel[] panels = new JPanel[titles.length];
                for (int i = 0; i < titles.length; i++) panels[i] = HelperTools.newTextPanel(titles[i]);
-               panels[1] = new RatingsPanel();
+                              
+               panels[1] = new RatingsPanel(currentStockModel);
                
                MainMenuBar mmb = new MainMenuBar();
                mmb.setMenuListener(new MainMenuBar.MainMenuListener() {
@@ -69,12 +76,23 @@ public class MainFrame
                });
                
                JFrame frame = new MainFrame(panels, titles);
-               
+                              
                frame.setJMenuBar(mmb);
                frame.setMinimumSize(new Dimension(800, 600));
+               frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                
                frame.setVisible(true);
            }
+        });
+        
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) { }
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                currentStockModel.add(new CurrentStock("AddedStock", "15:08", 230, 227, 232, 229, 1.0f));
+            }
         });
     }
 

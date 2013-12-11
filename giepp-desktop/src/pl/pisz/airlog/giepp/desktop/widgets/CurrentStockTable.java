@@ -1,6 +1,7 @@
 package pl.pisz.airlog.giepp.desktop.widgets;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.swing.JTable;
 
@@ -30,6 +31,29 @@ public class CurrentStockTable
             super();
             
             mStocks.add(new CurrentStock("TestingStock", "13:03", 100, 80, 160, 140, new Float(2.0)));
+        }
+        
+        public CurrentStockTableModel add(CurrentStock stock) {
+            mStocks.add(stock);
+            this.fireTableDataChanged();
+            
+            return this;
+        }
+        
+        public CurrentStockTableModel addAll(Collection<? extends CurrentStock> c) {
+            mStocks.addAll(c);
+            this.fireTableDataChanged();
+            
+            return this;
+        }
+
+        public CurrentStockTableModel clear() {
+            int size = mStocks.size();
+            
+            mStocks.clear();
+            this.fireTableRowsDeleted(0, size - 1);
+            
+            return this;
         }
         
         @Override
