@@ -1,5 +1,9 @@
 package pl.pisz.airlog.giepp.desktop.widgets;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -9,12 +13,15 @@ import javax.swing.table.AbstractTableModel;
 
 import pl.pisz.airlog.giepp.data.CurrentStock;
 
+import pl.pisz.airlog.giepp.desktop.menus.CurrentStockPopupMenu;
+
 /**
  * @author Rafal
  *
  */
 public class CurrentStockTable
-        extends JTable {
+        extends JTable
+        implements MouseListener {
 
     public static class CurrentStockTableModel
             extends AbstractTableModel {
@@ -117,5 +124,42 @@ public class CurrentStockTable
         }
         
     }
+    
+    private CurrentStockPopupMenu mPopupMenu = new CurrentStockPopupMenu();
+    
+    public CurrentStockTable() {
+        super();
+        
+        this.addMouseListener(this);
+    }
+
+    
+    @Override
+    public void mouseClicked(MouseEvent me) {}
+
+    
+    @Override
+    public void mousePressed(MouseEvent me) {
+        if (me.getButton() != MouseEvent.BUTTON3) return;
+            
+        int row = this.rowAtPoint(me.getPoint());
+        if (row >= 0 && row < this.getRowCount()) this.setRowSelectionInterval(row, row);
+        
+        mPopupMenu
+                .setStockName((String) this.getModel().getValueAt(row, 0))
+                .show(me.getComponent(), me.getX(), me.getY());
+    }
+    
+
+    @Override
+    public void mouseReleased(MouseEvent e) {}
+    
+
+    @Override
+    public void mouseEntered(MouseEvent e) {}
+
+    
+    @Override
+    public void mouseExited(MouseEvent e) {}
     
 }
