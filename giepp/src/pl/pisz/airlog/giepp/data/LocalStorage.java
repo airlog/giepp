@@ -119,7 +119,7 @@ public class LocalStorage {
         return removedCounter;
     }
 
-    public ArrayList<PlayerStock> getOwned(){
+    public ArrayList<PlayerStock> getOwned() {
         this.assertStocksDocument();
 	    
 	    ArrayList<PlayerStock> stocks = new ArrayList<PlayerStock>();
