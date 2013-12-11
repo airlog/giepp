@@ -8,10 +8,12 @@ public class DataManager {
 	
 	private DataParser parser;
 	private DataSource source;
+	private LocalStorage storage;
 
-	public DataManager(DataSource source, DataParser parser){
+	public DataManager(DataSource source, DataParser parser, LocalStorage storage){
 		this.source = source;
 		this.parser = parser;
+		this.storage = storage;
 	}
 	
 	public ArrayList<ArchivedStock> getArchival(int day, int month, int year) throws BadDate, IOException {
@@ -36,7 +38,7 @@ public class DataManager {
 	}
 
 	public ArrayList<PlayerStock> getOwned(){		
-		return new ArrayList<PlayerStock>();
+		return this.storage.getOwned();
 	}
 	
 	public ArrayList<String> getObserved(){		
@@ -44,7 +46,7 @@ public class DataManager {
 	}
 	
 	public TreeMap<String,ArrayList<ArchivedStock>> getArchivalFromXML(){		
-		return null;
+		return this.storage.getArchivalFromXML();
 	}
 	
 	public Stats getStats(){
@@ -55,7 +57,13 @@ public class DataManager {
 
 	public void saveObserved(ArrayList<String> observed){}
 
-	public void saveArchival(TreeMap<String,ArrayList<ArchivedStock>> archived){}
+	public void saveArchival(TreeMap<String,ArrayList<ArchivedStock>> archived) throws IOException {
+	    this.storage.saveArchival(archived);
+	}
 	
-	public void saveOwned(ArrayList<PlayerStock> owned){}
+	public void saveOwned(ArrayList<PlayerStock> owned) throws IOException {
+	    this.storage.saveOwned(owned);
+	}
+
 }
+

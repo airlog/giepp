@@ -14,8 +14,9 @@ import pl.pisz.airlog.giepp.data.PlayerStock;
 import pl.pisz.airlog.giepp.data.CurrentStock;
 import pl.pisz.airlog.giepp.data.Stats;
 import pl.pisz.airlog.giepp.data.DataManager;
-import pl.pisz.airlog.giepp.data.gpw.GPWDataSource;
-import pl.pisz.airlog.giepp.data.gpw.GPWDataParser;
+import pl.pisz.airlog.giepp.data.LocalStorage;
+import pl.pisz.airlog.giepp.data.DataSource;
+import pl.pisz.airlog.giepp.data.DataParser;
 
 public class Game {	
 
@@ -33,8 +34,8 @@ public class Game {
 	private Date lastRefresh;	
 	private Calendar calendar;
 	
-	public Game() {
-		dataManager = new DataManager(new GPWDataSource(), new GPWDataParser());
+	public Game(DataSource dataSource, DataParser dataParser, LocalStorage localStorage) {
+		dataManager = new DataManager(dataSource, dataParser, localStorage);
 		loadDataFromXML();
 	}
 	
@@ -74,8 +75,12 @@ public class Game {
 			stock.setStartPrice(stock.getStartPrice()+price*amount);
 		}
 		
-		dataManager.saveStats(new Stats(money,restarts));
-		dataManager.saveOwned(owned);
+		try {
+		    dataManager.saveStats(new Stats(money,restarts));
+		    dataManager.saveOwned(owned);
+	    } catch (IOException e) {
+	        // FIXME: uwaga na błąd
+	    }
 	}
 
 	public void sell(String company, int amount) throws ActionException {
@@ -113,8 +118,12 @@ public class Game {
 			stock.setStartPrice(stock.getStartPrice()-price*amount);
 		}
 		
-		dataManager.saveStats(new Stats(money,restarts));
-		dataManager.saveOwned(owned);
+		try {
+		    dataManager.saveStats(new Stats(money,restarts));
+		    dataManager.saveOwned(owned);
+	    } catch (IOException e) {
+	        // FIXME: uwaga na błąd
+	    }
 	}
 
 	private void toMap(ArrayList<ArchivedStock> stock, int index) {
@@ -177,7 +186,11 @@ public class Game {
 		}
 		
 		saveFirst(DAYS);
-		dataManager.saveArchival(archived);		
+		try {
+		    dataManager.saveArchival(archived);		
+	    } catch (IOException e) {
+	        // FIXME: uwaga na błąd
+	    }
 	}
 	
 	public void saveFirst(int days){
