@@ -37,11 +37,11 @@ public class DataManager {
 		return parser.parseCurrent(source.retrieveCurrentData());
 	}
 
-	public ArrayList<PlayerStock> getOwned(){		
+	public ArrayList<PlayerStock> getOwned() {		
 		return this.storage.getOwned();
 	}
 	
-	public ArrayList<String> getObserved(){		
+	public ArrayList<String> getObserved() {		
 		return null;
 	}
 	
