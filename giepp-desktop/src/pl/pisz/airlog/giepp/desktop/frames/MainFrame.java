@@ -2,6 +2,7 @@ package pl.pisz.airlog.giepp.desktop.frames;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -11,12 +12,11 @@ import javax.swing.SwingUtilities;
 import pl.pisz.airlog.giepp.data.CurrentStock;
 
 import pl.pisz.airlog.giepp.desktop.menus.MainMenuBar;
-
 import pl.pisz.airlog.giepp.desktop.panels.RatingsPanel;
-
 import pl.pisz.airlog.giepp.desktop.util.HelperTools;
-
 import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
+
+import pl.pisz.airlog.giepp.game.Game;
 
 /**
  * @author Rafal
@@ -88,10 +88,15 @@ public class MainFrame
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) { }
+        Game game = HelperTools.newGame();
+        game.refreshData();
+        final List<CurrentStock> list = game.getCurrent();
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                currentStockModel.add(new CurrentStock("AddedStock", "15:08", 230, 227, 232, 229, 1.0f));
+                //currentStockModel.add(new CurrentStock("AddedStock", "15:08", 230, 227, 232, 229, 1.0f));
+                currentStockModel.clear();
+                currentStockModel.addAll(list);
             }
         });
     }

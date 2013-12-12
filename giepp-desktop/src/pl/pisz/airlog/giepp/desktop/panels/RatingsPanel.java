@@ -25,6 +25,8 @@ public class RatingsPanel
         
         mStockTable = new CurrentStockTable();
         mStockTable.setModel(tableModel);
+        mStockTable.getColumnModel().getColumn(6).setCellRenderer(
+                new CurrentStockTable.ChangeRenderer());
         
         this.initComponent();
     }

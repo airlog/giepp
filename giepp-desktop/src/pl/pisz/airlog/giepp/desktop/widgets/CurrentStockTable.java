@@ -1,5 +1,6 @@
 package pl.pisz.airlog.giepp.desktop.widgets;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -9,8 +10,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import pl.pisz.airlog.giepp.data.CurrentStock;
 
@@ -123,6 +126,27 @@ public class CurrentStockTable
         public String getColumnName(int columnIndex) {
             return COLUMN_NAMES[columnIndex];
         }
+
+                
+    }
+    
+    public static class ChangeRenderer
+            extends DefaultTableCellRenderer {
+    
+        public static Color COLOR_INCREASED = Color.GREEN;
+        public static Color COLOR_DECREASED = Color.RED;
+        
+        @Override
+        protected void setValue(Object value) {
+            this.setHorizontalAlignment(SwingConstants.RIGHT);
+            super.setValue(value);
+            
+            if (!(value instanceof Float)) return;
+            
+            float f = (Float) value;
+            if (f > 0.0f) this.setForeground(COLOR_INCREASED);
+            else if (f < 0.0f) this.setForeground(COLOR_DECREASED);
+        }
         
     }
     
@@ -144,7 +168,6 @@ public class CurrentStockTable
     @Override
     public void mouseClicked(MouseEvent me) {}
 
-    
     @Override
     public void mousePressed(MouseEvent me) {
         if (me.getButton() != MouseEvent.BUTTON3) return;
@@ -156,16 +179,13 @@ public class CurrentStockTable
                 .setStockName((String) this.getModel().getValueAt(row, 0))
                 .show(me.getComponent(), me.getX(), me.getY());
     }
-    
 
     @Override
     public void mouseReleased(MouseEvent e) {}
     
-
     @Override
     public void mouseEntered(MouseEvent e) {}
 
-    
     @Override
     public void mouseExited(MouseEvent e) {}
     
