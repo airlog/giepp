@@ -4,6 +4,7 @@ import java.awt.GridLayout;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Comparator;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -39,6 +40,16 @@ public class HelperTools {
             System.err.println(e);
         }
         return new Game(new GPWDataSource(), new GPWDataParser(), localStorage);
+    }
+    
+    public static <T> Comparator<T> getReverseComparator(Comparator<T> comparator) {
+        final Comparator<T> comp = comparator;
+        return new Comparator<T>() {
+            @Override
+            public int compare(T a, T b) {
+                return -comp.compare(a, b); 
+            }
+        };
     }
     
 }
