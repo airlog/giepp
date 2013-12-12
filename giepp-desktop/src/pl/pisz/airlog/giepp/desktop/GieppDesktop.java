@@ -67,7 +67,6 @@ public class GieppDesktop {
                 currentStockModel.addAll(list);
             }
         });
-        currentStockModel.sort(HelperTools.getReverseComparator(CurrentStock.getByChangeComparator()));
     }
 
 }

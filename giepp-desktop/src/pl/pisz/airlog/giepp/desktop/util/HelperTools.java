@@ -29,13 +29,17 @@ public class HelperTools {
     }
     
     public static Game newGame() {
-        LocalStorage localStorage = null;
+        LocalStorage localStorage = null;        
         try {
-            localStorage = LocalStorage.newInstance(
+            File files[] = new File[] {
                     File.createTempFile("owned", ".xml"),
                     File.createTempFile("archive", ".xml"),
                     File.createTempFile("observed", ".xml"),
-                    File.createTempFile("stats", ".xml"));
+                    File.createTempFile("stats", ".xml")
+                };
+            for (File file : files) file.deleteOnExit();
+            
+            localStorage = LocalStorage.newInstance(files[0], files[1], files[2], files[3]);
         } catch (IOException e) {
             System.err.println(e);
         }
