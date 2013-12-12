@@ -99,19 +99,20 @@ public class MainActivity extends FragmentActivity {
 		public Fragment getItem(int position) {
 			Fragment fragment;
 			switch (position) {
-			default:
-			case 0: 
-				fragment = new MyAccountFragment();
-				break;
-			case 1: 
-				fragment = new AllRecordsFragment();
-				break;
-			case 2: 
-				fragment = new ObservedFragment();
-				break;
-			case 3: 
-				fragment = new StatsFragment();
-				break;
+				default:
+				case 0: 
+					fragment = new MyAccountFragment();
+					GiePPSingleton.getInstance().setFragment1((MyAccountFragment)fragment);
+					break;
+				case 1: 
+					fragment = new AllRecordsFragment();
+					break;
+				case 2: 
+					fragment = new ObservedFragment();
+					break;
+				case 3: 
+					fragment = new StatsFragment();
+					break;
 			}
 			Bundle args = new Bundle();
 			fragment.setArguments(args);

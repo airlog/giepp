@@ -17,16 +17,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class MyAccountFragment extends Fragment implements OnItemClickListener{
+public class MyAccountFragment extends Fragment implements OnItemClickListener {
 		
 		private AccountAdapter adapter3;
-	
-		public MyAccountFragment() {
+		private TextView textMoney;
+		private TextView textStock;
 		
+		public MyAccountFragment() {		
 		}	
 
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			Log.i("tabsfragments","kliknieto");
 			Intent intent = new Intent(getActivity(), CompanyDetailsActivity.class);
 			String name = adapter3.getName(position);
 			GiePPSingleton.getInstance().setName(name);
@@ -38,8 +38,8 @@ public class MyAccountFragment extends Fragment implements OnItemClickListener{
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.my_account,container, false);
-			TextView textMoney = (TextView) rootView.findViewById(R.id.money);
-			TextView textStock = (TextView) rootView.findViewById(R.id.stock);
+			textMoney = (TextView) rootView.findViewById(R.id.money);
+			textStock = (TextView) rootView.findViewById(R.id.stock);
 			
 			double money = GiePPSingleton.getInstance().getMoney()/100.0;
 			NumberFormat formatter = new DecimalFormat("#0.00");
@@ -50,6 +50,7 @@ public class MyAccountFragment extends Fragment implements OnItemClickListener{
 
 			textMoney.setText(moneyS+" PLN");
 			textStock.setText(stockS+" PLN");
+			
 			ListView list =  (ListView) rootView.findViewById(R.id.my_account_list);
 			ArrayList<PlayerStock> o1 = GiePPSingleton.getInstance().getOwned();
 			ArrayList<PlayerStock> o2 = new ArrayList<PlayerStock>();
@@ -62,5 +63,17 @@ public class MyAccountFragment extends Fragment implements OnItemClickListener{
 			list.setOnItemClickListener(this);
 
 			return rootView;
+		}
+		
+		public void zmiana(){
+			double money = GiePPSingleton.getInstance().getMoney()/100.0;
+			NumberFormat formatter = new DecimalFormat("#0.00");
+			String moneyS = formatter.format(money);
+			
+			double stock = GiePPSingleton.getInstance().getMoneyInStock()/100.0;
+			String stockS = formatter.format(stock);
+
+			textMoney.setText(moneyS+" PLN");
+			textStock.setText(stockS+" PLN");
 		}
 }

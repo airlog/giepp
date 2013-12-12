@@ -1,5 +1,7 @@
 package pl.pisz.airlog.giepp.android;
 
+import pl.pisz.airlog.giepp.data.CurrentStock;
+import pl.pisz.airlog.giepp.data.PlayerStock;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -8,36 +10,74 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.NumberPicker;
-import android.widget.TextView;
 import android.widget.NumberPicker.OnValueChangeListener;
 
-public class CompanyDetailsActivity extends Activity implements View.OnClickListener{
+public class CompanyDetailsActivity extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener{
 
+	private int maxToBuy = 0;
+	private int maxToSell = 0;
+	private String companyName;
+	private CheckBox checkBox;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);        
-        this.getActionBar().setTitle(GiePPSingleton.getInstance().getName());
+        super.onCreate(savedInstanceState);                
+        this.companyName = GiePPSingleton.getInstance().getName();
+        this.getActionBar().setTitle(companyName);
         
 		setContentView(R.layout.company_details);
-		TextView title = (TextView) findViewById(R.id.title);
-		title.setText("Informacja o firmie: " + GiePPSingleton.getInstance().getName());
 		Button buy = (Button) findViewById(R.id.buy);
 		Button sell = (Button) findViewById(R.id.sell);
+		
+		checkBox = (CheckBox)  findViewById(R.id.checkBox);
+		if(GiePPSingleton.getInstance().getObserved().contains(companyName)) {
+			checkBox.setChecked(true);
+		}
+		checkBox.setOnCheckedChangeListener(this);
+		
+		for(PlayerStock ps : GiePPSingleton.getInstance().getOwned()) {
+			if (ps.getCompanyName().equals(companyName)) {
+				this.maxToSell = ps.getAmount();
+				break;				
+			}
+		}
+		for(CurrentStock cs : GiePPSingleton.getInstance().getCurrent()) {
+			if (cs.getName().equals(companyName)) {
+				if(cs.getEndPrice() > 0 ) {
+					this.maxToBuy = (int) (GiePPSingleton.getInstance().getMoney() / cs.getEndPrice());
+				}
+				break;		
+			}
+		}
 		buy.setOnClickListener(this);
 		sell.setOnClickListener(this);
+    }
+    
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+    	if (isChecked) {
+    		GiePPSingleton.getInstance().addToObserved(companyName);
+    		Log.i("giepp","Dodaje do obserwowanych: " + companyName);
+    	}
+    	else {
+    		GiePPSingleton.getInstance().removeFromObserved(companyName);
+    		Log.i("giepp","Usuwam z obserwowanych: " + companyName);    		
+    	}
     }
 
     public void onClick(View v){
     	
     	if(v.getId() == R.id.buy) {
-    		final Dialog dialog = new DialogBuySell(this,GiePPSingleton.getInstance().getNr(),140,1);
-    		Log.i("tabsfragments","Tworze dialog");
+    		final Dialog dialog = new BuySellDialog(this,companyName,maxToBuy,1);
+    		Log.i("giepp","Tworze dialog");
 			dialog.setTitle("Kupno");	 		
 			dialog.show();
 		  }
     	else{
-    		final Dialog dialog = new DialogBuySell(this,GiePPSingleton.getInstance().getNr(),140,2);
+    		final Dialog dialog = new BuySellDialog(this,companyName,maxToSell,2);
     		Log.i("tabsfragments","Tworze dialog");
 			dialog.setTitle("Sprzedaż");	 		
 			dialog.show();
@@ -51,19 +91,19 @@ public class CompanyDetailsActivity extends Activity implements View.OnClickList
 }
 
 
-class DialogBuySell extends Dialog implements View.OnClickListener, OnValueChangeListener {
+class BuySellDialog extends Dialog implements View.OnClickListener, OnValueChangeListener {
 	
 	private NumberPicker np;
 	private Button buttonOK;
 	private Button buttonNO;
-	private int ile;
+	private int amount;
 	private int max;
-	private int firma;
+	private String companyName;
 	private int type;
 	
-	public DialogBuySell(Context ctx, int firma, int max, int type){
+	public BuySellDialog(Context ctx, String companyName, int max, int type){
 		super(ctx);
-		this.firma = firma;
+		this.companyName = companyName;
 		this.max = max;
 		this.type = type;
 	}
@@ -84,13 +124,25 @@ class DialogBuySell extends Dialog implements View.OnClickListener, OnValueChang
    }
 	
 	public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-		ile = newVal;
+		amount = newVal;
 	    Log.i("value is",""+newVal);
 
 	}
 
     public void onClick(View v){
-    	Log.i("tabsfragments","Dismiss");
+    	if(v.getId() == R.id.buttonOK) {
+    		switch (type) {
+    			default:
+    			case 1:
+    				Log.i("giepp","Kupuje " + amount + " akcji " + companyName);
+    				GiePPSingleton.getInstance().buy(companyName,amount);
+    				break;
+    			case 2:
+    				GiePPSingleton.getInstance().sell(companyName,amount);
+    				Log.i("giepp","Sprzedaje " + amount + " akcji " + companyName);
+    				break;
+    		}
+    	}
     	dismiss();
     }
 }

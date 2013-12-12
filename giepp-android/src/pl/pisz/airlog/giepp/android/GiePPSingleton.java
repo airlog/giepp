@@ -2,6 +2,8 @@ package pl.pisz.airlog.giepp.android;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -15,6 +17,8 @@ import pl.pisz.airlog.giepp.game.ActionException;
 import pl.pisz.airlog.giepp.game.Game;
 import android.app.Activity;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 public class GiePPSingleton{
 	
@@ -25,7 +29,6 @@ public class GiePPSingleton{
 		return GiePPSingleton.instance;
 	}
 	
-	private int nr;
 	private String name;
 	private Game game;
 	private AllRecordsAdapter adapter1;
@@ -33,6 +36,7 @@ public class GiePPSingleton{
 	private AccountAdapter adapter3;
 	private Activity act;
 	private boolean refreshing;
+	private MyAccountFragment fragment1;
 	
 	private GiePPSingleton() {
 		try{
@@ -66,16 +70,7 @@ public class GiePPSingleton{
 							Log.i("giepp",l.get(i).getName()+": "+l.get(i).getMaxPrice());
 					}
 					Log.i("giepp","Dane sciagniete");
-					
-					try{	
-						game.buy("ALIOR",10);
-					}catch(ActionException e2){
-						Log.i("giepp",e2.getReason()+"");
-					}
-					catch(Exception e3){
-						Log.i("giepp","Blad3:" + e3);
-					}
-					
+										
 					act.runOnUiThread(new Runnable(){
 						public void run(){
 							if(adapter1 != null){		
@@ -109,6 +104,50 @@ public class GiePPSingleton{
 		}).start();
 	}
 	
+	public void buy(String companyName, int amount){
+		try{
+			game.buy(companyName,amount);
+		}catch( Exception e){
+			Log.i("giepp","Blad1: " + e);
+		}
+		try {
+			act.runOnUiThread(new Runnable(){
+				public void run(){
+					if (fragment1 != null) {
+						fragment1.zmiana();
+						Log.i("giepp","moje konto updatowane");
+					}
+					if (adapter3 != null) {		
+						adapter3.zmiana(game.getOwned());
+						Log.i("giepp","lista3 updatowana");
+					}
+				}
+			});
+		}catch(Exception e){
+			Log.i("giepp","Blad2: " + e);
+		}
+	}
+	public void sell(String companyName, int amount){
+		try{
+			game.sell(companyName,amount);
+			act.runOnUiThread(new Runnable(){
+				public void run(){
+					if (fragment1 != null) {
+						fragment1.zmiana();
+						Log.i("giepp","moje konto updatowane");
+					}
+					if(adapter3 != null){		
+						adapter3.zmiana(game.getOwned());
+						Log.i("giepp","lista3 updatowana");
+					}
+				}
+			});
+		}
+		catch(Exception e){
+			Log.i("giepp","nie udalo sie: " + e);
+		}
+	}
+	
 	public ArrayList<CurrentStock> getCurrent(){
 		return game.getCurrent();
 	}
@@ -124,9 +163,31 @@ public class GiePPSingleton{
 	}
 	public void addToObserved(String name){
 		game.addToObserved(name);
+		act.runOnUiThread(new Runnable(){
+			public void run(){
+				if(adapter2 != null){		
+					adapter2.zmiana(game.getCurrent(),game.getObserved());
+					Log.i("giepp","lista2 updatowana");
+				}
+			}
+		});
+	}
+	public void removeFromObserved(String name) {
+		game.removeFromObserved(name);
+		act.runOnUiThread(new Runnable(){
+			public void run(){
+				if(adapter2 != null){		
+					adapter2.zmiana(game.getCurrent(),game.getObserved());
+					Log.i("giepp","lista2 updatowana");
+				}
+			}
+		});
 	}
 	public ArrayList<String> getObserved(){
 		return game.getObserved();
+	}
+	public void setFragment1(MyAccountFragment fragment1){
+		this.fragment1 = fragment1;
 	}
 	
 	public void setAdapter1(AllRecordsAdapter adapter1){
@@ -141,14 +202,6 @@ public class GiePPSingleton{
 	public void setActivity(Activity act){
 		this.act = act;
 	}
-	
-	public void setNr(int nr){
-		this.nr = nr;
-	}
-	public int getNr(){
-		return nr;
-	}
-
 	public void setName(String name){
 		this.name = name;
 	}

@@ -61,4 +61,7 @@ public class AllRecordsAdapter extends ArrayAdapter<CurrentStock> {
 			this.items.add(it.get(i));
 		this.notifyDataSetChanged();
 	}
+	public String getName(int index) {
+		return items.get(index).getName();
+	}
 }

@@ -55,6 +55,7 @@ public class ObservedAdapter extends ArrayAdapter<CurrentStock> {
 		}
 		return rowView;
 	}
+	
 	public void zmiana(ArrayList<CurrentStock> it, ArrayList<String> obs){
 		items.clear();
 		for(int i =0;i<it.size(); i++) {
@@ -63,5 +64,9 @@ public class ObservedAdapter extends ArrayAdapter<CurrentStock> {
 			}
 		}
 		this.notifyDataSetChanged();
+	}
+	
+	public String getName(int index) {
+		return items.get(index).getName();
 	}
 }
