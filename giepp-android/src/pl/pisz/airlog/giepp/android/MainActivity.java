@@ -23,7 +23,15 @@ public class MainActivity extends FragmentActivity {
 		@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+	
+		GiePPSingleton.getInstance().setActivity(this);
+		try{
+			GiePPSingleton.getInstance().addToObserved("ALIOR");
+			GiePPSingleton.getInstance().addToObserved("ZYWIEC");
+			GiePPSingleton.getInstance().addToObserved("CCC");
+		}catch(Exception e){
+			Log.i("giepp","Blad: " + e);
+		}
 		final ActionBar actionBar = getActionBar();
 	    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 	    
@@ -73,7 +81,7 @@ public class MainActivity extends FragmentActivity {
 	    // Handle presses on the action bar items
 	    switch (item.getItemId()) {
 	        case R.id.action_refresh:
-	        	Log.i("giepp","Odswiez");
+				GiePPSingleton.getInstance().refresh();
 	            return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
