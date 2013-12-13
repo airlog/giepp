@@ -25,7 +25,7 @@ public class Game {
 
 	private static final int MAX_TIME = 900000;				//15 minut
 	private static final int DAYS = 5;
-
+	private static final int MAX_DAYS_IN_MEMORY = 30;
 	public static final long MONEY_ON_START = 1000000;		//10 000 zl
 
 	private DataManager dataManager;
@@ -201,7 +201,7 @@ public class Game {
 			}
 		}
 		
-		saveFirst(DAYS);
+		saveFirst(MAX_DAYS_IN_MEMORY);
 		try {
 		    dataManager.saveArchival(archived);		
 	    } catch (IOException e) {
@@ -220,16 +220,21 @@ public class Game {
 		}		
 	}
 	
-	public void refreshData() {
+	public void refreshArchival() {
 		this.downloadArchived(DAYS);
+	}
+	public void refreshArchival(int days) {
+		this.downloadArchived(days);
+	}
+	
+	public void refreshCurrent(){
 		this.calendar = Calendar.getInstance();
-
 		try{
 			this.current = dataManager.getCurrent();
 		}catch (IOException e) {
 			//TODO ładne poradzenie sobie z wyjątkiem 
 		}
-		this.lastRefresh = calendar.getTime();
+		this.lastRefresh = calendar.getTime();		
 	}
 	
 	/** Ustawia pola zgodnie z danymi z plikow XML  **/
@@ -316,7 +321,7 @@ public class Game {
 		File stats = File.createTempFile("stats", ".xml");
 		Game g = new Game(new GPWDataSource(),
 				new GPWDataParser(),LocalStorage.newInstance(ownedStocks, archiveStocks, observedStocks, stats));
-		g.refreshData();
+		g.refreshArchival(2);
 		Set<String> keys = g.getArchived().keySet();
 		
 		for(String k: keys){
@@ -325,6 +330,10 @@ public class Game {
 			for(int i = 0; i<l.size(); i++)
 				System.out.println(k+": "+l.get(i).getDate()+": "+l.get(i).getMaxPrice());
 		}
-				
+		g.refreshCurrent();
+		ArrayList<CurrentStock> cs= g.getCurrent();
+		for (CurrentStock c : cs)
+			System.out.println(c.getName()+": "+c.getEndPrice());
+			
 	}
 }
