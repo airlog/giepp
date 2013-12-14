@@ -15,7 +15,7 @@ public class GPWDataParser implements DataParser {
 
 	public GPWDataParser() {
 		patternArchive = Pattern.compile(".*<td [^<>]*>([^<>]*)</td>[^<>]*<td [^<>]*>[^<>]*</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>([^<>]*)</td>[^<>]*<td>([^<>]*)</td>[^<>]*<td>([^<>]*)</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>[^<>]*</td>");
-		patternCurrent = Pattern.compile(".*<td>.*</td><td class=\"left nowrap\"><a[^<>]*>([^<>]*)</a></td><td class=\"left\">[^<>]*</td><td class=\"left\">PLN</td><td>([^<>]*)</td><td>[^<>]*</td><td>[^<>]*</td><td>([^<>]*)</td><td>([^<>]*)</td><td>([^<>]*)</td><td>([^<>]*)</td><td>([^<>]*)</td><td>[^<>]*</td><td>[^<>]*</td>");
+		patternCurrent = Pattern.compile(".*<td>.*</td><td class=\"left nowrap\"><a[^<>]*>([^<>]*)</a></td><td class=\"left\">[^<>]*</td><td class=\"left\">PLN</td><td>([^<>]*)</td><td>([^<>])*</td><td>[^<>]*</td><td>([^<>]*)</td><td>([^<>]*)</td><td>([^<>]*)</td><td>([^<>]*)</td><td>([^<>]*)</td><td>[^<>]*</td><td>[^<>]*</td>");
 	}
 
 	/** Zwraca listę notowań archiwalnych z podanego dnia. Jeśli dla danego dnia nie ma wyników to wyrzuca wyjątek BadDate **/
@@ -79,13 +79,13 @@ public class GPWDataParser implements DataParser {
 			 
 		if (m.find()) {
 			try{
-				max = Integer.parseInt(m.group(2).replaceAll(",",""));
+				max = Integer.parseInt(m.group(2).replaceAll(",","").replaceAll("&nbsp;", ""));
 			}catch (Exception e) {}
 			try{
-				min = Integer.parseInt(m.group(3).replaceAll(",",""));
+				min = Integer.parseInt(m.group(3).replaceAll(",","").replaceAll("&nbsp;", ""));
 			}catch (Exception e) {}
 			try{
-				end = Integer.parseInt(m.group(4).replaceAll(",",""));
+				end = Integer.parseInt(m.group(4).replaceAll(",","").replaceAll("&nbsp;", ""));
 			}catch (Exception e) {}
 			
 			if (max == 0.0f) {
@@ -101,6 +101,7 @@ public class GPWDataParser implements DataParser {
 
 	private CurrentStock matchSingleStockCurrent(String line) {
 		Matcher m = patternCurrent.matcher(line);
+		int odn = 0;
 		int start = 0;
 		int max = 0;
 		int min = 0;
@@ -109,21 +110,30 @@ public class GPWDataParser implements DataParser {
 
 		if (m.find()) {
 			try{
-				start = Integer.parseInt(m.group(3).replaceAll(",",""));
+				odn = Integer.parseInt(m.group(3).replaceAll(",","").replaceAll("&nbsp;", ""));
 			}catch (Exception e) {}
 			try{
-				min = Integer.parseInt(m.group(4).replaceAll(",",""));
+				start = Integer.parseInt(m.group(4).replaceAll(",","").replaceAll("&nbsp;", ""));
 			}catch (Exception e) {}
 			try{
-				max = Integer.parseInt(m.group(5).replaceAll(",",""));
+				min = Integer.parseInt(m.group(5).replaceAll(",","").replaceAll("&nbsp;", ""));
+			}catch (Exception e) {}
+			try{
+				max = Integer.parseInt(m.group(6).replaceAll(",","").replaceAll("&nbsp;", ""));
 			}catch (Exception e) {}	
 			try{
-				end = Integer.parseInt(m.group(6).replaceAll(",",""));
+				end = Integer.parseInt(m.group(7).replaceAll(",","").replaceAll("&nbsp;", ""));
 			}catch (Exception e) {}
 			try{
-				change = Float.parseFloat(m.group(7).replaceAll(",","."));
+				change = Float.parseFloat(m.group(8).replaceAll(",","."));
 			}catch (Exception e) {}
-	//		System.out.print(m.group(1) + " " + m.group(2) +" " + start +" " + min +" " + max +" " + end + " " + change +"\n");
+			if (max == 0 && end == 0) {
+				end = odn;
+				start = odn;
+				max = odn;
+				min = odn;
+			}
+			//		System.out.print(m.group(1) + " " + m.group(2) +" " + start +" " + min +" " + max +" " + end + " " + change +"\n");
 			return new CurrentStock(m.group(1),m.group(2),start,min,max,end,change);
 		}		
 		return null;
