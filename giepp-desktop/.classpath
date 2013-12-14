@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry combineaccessrules="false" kind="src" path="/giepp"/>
 	<classpathentry kind="lib" path="/giepp/dist/giepp.jar"/>
+	<classpathentry kind="lib" path="libs/jgoodies-common-1.7.0.jar"/>
 	<classpathentry kind="lib" path="libs/jgoodies-forms-1.7.2.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>

@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.table.TableCellRenderer;
 
 import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
@@ -15,6 +16,8 @@ import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
 public class RatingsPanel
         extends JPanel {
 
+    private JSplitPane mSplitPane;
+    
     private CurrentStockTable mStockTable;
     
     /**
@@ -22,7 +25,12 @@ public class RatingsPanel
      */
     public RatingsPanel(CurrentStockTable.TableModel tableModel) {
         super(new BorderLayout(), false);
-        
+                
+        this.initWidgets(tableModel);
+        this.initComponent();
+    }
+    
+    private void initWidgets(CurrentStockTable.TableModel tableModel) {
         TableCellRenderer priceRenderer = new CurrentStockTable.PriceRenderer();
         
         mStockTable = new CurrentStockTable(tableModel);
@@ -32,8 +40,6 @@ public class RatingsPanel
         mStockTable.getColumnModel().getColumn(5).setCellRenderer(priceRenderer);
         mStockTable.getColumnModel().getColumn(6).setCellRenderer(
                 new CurrentStockTable.ChangeRenderer());
-        
-        this.initComponent();
     }
     
     private void initComponent() {
@@ -41,7 +47,10 @@ public class RatingsPanel
         sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         
-        this.add(sp);
+        mSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, sp, new CompanyDetailsPanel());
+        mSplitPane.setOneTouchExpandable(true);
+        
+        this.add(mSplitPane);
     }
 
 }
