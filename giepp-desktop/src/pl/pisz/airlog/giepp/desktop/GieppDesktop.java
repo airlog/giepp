@@ -58,7 +58,7 @@ public class GieppDesktop {
         
         // update data
         Game game = HelperTools.newGame();
-        game.refreshData();
+        game.refreshCurrent();
         final List<CurrentStock> list = game.getCurrent();
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -67,6 +67,7 @@ public class GieppDesktop {
                 currentStockModel.addAll(list);
             }
         });
+        game.refreshArchival();
     }
 
 }
