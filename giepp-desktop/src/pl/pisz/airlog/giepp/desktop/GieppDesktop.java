@@ -12,6 +12,7 @@ import pl.pisz.airlog.giepp.data.CurrentStock;
 import pl.pisz.airlog.giepp.desktop.frames.MainFrame;
 import pl.pisz.airlog.giepp.desktop.menus.MainMenuBar;
 import pl.pisz.airlog.giepp.desktop.panels.RatingsPanel;
+import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
 import pl.pisz.airlog.giepp.desktop.util.HelperTools;
 import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
 
@@ -57,7 +58,7 @@ public class GieppDesktop {
         });
         
         // update data
-        Game game = HelperTools.newGame();
+        Game game = GameUtilities.getInstance();
         game.refreshCurrent();
         final List<CurrentStock> list = game.getCurrent();
         SwingUtilities.invokeLater(new Runnable() {

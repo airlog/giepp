@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,15 +14,19 @@ import java.util.Comparator;
 import java.text.DecimalFormat;
 
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import pl.pisz.airlog.giepp.data.CurrentStock;
 
 import pl.pisz.airlog.giepp.desktop.menus.CurrentStockPopupMenu;
+
+import pl.pisz.airlog.giepp.desktop.util.CompanySelectedListener;
 import pl.pisz.airlog.giepp.desktop.util.HelperTools;
 
 /**
@@ -315,9 +318,7 @@ public class CurrentStockTable
 
     public static class PriceRenderer
             extends DefaultTableCellRenderer {
-        
-        DecimalFormat mFormat = new DecimalFormat("#0.00");
-        
+                
         @Override
         protected void setValue(Object value) {            
             super.setValue(value);
@@ -327,12 +328,14 @@ public class CurrentStockTable
             int i = (Integer) value;
             double price = ((double) i) * 0.01;
             
-            this.setText(mFormat.format(price));
+            this.setText(HelperTools.getPriceFormat().format(price));
         }
         
     }
     
     private CurrentStockPopupMenu mPopupMenu;
+    
+    private CompanySelectedListener mCompanySelectedListener = null;
     
     public CurrentStockTable(TableModel model) {
         super();
@@ -346,8 +349,25 @@ public class CurrentStockTable
     }
     
     @Override
+    public void valueChanged(ListSelectionEvent lse) {
+        super.valueChanged(lse);
+        
+        if (lse.getValueIsAdjusting()) return;
+        
+        ListSelectionModel lsm = (ListSelectionModel) lse.getSource();
+        if (lsm.isSelectionEmpty() || mCompanySelectedListener == null) return;
+        
+        int row = lsm.getMinSelectionIndex();
+        mCompanySelectedListener.onCompanySelected((String) this.getModel().getValueAt(row, 0));
+    }
+    
+    @Override
     public void actionPerformed(ActionEvent ae) {
         System.out.println(ae);
+    }
+        
+    public void setCompanySelectedListener(CompanySelectedListener l) {
+        mCompanySelectedListener = l;
     }
     
     public CurrentStockPopupMenu getPopup() {

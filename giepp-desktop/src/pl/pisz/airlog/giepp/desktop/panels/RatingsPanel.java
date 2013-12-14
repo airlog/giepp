@@ -18,6 +18,8 @@ public class RatingsPanel
 
     private JSplitPane mSplitPane;
     
+    private CompanyDetailsPanel mDetailsPanel;
+    
     private CurrentStockTable mStockTable;
     
     /**
@@ -25,21 +27,24 @@ public class RatingsPanel
      */
     public RatingsPanel(CurrentStockTable.TableModel tableModel) {
         super(new BorderLayout(), false);
-                
-        this.initWidgets(tableModel);
+        
+        mStockTable = new CurrentStockTable(tableModel);
+        mDetailsPanel = new CompanyDetailsPanel();
+        
+        this.initWidgets();
         this.initComponent();
     }
     
-    private void initWidgets(CurrentStockTable.TableModel tableModel) {
+    private void initWidgets() {
         TableCellRenderer priceRenderer = new CurrentStockTable.PriceRenderer();
         
-        mStockTable = new CurrentStockTable(tableModel);
         mStockTable.getColumnModel().getColumn(2).setCellRenderer(priceRenderer);
         mStockTable.getColumnModel().getColumn(3).setCellRenderer(priceRenderer);
         mStockTable.getColumnModel().getColumn(4).setCellRenderer(priceRenderer);
         mStockTable.getColumnModel().getColumn(5).setCellRenderer(priceRenderer);
         mStockTable.getColumnModel().getColumn(6).setCellRenderer(
                 new CurrentStockTable.ChangeRenderer());
+        mStockTable.setCompanySelectedListener(mDetailsPanel);
     }
     
     private void initComponent() {
@@ -47,7 +52,7 @@ public class RatingsPanel
         sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         
-        mSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, sp, new CompanyDetailsPanel());
+        mSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, sp, mDetailsPanel);
         mSplitPane.setOneTouchExpandable(true);
         
         this.add(mSplitPane);
