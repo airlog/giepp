@@ -25,16 +25,13 @@ public class RatingsPanel
         
         TableCellRenderer priceRenderer = new CurrentStockTable.PriceRenderer();
         
-        mStockTable = new CurrentStockTable();
-        mStockTable.setModel(tableModel);
+        mStockTable = new CurrentStockTable(tableModel);
         mStockTable.getColumnModel().getColumn(2).setCellRenderer(priceRenderer);
         mStockTable.getColumnModel().getColumn(3).setCellRenderer(priceRenderer);
         mStockTable.getColumnModel().getColumn(4).setCellRenderer(priceRenderer);
         mStockTable.getColumnModel().getColumn(5).setCellRenderer(priceRenderer);
         mStockTable.getColumnModel().getColumn(6).setCellRenderer(
                 new CurrentStockTable.ChangeRenderer());
-        mStockTable.getTableHeader().addMouseListener(
-                new CurrentStockTable.HeaderMouseAdapter(mStockTable, tableModel));
         
         this.initComponent();
     }

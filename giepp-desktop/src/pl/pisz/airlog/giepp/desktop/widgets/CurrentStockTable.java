@@ -32,7 +32,7 @@ import pl.pisz.airlog.giepp.desktop.util.HelperTools;
  */
 public class CurrentStockTable
         extends JTable
-        implements ActionListener, MouseListener {
+        implements ActionListener {
 
     public static class TableModel
             extends AbstractTableModel {
@@ -150,21 +150,45 @@ public class CurrentStockTable
         
     }
     
-    // TODO: można spróbować przenieść do CurrentStockTable
+    public static class TableMouseAdapter
+            extends MouseAdapter {
+        
+        public CurrentStockTable mTable;
+        
+        public TableMouseAdapter(CurrentStockTable table) {
+            super();
+            
+            mTable = table;
+            
+        }
+        
+        @Override
+        public void mousePressed(MouseEvent me) {
+            if (me.getButton() != MouseEvent.BUTTON3) return;
+                
+            int row = mTable.rowAtPoint(me.getPoint());
+            if (row >= 0 && row < mTable.getRowCount()) mTable.setRowSelectionInterval(row, row);
+            
+            mTable.getPopup()
+                    .setStockName((String) mTable.getModel().getValueAt(row, 0))
+                    .show(me.getComponent(), me.getX(), me.getY());
+        }
+        
+    }
+    
     public static class HeaderMouseAdapter
             extends MouseAdapter {
         
-        private JTable      mTable;
-        private TableModel  mTableModel;
+        private CurrentStockTable mTable;
+        private TableModel mTableModel;  
         
         private boolean[] mColumnSorted = new boolean[TableModel.COLUMN_COUNT];
         
-        public HeaderMouseAdapter(JTable table, TableModel model) {
+        public HeaderMouseAdapter(CurrentStockTable table, TableModel model) {
             super();
             
             mTable = table;
             mTableModel = model;
-            mColumnSorted[0] = true;
         }
         
         protected void changeState(int pos) {
@@ -223,13 +247,14 @@ public class CurrentStockTable
             mTableModel.sort(comparator);
         }
         
+        
         @Override
         public void mouseClicked(MouseEvent me) {
             if (me.getButton() != MouseEvent.BUTTON1) return;
-            
+                
             int column = mTable.columnAtPoint(me.getPoint());
             if (column < 0 || column >= mTable.getColumnCount()) return;
-        
+                
             boolean sorted = mColumnSorted[column];
             this.changeState(column);
             switch (column) {
@@ -309,42 +334,24 @@ public class CurrentStockTable
     
     private CurrentStockPopupMenu mPopupMenu;
     
-    public CurrentStockTable() {
+    public CurrentStockTable(TableModel model) {
         super();
         
         mPopupMenu = new CurrentStockPopupMenu(this);
         
-        this.addMouseListener(this);
+        this.setModel(model);
+        this.addMouseListener(new TableMouseAdapter(this));
         this.getTableHeader().setReorderingAllowed(false);
+        this.getTableHeader().addMouseListener(new HeaderMouseAdapter(this, model));
     }
-
+    
     @Override
     public void actionPerformed(ActionEvent ae) {
         System.out.println(ae);
     }
     
-    @Override
-    public void mouseClicked(MouseEvent me) {}
-
-    @Override
-    public void mousePressed(MouseEvent me) {
-        if (me.getButton() != MouseEvent.BUTTON3) return;
-            
-        int row = this.rowAtPoint(me.getPoint());
-        if (row >= 0 && row < this.getRowCount()) this.setRowSelectionInterval(row, row);
-        
-        mPopupMenu
-                .setStockName((String) this.getModel().getValueAt(row, 0))
-                .show(me.getComponent(), me.getX(), me.getY());
+    public CurrentStockPopupMenu getPopup() {
+        return mPopupMenu;
     }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {}
-    
-    @Override
-    public void mouseEntered(MouseEvent e) {}
-
-    @Override
-    public void mouseExited(MouseEvent e) {}
     
 }
