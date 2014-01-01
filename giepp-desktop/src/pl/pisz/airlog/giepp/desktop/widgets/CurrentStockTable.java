@@ -24,6 +24,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import pl.pisz.airlog.giepp.data.CurrentStock;
 
+import pl.pisz.airlog.giepp.desktop.dialogs.BuyStockDialog;
 import pl.pisz.airlog.giepp.desktop.menus.CurrentStockPopupMenu;
 
 import pl.pisz.airlog.giepp.desktop.util.CompanySelectedListener;
@@ -139,6 +140,10 @@ public class CurrentStockTable
             return COLUMN_NAMES[columnIndex];
         }
 
+        public CurrentStock getStock(int row) {
+            return mStocks.get(row);
+        }
+        
         public void sort(Comparator<CurrentStock> comparator) {
             Collections.sort(mStocks, comparator);
             
@@ -334,18 +339,27 @@ public class CurrentStockTable
     }
     
     private CurrentStockPopupMenu mPopupMenu;
+    private BuyStockDialog mBuyDialog;
     
     private CompanySelectedListener mCompanySelectedListener = null;
     
-    public CurrentStockTable(TableModel model) {
+    public CurrentStockTable(TableModel model, BuyStockDialog buyDialog) {
         super();
         
         mPopupMenu = new CurrentStockPopupMenu(this);
+        mBuyDialog = buyDialog;
         
         this.setModel(model);
         this.addMouseListener(new TableMouseAdapter(this));
         this.getTableHeader().setReorderingAllowed(false);
         this.getTableHeader().addMouseListener(new HeaderMouseAdapter(this, model));
+    }
+    
+    protected void showBuyDialog() {
+        if (mBuyDialog.isVisible()) mBuyDialog.setVisible(false);
+        
+        mBuyDialog.setCompany(((TableModel) this.getModel()).getStock(this.getSelectedRow()));
+        mBuyDialog.setVisible(true);
     }
     
     @Override
@@ -363,7 +377,8 @@ public class CurrentStockTable
     
     @Override
     public void actionPerformed(ActionEvent ae) {
-        System.out.println(ae);
+        System.err.println(ae);
+        if (ae.getActionCommand().equals("Kup")) this.showBuyDialog();
     }
         
     public void setCompanySelectedListener(CompanySelectedListener l) {

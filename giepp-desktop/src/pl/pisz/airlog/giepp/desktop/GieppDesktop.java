@@ -9,6 +9,7 @@ import javax.swing.SwingUtilities;
 
 import pl.pisz.airlog.giepp.data.CurrentStock;
 
+import pl.pisz.airlog.giepp.desktop.dialogs.BuyStockDialog;
 import pl.pisz.airlog.giepp.desktop.frames.MainFrame;
 import pl.pisz.airlog.giepp.desktop.menus.MainMenuBar;
 import pl.pisz.airlog.giepp.desktop.panels.RatingsPanel;
@@ -36,19 +37,23 @@ public class GieppDesktop {
                String[] titles = new String[] {"Moje konto", "Notowania", "Obserwowane", "Statystyki"};
                JPanel[] panels = new JPanel[titles.length];
                for (int i = 0; i < titles.length; i++) panels[i] = HelperTools.newTextPanel(titles[i]);
-                              
-               panels[1] = new RatingsPanel(currentStockModel);
+               
+               final BuyStockDialog buyDialog = new BuyStockDialog(null);
+               buyDialog.setMinimumSize(new Dimension(320, 0));
+               buyDialog.pack();
+               
+               panels[1] = new RatingsPanel(currentStockModel, buyDialog);
+               
+               final JFrame frame = new MainFrame(panels, titles);                   
                
                MainMenuBar mmb = new MainMenuBar();
                mmb.setMenuListener(new MainMenuBar.MainMenuListener() {
-                  @Override
-                  public void onFileQuit(java.awt.event.ActionEvent ae) {
-                      System.exit(0);
-                  }
+                   @Override
+                   public void onFileQuit(java.awt.event.ActionEvent ae) {
+                       System.exit(0);
+                   }
                });
-               
-               JFrame frame = new MainFrame(panels, titles);
-                              
+                                             
                frame.setJMenuBar(mmb);
                frame.setMinimumSize(new Dimension(800, 600));
                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

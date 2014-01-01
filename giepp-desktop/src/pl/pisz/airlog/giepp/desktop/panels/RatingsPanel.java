@@ -7,6 +7,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.table.TableCellRenderer;
 
+import pl.pisz.airlog.giepp.desktop.dialogs.BuyStockDialog;
 import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
 
 /**
@@ -25,10 +26,10 @@ public class RatingsPanel
     /**
      * 
      */
-    public RatingsPanel(CurrentStockTable.TableModel tableModel) {
+    public RatingsPanel(CurrentStockTable.TableModel tableModel, BuyStockDialog buyDialog) {
         super(new BorderLayout(), false);
         
-        mStockTable = new CurrentStockTable(tableModel);
+        mStockTable = new CurrentStockTable(tableModel, buyDialog);
         mDetailsPanel = new CompanyDetailsPanel();
         
         this.initWidgets();
