@@ -17,6 +17,8 @@ import javax.swing.event.ChangeListener;
 import pl.pisz.airlog.giepp.data.CurrentStock;
 import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
 import pl.pisz.airlog.giepp.desktop.util.HelperTools;
+import pl.pisz.airlog.giepp.game.ActionException;
+import pl.pisz.airlog.giepp.game.Game;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -132,6 +134,19 @@ public class BuyStockDialog
     
     public void onBuyClicked() {
         this.stateChanged(null);
+        
+        Game game = GameUtilities.getInstance();
+        try {
+            game.buy(mCompanyStock.getName(), (Integer) mAmountSpinner.getValue());
+            this.setVisible(false);
+            
+            // TODO: wyświetl dialog potwierdzający kupno
+        }
+        catch (ActionException e) {
+            System.err.println(e);
+            
+            // TODO: wyświetl dialog z błędem
+        }
     }
     
     public void onCancelClicked() {

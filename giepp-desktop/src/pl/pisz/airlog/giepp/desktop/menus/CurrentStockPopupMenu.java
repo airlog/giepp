@@ -66,7 +66,7 @@ public class CurrentStockPopupMenu
     
     @Override
     public void show(Component invoker, int x, int y) {
-        if (this.findOwnedStock(mStockItem.getText()) == null) mSellItem.setEnabled(false);
+        mSellItem.setEnabled(this.findOwnedStock(mStockItem.getText()) != null);
         
         super.show(invoker, x, y);
     }

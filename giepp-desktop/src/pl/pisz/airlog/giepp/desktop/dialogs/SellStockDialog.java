@@ -18,6 +18,8 @@ import pl.pisz.airlog.giepp.data.CurrentStock;
 import pl.pisz.airlog.giepp.data.PlayerStock;
 import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
 import pl.pisz.airlog.giepp.desktop.util.HelperTools;
+import pl.pisz.airlog.giepp.game.ActionException;
+import pl.pisz.airlog.giepp.game.Game;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -95,7 +97,7 @@ public class SellStockDialog
     }
     
     protected void setAmountValue(Integer amount) {
-        mAmountField.setText(HelperTools.getPriceFormat().format((double) amount * 0.01));
+        mAmountField.setText(amount.toString());
     }
     
     protected PlayerStock findOwnedStock(String company) {
@@ -121,17 +123,20 @@ public class SellStockDialog
         if (mCompanyStock == null) throw new IllegalStateException("Must set stock before showing the dialog");
         
         PlayerStock owned = this.findOwnedStock(mCompanyStock.getName());
-        if (owned == null) throw new IllegalStateException("Such a stock is not owned!");
+        if (owned != null) {
+            int amount = owned.getAmount();
+            int price = mCompanyStock.getEndPrice();
+            
+            if (b) {
+                this.setPriceValue(price);
+                this.setAmountValue(amount);
+                mAmountSpinner.setValue(new Integer(0));
+                mCompanyField.setText(mCompanyStock.getName());
+            }
+        }
+        else if (b) throw new IllegalStateException("Such a stock is not owned!");
         
-        int amount = owned.getAmount();
-        int price = mCompanyStock.getEndPrice();
-        
-        if (b) {
-            this.setPriceValue(price);
-            this.setAmountValue(amount);
-            mAmountSpinner.setValue(new Integer(0));
-            mCompanyField.setText(mCompanyStock.getName());
-        } else {
+        if (!b) {
             mCompanyStock = null;
             mCompanyField.setText("");
             mPriceField.setText("");
@@ -142,6 +147,19 @@ public class SellStockDialog
     
     public void onSellClicked() {
         this.stateChanged(null);
+        
+        Game game = GameUtilities.getInstance();
+        try {
+            game.sell(mCompanyStock.getName(), (Integer) mAmountSpinner.getValue());
+            this.setVisible(false);
+            
+            // TODO: wyświetl dialog potwierdzający sprzedaż
+        }
+        catch (ActionException e) {
+            System.err.println(e);
+            
+            // TODO: wyświetl dialog z błędem
+        }
     }
     
     public void onCancelClicked() {
