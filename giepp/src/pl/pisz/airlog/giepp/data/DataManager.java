@@ -45,15 +45,28 @@ public class DataManager {
 		return new ArrayList<String>();
 	}
 	
-	public TreeMap<String,ArrayList<ArchivedStock>> getArchivalFromXML(){		
+	public TreeMap<String,ArrayList<ArchivedStock>> getArchivalFromXML() {		
 		return this.storage.getArchivalFromXML();
 	}
 	
-	public Stats getStats(){
-		return new Stats();
+	public Stats getStats() {
+		Stats stat = null;
+		try {
+			stat = storage.getStats();
+		} catch (IllegalArgumentException e) {
+			stat = new Stats(); 
+		}
+		
+		return stat;
 	}
 
-	public void saveStats(Stats stats){}
+	public void saveStats(Stats stats) {
+		try {
+			storage.saveStats(stats);
+		} catch (IOException e) {
+			System.out.println(e);
+		}
+	}
 
 	public void saveObserved(ArrayList<String> observed){}
 

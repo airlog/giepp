@@ -28,7 +28,7 @@ public class StatsFileBuilder {
      * @param   document    document to which append
      */
     private Document appendRoot(Document document) {
-        document.appendChild(document.createElement("stats"));  // owned stocks XML file's root
+        document.appendChild(document.createElement("stats"));  // stats XML file's root
     
         return document;
     }

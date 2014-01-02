@@ -26,6 +26,8 @@ import org.w3c.dom.NodeList;
 
 import pl.pisz.airlog.giepp.xml.OwnedStocksBuilder;
 import pl.pisz.airlog.giepp.xml.PlayerStockTransformer;
+import pl.pisz.airlog.giepp.xml.StatsFileBuilder;
+import pl.pisz.airlog.giepp.xml.StatsTransformer;
 import pl.pisz.airlog.giepp.xml.StocksArchiveBuilder;
 import pl.pisz.airlog.giepp.xml.ArchivedStockTransformer;
 
@@ -72,8 +74,9 @@ public class LocalStorage {
         if (!LocalStorage.isInited()) LocalStorage.initBuilder(DocumentBuilderFactory.newInstance());        
         FileHandle oh = LocalStorage.getFileHandle(ownedStocks);
         FileHandle ah = LocalStorage.getFileHandle(archiveStocks);
+        FileHandle sh = LocalStorage.getFileHandle(stats);
         
-        return new LocalStorage(oh, ah, null, null);  // TODO: change this nulls
+        return new LocalStorage(oh, ah, null, sh);  // TODO: change this nulls
     }
 
     private FileHandle  stocksFile    = null;
@@ -102,6 +105,14 @@ public class LocalStorage {
 	        this.archiveFile.doc = asb.newDocument();
 	        this.archiveFile.doc.normalize();
 	    }
+    }
+    
+    private void assertStatsDocument() {
+        if (this.statsFile.doc == null) {  // document not yet created
+            StatsFileBuilder asb = new StatsFileBuilder(LocalStorage.DOCBUILDER);
+            this.statsFile.doc = asb.newDocument();
+            this.statsFile.doc.normalize();
+        }
     }
     
     private int clearDocument(Document document) {
@@ -163,6 +174,15 @@ public class LocalStorage {
 	    
 	    return map;
     }
+
+    public Stats getStats() {
+        this.assertStatsDocument();
+        
+        Node root = this.statsFile.doc.getDocumentElement();
+        StatsTransformer st = new StatsTransformer(this.statsFile.doc);
+        
+        return st.transform(root);
+    }
     
     public void saveArchival(TreeMap<String,ArrayList<ArchivedStock>> archived)
             throws IOException {
@@ -197,6 +217,20 @@ public class LocalStorage {
         this.stocksFile.save();
     }
 
+    public void saveStats(Stats stat)
+            throws IOException {
+        this.assertStatsDocument();
+        this.clearDocument(this.statsFile.doc);
+        
+        Element root = this.statsFile.doc.getDocumentElement();
+        StatsTransformer st = new StatsTransformer(this.statsFile.doc);
+        
+        Node node = st.transform(stat);
+        root.appendChild(node);
+    
+        this.statsFile.save();
+    }
+    
 }
 
 class FileHandle {
