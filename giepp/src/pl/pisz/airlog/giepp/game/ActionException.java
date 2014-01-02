@@ -8,7 +8,13 @@ public class ActionException extends Exception {
 		this.reason = reason;
 	}
 	
+	@Override
+	public String getMessage() {
+	    return reason.toString();
+	}
+	
 	public ActionError getReason() {
 		return reason;
 	}
+	
 }
