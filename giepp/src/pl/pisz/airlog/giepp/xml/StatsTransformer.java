@@ -37,18 +37,63 @@ public class StatsTransformer
         return this.xmlDocument.createElement(tag);
     }
 
+    protected void parseChild(Node child, Stats stats)
+            throws IllegalArgumentException {
+        System.err.println(child.getNodeName());
+        if (child.getNodeName().equals("money")) {
+            try {
+                long money = Long.parseLong(child.getTextContent());
+                stats.setMoney(money);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException(StatsTransformer.INVALID_NODE + " (bad money format)");
+            }
+        }
+        else if (child.getNodeName().equals("restarts")) {
+            try {
+                int num = Integer.parseInt(child.getTextContent());
+                stats.setRestarts(num);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException(StatsTransformer.INVALID_NODE + " (bad money format)");
+            } 
+        }
+    }
+    
     /** Converts {@link Stats} to DOM element allowing XML serialization.
      * @see Transformer#transform(T)
      */
     @Override
     public Element transform(Stats object) {        
-        return null;
+        Element moneyNode = this.newElement("money"),
+                restartsNode = this.newElement("restarts");
+        
+        moneyNode.setTextContent(object.getMoney().toString());
+        restartsNode.setTextContent(object.getRestarts().toString());
+        
+        Element group = this.newElement("group");
+        group.appendChild(moneyNode);
+        group.appendChild(restartsNode);
+        
+        return group;
     }
     
     @Override
     public Stats transform(Node node)
             throws IllegalArgumentException {        
-        return null;
+        NodeList children = node.getChildNodes();
+        if (children.getLength() != 1) {
+            throw new IllegalArgumentException(StatsTransformer.INVALID_NODE
+                    + " (either too many or not enough group tags)");
+        }
+        
+        Node group = children.item(0);
+        children = group.getChildNodes();
+        Stats stats = new Stats();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            this.parseChild(child, stats);
+        }
+        
+        return stats;
     }
 
 }

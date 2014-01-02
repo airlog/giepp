@@ -17,11 +17,22 @@ public class Stats {
 		this.restarts = restarts;
 	}
 	
-	public int getRestarts() {
+	public Stats setMoney(long money) {
+	    this.money = money;
+	    return this;
+	}
+	
+	public Stats setRestarts(int num) {
+	    this.restarts = num;
+	    return this;
+	}
+	
+	public Integer getRestarts() {
 		return restarts;
 	}
 	
-	public long getMoney() {
+	public Long getMoney() {
 		return money;
 	}
+	
 }
