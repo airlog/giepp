@@ -7,10 +7,8 @@ package pl.pisz.airlog.giepp.test;
 import java.util.List;
 import java.util.LinkedList;
 
-import java.io.FileOutputStream;
 import java.io.StringWriter;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import javax.xml.transform.Transformer;
