@@ -2,6 +2,7 @@ package pl.pisz.airlog.giepp.game;
 
 import java.io.File;
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -26,15 +27,18 @@ public class Game {
 	private static final int MAX_TIME = 900000;				//15 minut
 	private static final int DAYS = 5;
 	private static final int MAX_DAYS_IN_MEMORY = 30;
+	
 	public static final long MONEY_ON_START = 1000000;		//10 000 zl
-
-	private DataManager dataManager;
+	
 	private Long money;
 	private Integer restarts;
+	
+	private DataManager dataManager;
 	private ArrayList<String> observed;
 	private ArrayList<PlayerStock> owned;
 	private TreeMap<String, ArrayList<ArchivedStock> > archived;
 	private ArrayList<CurrentStock> current;
+	
 	private Date lastRefresh;	
 	private Calendar calendar;
 		
@@ -46,14 +50,36 @@ public class Game {
 		this.loadDataFromXML();
 	}
 	
+	/** Sprawdzenie czy czas od ostaniej aktualizacji danych jest dozwolony.
+	 * @return <i>true</i> jeśli dane są poprawne (ważne)
+	 */
+	protected boolean isDataValid() {
+	    calendar = Calendar.getInstance();
+        Date now = calendar.getTime();
+        
+        return !(now.getTime() - lastRefresh.getTime() > MAX_TIME);
+	}
+
+	/** Wyszukuje podanej firmy w posiadanych akcjach.
+	 * 
+	 * @param name nazwa akcji szukanej firmy
+	 * @return obiekt {@link PlayerStock} lub <i>null</i> jeśli nie znaleziono
+	 */
+	public PlayerStock getOwnedStockByName(String name) {
+	    for (PlayerStock stock : this.owned) {
+            if (stock.getCompanyName().equals(name)) return stock;
+        }
+	    
+	    return null;
+	}
+	
 	public void buy(String company, int amount) throws ActionException {
-		calendar = Calendar.getInstance();
-		Date now = calendar.getTime();
-		if (now.getTime() - lastRefresh.getTime() > MAX_TIME ){
-			throw new ActionException(ActionError.TOO_OLD_DATA);
-		}
+		if (amount < 0) throw new ActionException(ActionError.NEGATIVE_AMOUNT);
+	    if (!this.isDataValid()) throw new ActionException(ActionError.TOO_OLD_DATA);
+		
+		/* wyszukanie aktualnej ceny za jeden pakiet akcji */
 		int price = -1;
-		for (int i = 0; i<current.size(); i++) {
+		for (int i = 0; i < current.size(); i++) {
 			if (current.get(i).getName().equals(company)) {
 				price = current.get(i).getEndPrice();
 				break;
@@ -66,46 +92,39 @@ public class Game {
 			throw new ActionException(ActionError.LACK_OF_MONEY);
 		}
 
-		money -= price*amount;
-		PlayerStock stock = null;
-		for (int i = 0; i<owned.size(); i++) {
-			if (owned.get(i).getCompanyName().equals(company)) {
-				stock = owned.get(i);
-				break;
-			}
-		}
+		/* aktualizacja danych gracza */
+		money -= price*amount;    // nowy stan gotówki
+		
+		// uaktualnienie lub dodanie kupionych pakietów
+		PlayerStock stock = this.getOwnedStockByName(company);
 		if (stock == null) {
-			owned.add(new PlayerStock(company,amount,price*amount));
+			owned.add(new PlayerStock(company, amount, price*amount));
 		}
 		else {
 			stock.setAmount(stock.getAmount()+amount);
 			stock.setStartPrice(stock.getStartPrice()+price*amount);
 		}
 		
+		/* zapisanie danych na dysku */
 		try {
 		    dataManager.saveStats(new Stats(money,restarts));
 		    dataManager.saveOwned(owned);
 	    } catch (IOException e) {
-	        // FIXME: uwaga na błąd
+	        // TODO: uwaga na błąd
 	    }
 	}
 
 	public void sell(String company, int amount) throws ActionException {
-		calendar = Calendar.getInstance();
-		Date now = calendar.getTime();
-		if (now.getTime() - lastRefresh.getTime() > MAX_TIME){
-			throw new ActionException(ActionError.TOO_OLD_DATA);
-		}
-		PlayerStock stock = null;
-		for (int i = 0; i<owned.size(); i++) {
-			if (owned.get(i).getCompanyName().equals(company)) {
-				stock = owned.get(i);
-				break;
-			}
-		}
+	    if (amount < 0) throw new ActionException(ActionError.NEGATIVE_AMOUNT);
+	    if (!this.isDataValid()) throw new ActionException(ActionError.TOO_OLD_DATA);
+		
+	    /* sprawdzenie ilości posiadanych akcji */
+		PlayerStock stock = this.getOwnedStockByName(company);
 		if (stock == null || stock.getAmount() < amount) {
 			throw new ActionException(ActionError.LACK_OF_STOCK);
 		}
+		
+		/* wyszukanie aktualnej ceny za jeden pakiet akcji */
 		int price = -1;
 		for (int i = 0; i<current.size(); i++) {
 			if (current.get(i).getName().equals(company)) {
@@ -116,7 +135,10 @@ public class Game {
 		if (price == -1) {
 			throw new ActionException(ActionError.COMPANY_NOT_FOUND);
 		}
+		
+		/* aktualizacja danych */
 		money += amount*price;
+		
 		if (stock.getAmount() == amount) {
 			owned.remove(stock);
 		}
@@ -125,11 +147,12 @@ public class Game {
 			stock.setStartPrice(stock.getStartPrice()-price*amount);
 		}
 		
+		/* zapisanie danych na dysku */
 		try {
 		    dataManager.saveStats(new Stats(money,restarts));
 		    dataManager.saveOwned(owned);
 	    } catch (IOException e) {
-	        // FIXME: uwaga na błąd
+	        // TODO: uwaga na błąd
 	    }
 	}
 
@@ -224,6 +247,7 @@ public class Game {
 	public void refreshArchival() {
 		this.downloadArchived(DAYS);
 	}
+	
 	public void refreshArchival(int days) {
 		this.downloadArchived(days);
 	}
@@ -278,8 +302,7 @@ public class Game {
 	}
 	
 	public void addToObserved(String name){
-		if (observed.indexOf(name) == -1)
-			observed.add(name);
+		if (observed.indexOf(name) == -1) observed.add(name);
 	}
 	
 	public void removeFromObserved(String name){
@@ -342,4 +365,5 @@ public class Game {
 			System.out.println(c.getName()+": "+c.getEndPrice());
 	*/		
 	}
+
 }
