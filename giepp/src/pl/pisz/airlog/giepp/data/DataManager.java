@@ -50,7 +50,7 @@ public class DataManager {
 	}
 	
 	public Stats getStats(){
-		return new Stats();
+		return storage.getStats();
 	}
 
 	public void saveStats(Stats stats){}
