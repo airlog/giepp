@@ -10,6 +10,7 @@ import javax.swing.SwingUtilities;
 import pl.pisz.airlog.giepp.data.CurrentStock;
 
 import pl.pisz.airlog.giepp.desktop.dialogs.BuyStockDialog;
+import pl.pisz.airlog.giepp.desktop.dialogs.SellStockDialog;
 import pl.pisz.airlog.giepp.desktop.frames.MainFrame;
 import pl.pisz.airlog.giepp.desktop.menus.MainMenuBar;
 import pl.pisz.airlog.giepp.desktop.panels.RatingsPanel;
@@ -42,7 +43,11 @@ public class GieppDesktop {
                buyDialog.setMinimumSize(new Dimension(320, 0));
                buyDialog.pack();
                
-               panels[1] = new RatingsPanel(currentStockModel, buyDialog);
+               final SellStockDialog sellDialog = new SellStockDialog(null);
+               sellDialog.setMinimumSize(new Dimension(320, 0));
+               sellDialog.pack();
+               
+               panels[1] = new RatingsPanel(currentStockModel, buyDialog, sellDialog);
                
                final JFrame frame = new MainFrame(panels, titles);                   
                

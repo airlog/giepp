@@ -11,8 +11,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 
-import java.text.DecimalFormat;
-
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -25,6 +23,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import pl.pisz.airlog.giepp.data.CurrentStock;
 
 import pl.pisz.airlog.giepp.desktop.dialogs.BuyStockDialog;
+import pl.pisz.airlog.giepp.desktop.dialogs.SellStockDialog;
 import pl.pisz.airlog.giepp.desktop.menus.CurrentStockPopupMenu;
 
 import pl.pisz.airlog.giepp.desktop.util.CompanySelectedListener;
@@ -340,14 +339,17 @@ public class CurrentStockTable
     
     private CurrentStockPopupMenu mPopupMenu;
     private BuyStockDialog mBuyDialog;
+    private SellStockDialog mSellDialog;
     
     private CompanySelectedListener mCompanySelectedListener = null;
     
-    public CurrentStockTable(TableModel model, BuyStockDialog buyDialog) {
+    public CurrentStockTable(TableModel model,
+            BuyStockDialog buyDialog, SellStockDialog sellDialog) {
         super();
         
         mPopupMenu = new CurrentStockPopupMenu(this);
         mBuyDialog = buyDialog;
+        mSellDialog = sellDialog;
         
         this.setModel(model);
         this.addMouseListener(new TableMouseAdapter(this));
@@ -360,6 +362,13 @@ public class CurrentStockTable
         
         mBuyDialog.setCompany(((TableModel) this.getModel()).getStock(this.getSelectedRow()));
         mBuyDialog.setVisible(true);
+    }
+    
+    protected void showSellDialog() {
+        if (mSellDialog.isVisible()) mSellDialog.setVisible(false);
+        
+        mSellDialog.setCompany(((TableModel) this.getModel()).getStock(this.getSelectedRow()));
+        mSellDialog.setVisible(true);    
     }
     
     @Override
@@ -377,8 +386,8 @@ public class CurrentStockTable
     
     @Override
     public void actionPerformed(ActionEvent ae) {
-        System.err.println(ae);
         if (ae.getActionCommand().equals("Kup")) this.showBuyDialog();
+        else if (ae.getActionCommand().equals("Sprzedaj")) this.showSellDialog();
     }
         
     public void setCompanySelectedListener(CompanySelectedListener l) {

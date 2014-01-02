@@ -15,6 +15,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import pl.pisz.airlog.giepp.data.CurrentStock;
+import pl.pisz.airlog.giepp.data.PlayerStock;
 import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
 import pl.pisz.airlog.giepp.desktop.util.HelperTools;
 
@@ -26,7 +27,7 @@ import com.jgoodies.forms.layout.FormLayout;
  * @author Rafal
  *
  */
-public class BuyStockDialog
+public class SellStockDialog
         extends JDialog
         implements ActionListener, ChangeListener {    
 
@@ -34,14 +35,14 @@ public class BuyStockDialog
     
     private JTextField  mCompanyField = new JTextField();
     private JTextField  mPriceField = new JTextField();
-    private JTextField  mMoneyField = new JTextField();
+    private JTextField  mAmountField = new JTextField();
     private JSpinner    mAmountSpinner = new JSpinner(new SpinnerNumberModel());
     
-    private JButton mBuyButton = new JButton("Kup");
+    private JButton mSellButton = new JButton("Sprzedaj");
     private JButton mCancelButton = new JButton("Anuluj");
     
-    public BuyStockDialog(JFrame owner) {
-        super(owner, "Kup akcje");
+    public SellStockDialog(JFrame owner) {
+        super(owner, "Sprzedaj akcje");
         
         Color defColor = mCompanyField.getBackground();
         
@@ -51,12 +52,12 @@ public class BuyStockDialog
         mPriceField.setEditable(false);
         mPriceField.setBackground(defColor);
         
-        mMoneyField.setEditable(false);
-        mMoneyField.setBackground(defColor);
+        mAmountField.setEditable(false);
+        mAmountField.setBackground(defColor);
         
         mAmountSpinner.addChangeListener(this);
         
-        mBuyButton.addActionListener(this);
+        mSellButton.addActionListener(this);
         mCancelButton.addActionListener(this);
         
         this.initComponent();
@@ -74,7 +75,7 @@ public class BuyStockDialog
         CellConstraints cc = new CellConstraints();
         
         JPanel insidePanel = new JPanel(new FormLayout("pref:grow, pref:grow", "p"));
-        insidePanel.add(mBuyButton, cc.xy(1, 1));
+        insidePanel.add(mSellButton, cc.xy(1, 1));
         insidePanel.add(mCancelButton, cc.xy(2, 1));
         
         builder.addLabel("Firma", cc.xy(2, 2));
@@ -84,7 +85,7 @@ public class BuyStockDialog
         builder.addLabel("Cena", cc.xy(2, 4));
         builder.add(mPriceField, cc.xyw(4, 4, 2));
         builder.addLabel("Dostępne", cc.xy(2, 5));
-        builder.add(mMoneyField, cc.xyw(4, 5, 2));
+        builder.add(mAmountField, cc.xyw(4, 5, 2));
         builder.add(insidePanel, cc.xyw(2, 8, 4));
     }
 
@@ -93,13 +94,20 @@ public class BuyStockDialog
                 (double) price * 0.01 * (double) ((Integer) mAmountSpinner.getValue()).intValue()));
     }
     
-    protected void setMoneyValue(Long money) {
-        mMoneyField.setText(HelperTools.getPriceFormat().format((double) money * 0.01));
+    protected void setAmountValue(Integer amount) {
+        mAmountField.setText(HelperTools.getPriceFormat().format((double) amount * 0.01));
+    }
+    
+    protected PlayerStock findOwnedStock(String company) {
+        for (PlayerStock stock : GameUtilities.getInstance().getOwned()) {
+            if (stock.getCompanyName().equals(company)) return stock;
+        }
+        return null;
     }
     
     @Override
     public void actionPerformed(ActionEvent ae) {
-        if (ae.getSource() == mBuyButton) this.onBuyClicked();
+        if (ae.getSource() == mSellButton) this.onSellClicked();
         else if (ae.getSource() == mCancelButton) this.onCancelClicked();
     }
     
@@ -112,13 +120,15 @@ public class BuyStockDialog
     public void setVisible(boolean b) {
         if (mCompanyStock == null) throw new IllegalStateException("Must set stock before showing the dialog");
         
-        long money = GameUtilities.getInstance().getMoney();
+        PlayerStock owned = this.findOwnedStock(mCompanyStock.getName());
+        if (owned == null) throw new IllegalStateException("Such a stock is not owned!");
+        
+        int amount = owned.getAmount();
         int price = mCompanyStock.getEndPrice();
-        long max = money/(long) price;
-
+        
         if (b) {
             this.setPriceValue(price);
-            this.setMoneyValue(money);
+            this.setAmountValue(amount);
             mAmountSpinner.setValue(new Integer(0));
             mCompanyField.setText(mCompanyStock.getName());
         } else {
@@ -130,7 +140,7 @@ public class BuyStockDialog
         super.setVisible(b);
     }
     
-    public void onBuyClicked() {
+    public void onSellClicked() {
         this.stateChanged(null);
     }
     
@@ -141,5 +151,5 @@ public class BuyStockDialog
     public void setCompany(CurrentStock stock) {
         mCompanyStock = stock;
     }
-  
+        
 }
