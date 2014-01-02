@@ -99,14 +99,7 @@ public class SellStockDialog
     protected void setAmountValue(Integer amount) {
         mAmountField.setText(amount.toString());
     }
-    
-    protected PlayerStock findOwnedStock(String company) {
-        for (PlayerStock stock : GameUtilities.getInstance().getOwned()) {
-            if (stock.getCompanyName().equals(company)) return stock;
-        }
-        return null;
-    }
-    
+       
     @Override
     public void actionPerformed(ActionEvent ae) {
         if (ae.getSource() == mSellButton) this.onSellClicked();
@@ -122,7 +115,7 @@ public class SellStockDialog
     public void setVisible(boolean b) {
         if (mCompanyStock == null) throw new IllegalStateException("Must set stock before showing the dialog");
         
-        PlayerStock owned = this.findOwnedStock(mCompanyStock.getName());
+        PlayerStock owned = GameUtilities.getInstance().getOwnedStockByName(mCompanyStock.getName());
         if (owned != null) {
             int amount = owned.getAmount();
             int price = mCompanyStock.getEndPrice();
