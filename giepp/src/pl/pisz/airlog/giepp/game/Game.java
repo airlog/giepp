@@ -111,6 +111,7 @@ public class Game {
 		    dataManager.saveOwned(owned);
 	    } catch (IOException e) {
 	        // TODO: uwaga na błąd
+	    	System.out.println(e);
 	    }
 	}
 
