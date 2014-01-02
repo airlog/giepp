@@ -2,8 +2,6 @@ package pl.pisz.airlog.giepp.android;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -13,12 +11,10 @@ import pl.pisz.airlog.giepp.data.LocalStorage;
 import pl.pisz.airlog.giepp.data.PlayerStock;
 import pl.pisz.airlog.giepp.data.gpw.GPWDataParser;
 import pl.pisz.airlog.giepp.data.gpw.GPWDataSource;
-import pl.pisz.airlog.giepp.game.ActionException;
 import pl.pisz.airlog.giepp.game.Game;
 import android.app.Activity;
+import android.os.Environment;
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 
 public class GiePPSingleton{
 	
@@ -40,10 +36,19 @@ public class GiePPSingleton{
 	
 	private GiePPSingleton() {
 		try{
-			File file1 = File.createTempFile("file1", "xml");
-			File file2 = File.createTempFile("file2", "xml");
-			File file3 = File.createTempFile("file3", "xml");
-			File file4 = File.createTempFile("stats", "xml");
+			File dir = new File(Environment.getExternalStorageDirectory() + "/giepp");
+			if (!dir.exists()) dir.mkdir();
+			
+			File file1 = new File(Environment.getExternalStorageDirectory() + "/giepp/owned.xml");
+			File file2 = new File(Environment.getExternalStorageDirectory() + "/giepp/archived.xml");
+			File file3 = new File(Environment.getExternalStorageDirectory() + "/giepp/observed.xml");
+			File file4 = new File(Environment.getExternalStorageDirectory() + "/giepp/stats.xml");
+			
+			if (! file1.exists()) file1.createNewFile();
+			if (! file2.exists()) file2.createNewFile();
+			if (! file3.exists()) file3.createNewFile();
+			if (! file4.exists()) file4.createNewFile();
+			
 			game = new Game(new GPWDataSource(),new GPWDataParser(),LocalStorage.newInstance(file1, file2, file3, file4));
 			this.refreshing = false;
 		}catch(IOException e){
@@ -61,16 +66,9 @@ public class GiePPSingleton{
 			@Override
 			public void run(){
 				try{
-					Log.i("giepp","Zaczynam sciagac");
-					game.refreshData();
-					Set<String> keys = game.getArchived().keySet();
-					for(String k: keys){
-						ArrayList<ArchivedStock> l = game.getArchived().get(k);
-						for(int i = 0; i<l.size(); i++)
-							Log.i("giepp",l.get(i).getName()+": "+l.get(i).getMaxPrice());
-					}
-					Log.i("giepp","Dane sciagniete");
-										
+					Log.i("System.out","Zaczynam sciagac");
+					game.refreshCurrent();
+					Log.i("giepp","Dane aktualne sciagniete");
 					act.runOnUiThread(new Runnable(){
 						public void run(){
 							if(adapter1 != null){		
@@ -96,6 +94,14 @@ public class GiePPSingleton{
 							}
 						}
 					});
+					Log.i("System.out","aktualne sciagniete");
+
+					game.refreshArchival(10);
+					if ( game.getArchived() != null ) {
+						Log.i("System.out","nie null");
+					}
+					
+					Log.i("giepp","Dane archiwalne sciagniete");
 				}catch(Exception e){
 					Log.i("giepp","Blad"+e);
 				}
@@ -104,8 +110,8 @@ public class GiePPSingleton{
 		}).start();
 	}
 	
-	public void buy(String companyName, int amount){
-		try{
+	public void buy(String companyName, int amount) {
+		try {
 			game.buy(companyName,amount);
 		}catch( Exception e){
 			Log.i("giepp","Blad1: " + e);
@@ -152,6 +158,16 @@ public class GiePPSingleton{
 		return game.getCurrent();
 	}
 
+	public int getAmount(String companyName) {
+		ArrayList<PlayerStock> owned = game.getOwned();
+		for(PlayerStock p : owned ) {
+			if (p.getCompanyName().equals(companyName)) {
+				return p.getAmount();
+			}
+		}
+		return 0;
+	}
+	
 	public long getMoney() {
 		return game.getMoney();
 	}
@@ -182,6 +198,9 @@ public class GiePPSingleton{
 				}
 			}
 		});
+	}
+	public ArrayList<ArchivedStock> getArchival(String name){
+		return game.getArchived().get(name);
 	}
 	public ArrayList<String> getObserved(){
 		return game.getObserved();

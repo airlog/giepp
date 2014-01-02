@@ -189,7 +189,7 @@ public class Game {
 				//TODO ładne poradzenie sobie z wyjątkiem 
 			}
 			attempt++;
-			if (attempt == max) return; //aby funkcja sie zawsze skonczyla
+			if (attempt == max) break; //aby funkcja sie zawsze skonczyla
 			day--;
 			if (day == 0) {
 				day=31;
@@ -206,6 +206,7 @@ public class Game {
 		    dataManager.saveArchival(archived);		
 	    } catch (IOException e) {
 	        // FIXME: uwaga na błąd
+	    	System.out.println(e);
 	    }
 	}
 	
@@ -315,14 +316,19 @@ public class Game {
 
 	/** do testow **/
 	public static void main(String args[]) throws Exception{
+		System.out.println(System.getProperty("http.agent"));
 		File ownedStocks = File.createTempFile("owned", ".xml");
 		File archiveStocks = File.createTempFile("archived", ".xml");
 		File observedStocks = File.createTempFile("observed", ".xml");
 		File stats = File.createTempFile("stats", ".xml");
 		Game g = new Game(new GPWDataSource(),
 				new GPWDataParser(),LocalStorage.newInstance(ownedStocks, archiveStocks, observedStocks, stats));
-		g.refreshArchival(2);
-		Set<String> keys = g.getArchived().keySet();
+		g.refreshArchival(4);
+		ArrayList<ArchivedStock> hist = g.getArchived().get("ZYWIEC");
+		for (ArchivedStock h : hist) {
+			System.out.println(h.getDate() + ": " + h.getMaxPrice());
+		}
+/*		Set<String> keys = g.getArchived().keySet();
 		
 		for(String k: keys){
 			ArrayList<ArchivedStock> l = g.getArchived().get(k);
@@ -334,6 +340,6 @@ public class Game {
 		ArrayList<CurrentStock> cs= g.getCurrent();
 		for (CurrentStock c : cs)
 			System.out.println(c.getName()+": "+c.getEndPrice());
-			
+	*/		
 	}
 }

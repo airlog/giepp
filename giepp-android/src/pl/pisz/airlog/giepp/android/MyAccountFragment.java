@@ -61,11 +61,12 @@ public class MyAccountFragment extends Fragment implements OnItemClickListener {
 			GiePPSingleton.getInstance().setAdapter3(adapter3);
 			list.setAdapter(adapter3);
 			list.setOnItemClickListener(this);
-
+			GiePPSingleton.getInstance().setFragment1(this);
 			return rootView;
 		}
 		
-		public void zmiana(){
+		public void zmiana() {
+			Log.i("System.out","zmiana");
 			double money = GiePPSingleton.getInstance().getMoney()/100.0;
 			NumberFormat formatter = new DecimalFormat("#0.00");
 			String moneyS = formatter.format(money);
