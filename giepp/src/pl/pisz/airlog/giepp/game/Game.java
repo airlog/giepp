@@ -30,8 +30,10 @@ public class Game {
 	
 	public static final long MONEY_ON_START = 1000000;		//10 000 zl
 	
-	private Long money;
-	private Integer restarts;
+//	private Long money;
+//	private Integer restarts;
+	
+	private Stats stats;
 	
 	private DataManager dataManager;
 	private ArrayList<String> observed;
@@ -77,6 +79,8 @@ public class Game {
 		if (amount < 0) throw new ActionException(ActionError.NEGATIVE_AMOUNT);
 	    if (!this.isDataValid()) throw new ActionException(ActionError.TOO_OLD_DATA);
 		
+	    long money = stats.getMoney();
+	    
 		/* wyszukanie aktualnej ceny za jeden pakiet akcji */
 		int price = -1;
 		for (int i = 0; i < current.size(); i++) {
@@ -105,9 +109,10 @@ public class Game {
 			stock.setStartPrice(stock.getStartPrice()+price*amount);
 		}
 		
+		stats.setMoney(money);
 		/* zapisanie danych na dysku */
 		try {
-		    dataManager.saveStats(new Stats(money,restarts));
+		    dataManager.saveStats(stats);
 		    dataManager.saveOwned(owned);
 	    } catch (IOException e) {
 	        // TODO: uwaga na błąd
@@ -119,6 +124,8 @@ public class Game {
 	    if (amount < 0) throw new ActionException(ActionError.NEGATIVE_AMOUNT);
 	    if (!this.isDataValid()) throw new ActionException(ActionError.TOO_OLD_DATA);
 		
+	    long money = stats.getMoney();
+	    
 	    /* sprawdzenie ilości posiadanych akcji */
 		PlayerStock stock = this.getOwnedStockByName(company);
 		if (stock == null || stock.getAmount() < amount) {
@@ -148,9 +155,11 @@ public class Game {
 			stock.setStartPrice(stock.getStartPrice()-price*amount);
 		}
 		
+		stats.setMoney(money);
+		
 		/* zapisanie danych na dysku */
 		try {
-		    dataManager.saveStats(new Stats(money,restarts));
+		    dataManager.saveStats(stats);
 		    dataManager.saveOwned(owned);
 	    } catch (IOException e) {
 	        // TODO: uwaga na błąd
@@ -233,6 +242,18 @@ public class Game {
 	    	System.out.println(e);
 	    }
 	}
+
+	private void updateMaxMinMoney() {
+		long mis = this.getMoneyInStock();
+		if(mis + stats.getMoney() > stats.getMaxMoney()) {
+			stats.setMaxMoney(mis+stats.getMoney());
+		}
+		else if (mis + stats.getMoney() < stats.getMinMoney()) {
+			stats.setMinMoney(mis+stats.getMoney());
+		}
+		dataManager.saveStats(stats);	
+	}
+
 	
 	public void saveFirst(int days){
 		Set keys = archived.keySet();
@@ -253,21 +274,20 @@ public class Game {
 		this.downloadArchived(days);
 	}
 	
-	public void refreshCurrent(){
+	public void refreshCurrent() {
 		this.calendar = Calendar.getInstance();
-		try{
+		try {
 			this.current = dataManager.getCurrent();
-		}catch (IOException e) {
+		} catch (IOException e) {
 			//TODO ładne poradzenie sobie z wyjątkiem 
+			System.out.println(e);
 		}
 		this.lastRefresh = calendar.getTime();		
 	}
-	
+		
 	/** Ustawia pola zgodnie z danymi z plikow XML  **/
 	public void loadDataFromXML() {
-		Stats stats = dataManager.getStats();
-		money = stats.getMoney();
-		restarts = stats.getRestarts();
+		this.stats = dataManager.getStats();
 		
 		observed = dataManager.getObserved();
 		owned = dataManager.getOwned();
@@ -278,40 +298,57 @@ public class Game {
 	public void restartGame(){
 		this.observed = new ArrayList<String>();
 		this.owned = new ArrayList<PlayerStock>();
-		this.restarts += 1;
-		this.money = MONEY_ON_START;
+		int restarts = stats.getRestarts() + 1;
+		stats = (new Stats()).setRestarts(restarts);
 	}
 	
-	public ArrayList<ArchivedStock> getArchived(String name){
+	public ArrayList<ArchivedStock> getArchived(String name) {
 		return archived.get(name);
 	}
 	
-	public ArrayList<PlayerStock> getOwned(){
+	public ArrayList<PlayerStock> getOwned() {
 		return owned;
 	}
 	
-	public long getMoney(){
-		return money;
+	public long getMoney() {
+		return stats.getMoney();
 	}
 	
-	public TreeMap<String,ArrayList<ArchivedStock>> getArchived(){
+	public TreeMap<String,ArrayList<ArchivedStock>> getArchived() {
 		return archived;
 	}
 	
-	public ArrayList<CurrentStock> getCurrent(){
+	public ArrayList<CurrentStock> getCurrent() {
 		return current;
 	}
 	
-	public void addToObserved(String name){
-		if (observed.indexOf(name) == -1) observed.add(name);
+	public void addToObserved(String name) {
+		if (observed.indexOf(name) == -1) {
+			observed.add(name);
+			try {
+				dataManager.saveObserved(observed);
+			} catch (IOException e) {
+				System.out.println(e);
+			}
+		}
+		
 	}
 	
-	public void removeFromObserved(String name){
+	public void removeFromObserved(String name) {
 		observed.remove(name);
+		try {
+			dataManager.saveObserved(observed);
+		} catch (IOException e) {
+			System.out.println(e);
+		}
 	}
 	
-	public ArrayList<String> getObserved(){
+	public ArrayList<String> getObserved() {
 		return observed;
+	}
+	
+	public Stats getStats() {
+		return stats;
 	}
 	
 	public long getMoneyInStock() {
@@ -347,11 +384,11 @@ public class Game {
 		File stats = File.createTempFile("stats", ".xml");
 		Game g = new Game(new GPWDataSource(),
 				new GPWDataParser(),LocalStorage.newInstance(ownedStocks, archiveStocks, observedStocks, stats));
-		g.refreshArchival(4);
+		/*g.refreshArchival(4);
 		ArrayList<ArchivedStock> hist = g.getArchived().get("ZYWIEC");
 		for (ArchivedStock h : hist) {
 			System.out.println(h.getDate() + ": " + h.getMaxPrice());
-		}
+		}*/
 /*		Set<String> keys = g.getArchived().keySet();
 		
 		for(String k: keys){
@@ -360,11 +397,11 @@ public class Game {
 			for(int i = 0; i<l.size(); i++)
 				System.out.println(k+": "+l.get(i).getDate()+": "+l.get(i).getMaxPrice());
 		}
-		g.refreshCurrent();
+	*/	g.refreshCurrent();
 		ArrayList<CurrentStock> cs= g.getCurrent();
 		for (CurrentStock c : cs)
 			System.out.println(c.getName()+": "+c.getEndPrice());
-	*/		
+			
 	}
 
 }

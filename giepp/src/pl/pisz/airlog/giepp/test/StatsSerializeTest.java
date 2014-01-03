@@ -20,10 +20,14 @@ public class StatsSerializeTest {
 
     private Long mMoney;
     private Integer mRestarts;
+    private Long mMaxMoney;
+	private Long mMinMoney;
     
-    public StatsSerializeTest(long money, int restarts) {
+    public StatsSerializeTest(long money, int restarts, long maxMoney, long minMoney) {
         mMoney = money;
         mRestarts = restarts;
+        mMaxMoney = maxMoney;
+        mMinMoney = minMoney;
     }
     
     private static String parseString(Document document) throws Exception {
@@ -40,7 +44,8 @@ public class StatsSerializeTest {
     private boolean testRead(Element node, StatsTransformer transformer) {                    
         Stats stat = transformer.transform(node);
         
-        return stat.getMoney().equals(mMoney) && stat.getRestarts().equals(mRestarts);
+        return stat.getMoney().equals(mMoney) && stat.getRestarts().equals(mRestarts)
+        		&& stat.getMaxMoney().equals(mMaxMoney) && stat.getMinMoney().equals(mMinMoney);
     }
 
     private void testWrite(Document document, Stats stat, StatsTransformer transformer) {
@@ -63,14 +68,16 @@ public class StatsSerializeTest {
         
         stat
         .setMoney(mMoney)
-        .setRestarts(mRestarts);
+        .setRestarts(mRestarts)
+        .setMaxMoney(mMaxMoney)
+        .setMinMoney(mMinMoney);
         
         this.testWrite(xmlDoc, stat, st);
     }
     
     public static void main(String[] args)
             throws Exception {        
-        (new StatsSerializeTest(123456, 12)).test();
+        (new StatsSerializeTest(123456, 12, 5030455, 999)).test();
     }
 
 }

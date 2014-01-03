@@ -6,17 +6,16 @@ public class Stats {
 	
 	private Long money;
 	private Integer restarts;
+	private Long maxMoney;
+	private Long minMoney;
 	
 	public Stats() {
 		this.money = Game.MONEY_ON_START;
 		this.restarts = 0;
+		this.maxMoney = Game.MONEY_ON_START;
+		this.minMoney = Game.MONEY_ON_START;
 	}
-	
-	public Stats(long money, int restarts) {
-		this.money = money;
-		this.restarts = restarts;
-	}
-	
+		
 	public Stats setMoney(long money) {
 	    this.money = money;
 	    return this;
@@ -27,12 +26,30 @@ public class Stats {
 	    return this;
 	}
 	
+	public Stats setMaxMoney(long maxMoney) {
+		this.maxMoney = maxMoney;
+		return this;
+	}
+
+	public Stats setMinMoney(long minMoney) {
+		this.minMoney = minMoney;
+		return this;
+	}
+
 	public Integer getRestarts() {
 		return restarts;
 	}
-	
+		
 	public Long getMoney() {
 		return money;
+	}
+	
+	public Long getMaxMoney() {
+		return maxMoney;
+	}
+
+	public Long getMinMoney() {
+		return minMoney;
 	}
 	
 }

@@ -15,7 +15,7 @@ public class GPWDataParser implements DataParser {
 
 	public GPWDataParser() {
 		patternArchive = Pattern.compile(".*<td [^<>]*>([^<>]*)</td>[^<>]*<td [^<>]*>[^<>]*</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>([^<>]*)</td>[^<>]*<td>([^<>]*)</td>[^<>]*<td>([^<>]*)</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>[^<>]*</td>");
-		patternCurrent = Pattern.compile(".*<td>.*</td><td class=\"left nowrap\"><a[^<>]*>([^<>]*)</a></td><td class=\"left\">[^<>]*</td><td class=\"left\">PLN</td><td>([^<>]*)</td><td>([^<>])*</td><td>[^<>]*</td><td>([^<>]*)</td><td>([^<>]*)</td><td>([^<>]*)</td><td>([^<>]*)</td><td>([^<>]*)</td><td>[^<>]*</td><td>[^<>]*</td>");
+		patternCurrent = Pattern.compile(".*<td>.*</td><td class=\"left nowrap\"><a[^<>]*>([^<>]*)</a></td><td class=\"left\">[^<>]*</td><td class=\"left\">PLN</td><td>([^<>]*)</td><td>([^<>]*)</td><td>[^<>]*</td><td>([^<>]*)</td><td>([^<>]*)</td><td>([^<>]*)</td><td>([^<>]*)</td><td>([^<>]*)</td><td>[^<>]*</td><td>[^<>]*</td>");
 	}
 
 	/** Zwraca listę notowań archiwalnych z podanego dnia. Jeśli dla danego dnia nie ma wyników to wyrzuca wyjątek BadDate **/

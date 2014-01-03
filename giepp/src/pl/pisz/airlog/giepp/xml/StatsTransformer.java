@@ -53,8 +53,24 @@ public class StatsTransformer
                 int num = Integer.parseInt(child.getTextContent());
                 stats.setRestarts(num);
             } catch (NumberFormatException e) {
-                throw new IllegalArgumentException(StatsTransformer.INVALID_NODE + " (bad money format)");
+                throw new IllegalArgumentException(StatsTransformer.INVALID_NODE + " (bad restarts format)");
             } 
+        }
+        else if (child.getNodeName().equals("max_money")) {
+            try {
+                long money = Long.parseLong(child.getTextContent());
+                stats.setMaxMoney(money);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException(StatsTransformer.INVALID_NODE + " (bad max_money format)");
+            }
+        }
+        else if (child.getNodeName().equals("min_money")) {
+            try {
+                long money = Long.parseLong(child.getTextContent());
+                stats.setMinMoney(money);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException(StatsTransformer.INVALID_NODE + " (bad min_money format)");
+            }
         }
     }
     
@@ -64,14 +80,20 @@ public class StatsTransformer
     @Override
     public Element transform(Stats object) {        
         Element moneyNode = this.newElement("money"),
-                restartsNode = this.newElement("restarts");
+                restartsNode = this.newElement("restarts"),
+                maxMoneyNode = this.newElement("max_money"),
+                minMoneyNode = this.newElement("min_money");
         
         moneyNode.setTextContent(object.getMoney().toString());
         restartsNode.setTextContent(object.getRestarts().toString());
+        maxMoneyNode.setTextContent(object.getMaxMoney().toString());
+        minMoneyNode.setTextContent(object.getMinMoney().toString());
         
         Element group = this.newElement("group");
         group.appendChild(moneyNode);
         group.appendChild(restartsNode);
+        group.appendChild(maxMoneyNode);
+        group.appendChild(minMoneyNode);
         
         return group;
     }
