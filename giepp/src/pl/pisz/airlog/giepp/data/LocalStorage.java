@@ -24,6 +24,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+import pl.pisz.airlog.giepp.xml.ObservedFileBuilder;
+import pl.pisz.airlog.giepp.xml.ObservedTransformer;
 import pl.pisz.airlog.giepp.xml.OwnedStocksBuilder;
 import pl.pisz.airlog.giepp.xml.PlayerStockTransformer;
 import pl.pisz.airlog.giepp.xml.StatsFileBuilder;
@@ -74,9 +76,10 @@ public class LocalStorage {
         if (!LocalStorage.isInited()) LocalStorage.initBuilder(DocumentBuilderFactory.newInstance());        
         FileHandle oh = LocalStorage.getFileHandle(ownedStocks);
         FileHandle ah = LocalStorage.getFileHandle(archiveStocks);
+        FileHandle dh = LocalStorage.getFileHandle(observedStocks);
         FileHandle sh = LocalStorage.getFileHandle(stats);
         
-        return new LocalStorage(oh, ah, null, sh);  // TODO: change this nulls
+        return new LocalStorage(oh, ah, dh, sh);
     }
 
     private FileHandle  stocksFile    = null;
@@ -113,6 +116,14 @@ public class LocalStorage {
             this.statsFile.doc = asb.newDocument();
             this.statsFile.doc.normalize();
         }
+    }
+    
+    private void assertObservedDocument() {
+        if (this.observedFile.doc == null) {  // document not yet created
+            ObservedFileBuilder asb = new ObservedFileBuilder(LocalStorage.DOCBUILDER);
+            this.observedFile.doc = asb.newDocument();
+            this.observedFile.doc.normalize();
+        }    
     }
     
     private int clearDocument(Document document) {
@@ -184,6 +195,24 @@ public class LocalStorage {
         return st.transform(root);
     }
     
+    public ArrayList<String> getObserved()
+            throws IllegalArgumentException {
+        this.assertObservedDocument();
+        
+        Node root = this.observedFile.doc.getDocumentElement();
+        ObservedTransformer ot = new ObservedTransformer(this.observedFile.doc);
+        
+        ArrayList<String> observed = new ArrayList<String>();
+        NodeList children = root.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node node = children.item(i);
+            String company = ot.transform(node);
+            observed.add(company);
+        }
+        
+        return observed;
+    }
+    
     public void saveArchival(TreeMap<String,ArrayList<ArchivedStock>> archived)
             throws IOException {
         this.assertArchiveDocument();
@@ -231,6 +260,19 @@ public class LocalStorage {
         this.statsFile.save();
     }
     
+    public void saveObserved(List<String> observed)
+            throws IOException {
+        this.assertObservedDocument();
+        this.clearDocument(this.observedFile.doc);
+        
+        Element root = this.observedFile.doc.getDocumentElement();
+        ObservedTransformer ot = new ObservedTransformer(this.observedFile.doc);
+        for (String company : observed) {
+            Node node = ot.transform(company);
+            root.appendChild(node);
+        }
+    }
+    
 }
 
 class FileHandle {
@@ -242,6 +284,7 @@ class FileHandle {
         this.file = file;
         this.doc = doc;
     }
+    
                 
     protected String convert(Document document) throws TransformerException {
         Transformer transformer = TransformerFactory.newInstance().newTransformer();
@@ -253,6 +296,7 @@ class FileHandle {
             
         return stringWriter.getBuffer().toString();
     }
+    
                         
     public final void save() throws IOException {
         String doc = null;
@@ -267,6 +311,7 @@ class FileHandle {
         dos.write(doc, 0, doc.length());
         dos.close();
     }
+    
         
 }
 
