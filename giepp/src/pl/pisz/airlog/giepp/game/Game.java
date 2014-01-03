@@ -323,11 +323,24 @@ public class Game {
 	}
 	
 	public void addToObserved(String name) {
-		if (observed.indexOf(name) == -1) observed.add(name);
+		if (observed.indexOf(name) == -1) {
+			observed.add(name);
+			try {
+				dataManager.saveObserved(observed);
+			} catch (IOException e) {
+				System.out.println(e);
+			}
+		}
+		
 	}
 	
 	public void removeFromObserved(String name) {
 		observed.remove(name);
+		try {
+			dataManager.saveObserved(observed);
+		} catch (IOException e) {
+			System.out.println(e);
+		}
 	}
 	
 	public ArrayList<String> getObserved() {
