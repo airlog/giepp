@@ -42,7 +42,14 @@ public class DataManager {
 	}
 	
 	public ArrayList<String> getObserved() {		
-		return new ArrayList<String>();
+	    ArrayList<String> observed = null;
+        try {
+            observed = storage.getObserved();
+        } catch (IllegalArgumentException e) {
+            observed = new ArrayList<String>(); 
+        }
+        
+        return observed;
 	}
 	
 	public TreeMap<String,ArrayList<ArchivedStock>> getArchivalFromXML() {		
@@ -68,7 +75,10 @@ public class DataManager {
 		}
 	}
 
-	public void saveObserved(ArrayList<String> observed){}
+	public void saveObserved(ArrayList<String> observed)
+	        throws IOException {
+	    storage.saveObserved(observed);
+	}
 
 	public void saveArchival(TreeMap<String,ArrayList<ArchivedStock>> archived) throws IOException {
 	    this.storage.saveArchival(archived);
