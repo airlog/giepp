@@ -22,6 +22,7 @@ public class MyAccountFragment extends Fragment implements OnItemClickListener {
 		private AccountAdapter adapter3;
 		private TextView textMoney;
 		private TextView textStock;
+		private TextView textMoneyAll;
 		
 		public MyAccountFragment() {		
 		}	
@@ -39,18 +40,11 @@ public class MyAccountFragment extends Fragment implements OnItemClickListener {
 			Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.my_account,container, false);
 			textMoney = (TextView) rootView.findViewById(R.id.money);
+			textMoneyAll = (TextView)  rootView.findViewById(R.id.money_all);
 			textStock = (TextView) rootView.findViewById(R.id.stock);
-			
-			double money = GiePPSingleton.getInstance().getMoney()/100.0;
-			NumberFormat formatter = new DecimalFormat("#0.00");
-			String moneyS = formatter.format(money);
-			
-			double stock = GiePPSingleton.getInstance().getMoneyInStock()/100.0;
-			String stockS = formatter.format(stock);
+		
+			zmiana();
 
-			textMoney.setText(moneyS+" PLN");
-			textStock.setText(stockS+" PLN");
-			
 			ListView list =  (ListView) rootView.findViewById(R.id.my_account_list);
 			ArrayList<PlayerStock> o1 = GiePPSingleton.getInstance().getOwned();
 			ArrayList<PlayerStock> o2 = new ArrayList<PlayerStock>();
@@ -66,7 +60,6 @@ public class MyAccountFragment extends Fragment implements OnItemClickListener {
 		}
 		
 		public void zmiana() {
-			Log.i("System.out","zmiana");
 			double money = GiePPSingleton.getInstance().getMoney()/100.0;
 			NumberFormat formatter = new DecimalFormat("#0.00");
 			String moneyS = formatter.format(money);
@@ -74,7 +67,12 @@ public class MyAccountFragment extends Fragment implements OnItemClickListener {
 			double stock = GiePPSingleton.getInstance().getMoneyInStock()/100.0;
 			String stockS = formatter.format(stock);
 
+			double all = (stock + money);
+			String allS = formatter.format(all);
+			
 			textMoney.setText(moneyS+" PLN");
 			textStock.setText(stockS+" PLN");
+			textMoneyAll.setText(allS+" PLN");
+			
 		}
 }

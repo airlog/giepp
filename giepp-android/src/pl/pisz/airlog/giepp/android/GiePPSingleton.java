@@ -71,6 +71,9 @@ public class GiePPSingleton{
 					Log.i("giepp","Dane aktualne sciagniete");
 					act.runOnUiThread(new Runnable(){
 						public void run(){
+							if (fragment1 != null) {
+								fragment1.zmiana();
+							}
 							if(adapter1 != null){		
 								adapter1.zmiana(game.getCurrent());
 								Log.i("giepp","lista1 updatowana");

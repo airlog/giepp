@@ -32,6 +32,7 @@ public class AccountAdapter extends ArrayAdapter<PlayerStock> {
 		TextView textView1 = (TextView) rowView.findViewById(R.id.firma);
 		TextView textView2 = (TextView) rowView.findViewById(R.id.ilosc);
 		TextView textView3 = (TextView) rowView.findViewById(R.id.suma);
+		TextView textView4 = (TextView) rowView.findViewById(R.id.zakup);
 		
 		textView1.setText(items.get(position).getCompanyName());
 		textView2.setText(""+items.get(position).getAmount());
@@ -48,7 +49,12 @@ public class AccountAdapter extends ArrayAdapter<PlayerStock> {
 		String priceS = formatter.format(priceD);
 
 		textView3.setText(priceS);
+		double startD = items.get(position).getStartPrice()/100.0;
+		String startS = formatter.format(startD);
+		
+		textView4.setText(startS);
 
+		
 		return rowView;
 	}
 	public void zmiana(ArrayList<PlayerStock> it){
