@@ -271,6 +271,8 @@ public class LocalStorage {
             Node node = ot.transform(company);
             root.appendChild(node);
         }
+        
+        this.observedFile.save();
     }
     
 }
