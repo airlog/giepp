@@ -1,0 +1,60 @@
+<project name="giepp" default="dist" basedir=".">
+    <description>
+        building entire desktop application
+    </description>
+ 
+    <!-- set global properties for this build -->
+    <property name="projectName" value="giepp-desktop"/>
+    
+    <property name="classes" value="bin/"/>
+    <property name="dist" value="dist/"/>
+    <property name="doc" value="doc/"/>
+    <property name="sources" value="src/"/>
+    <property name="libs" value="libs/"/>
+    
+    <property name="manifest" value="src/manifest.mf"/>
+    <property name="jar" value="giepp-desktop.jar"/>
+ 
+    <property name="gieppdir" value="."/>
+ 
+    <path id="libraries">
+        <fileset dir="${libs}">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${gieppdir}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+ 
+    <target name="init">
+       	<tstamp/>
+       	<mkdir dir="${classes}"/>
+        <mkdir dir="${dist}"/>
+    </target>
+    
+    <target name="dist" depends="init, giepp">
+        <tstamp/>
+        <jar destfile="${dist}/${jar}" basedir="${classes}" manifest="${manifest}"/>
+        <copy todir="${dist}/">
+            <path refid="libraries"/>
+        </copy>    
+    </target>
+ 
+    <target name="doc">
+        <mkdir dir="${doc}"/>
+        <javadoc sourcepath="${sources}" destdir="${doc}"/>
+    </target>
+    
+    <target name="giepp" depends="init">
+        <javac srcdir="${sources}" destdir="${classes}" target="1.6" source="1.6">
+            <classpath refid="libraries"/>
+        </javac>
+    </target>
+ 
+    <target name="clean" description="clean up" >
+        <delete dir="${classes}"/>
+        <delete dir="${dist}"/>
+        <delete dir="${doc}"/>
+    </target>    
+</project>
+
