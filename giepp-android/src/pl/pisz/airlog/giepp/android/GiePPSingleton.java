@@ -3,12 +3,12 @@ package pl.pisz.airlog.giepp.android;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Set;
 
 import pl.pisz.airlog.giepp.data.ArchivedStock;
 import pl.pisz.airlog.giepp.data.CurrentStock;
 import pl.pisz.airlog.giepp.data.LocalStorage;
 import pl.pisz.airlog.giepp.data.PlayerStock;
+import pl.pisz.airlog.giepp.data.Stats;
 import pl.pisz.airlog.giepp.data.gpw.GPWDataParser;
 import pl.pisz.airlog.giepp.data.gpw.GPWDataSource;
 import pl.pisz.airlog.giepp.game.Game;
@@ -33,6 +33,7 @@ public class GiePPSingleton{
 	private Activity act;
 	private boolean refreshing;
 	private MyAccountFragment fragment1;
+	private StatsFragment fragment4;
 	
 	private GiePPSingleton() {
 		try{
@@ -56,7 +57,7 @@ public class GiePPSingleton{
 			System.exit(1);
 		}
 	}
-	public void refresh(){
+	public void refreshCurrent(){
 		if (refreshing) {
 				return;
 		}
@@ -72,7 +73,10 @@ public class GiePPSingleton{
 					act.runOnUiThread(new Runnable(){
 						public void run(){
 							if (fragment1 != null) {
-								fragment1.zmiana();
+								fragment1.updateView();
+							}
+							if (fragment4 != null) {
+								fragment4.updateView();
 							}
 							if(adapter1 != null){		
 								adapter1.zmiana(game.getCurrent());
@@ -98,13 +102,14 @@ public class GiePPSingleton{
 						}
 					});
 					Log.i("System.out","aktualne sciagniete");
-
+/*
 					game.refreshArchival(10);
 					if ( game.getArchived() != null ) {
 						Log.i("System.out","nie null");
 					}
 					
 					Log.i("giepp","Dane archiwalne sciagniete");
+				*/
 				}catch(Exception e){
 					Log.i("giepp","Blad"+e);
 				}
@@ -123,7 +128,7 @@ public class GiePPSingleton{
 			act.runOnUiThread(new Runnable(){
 				public void run(){
 					if (fragment1 != null) {
-						fragment1.zmiana();
+						fragment1.updateView();
 						Log.i("giepp","moje konto updatowane");
 					}
 					if (adapter3 != null) {		
@@ -142,7 +147,7 @@ public class GiePPSingleton{
 			act.runOnUiThread(new Runnable(){
 				public void run(){
 					if (fragment1 != null) {
-						fragment1.zmiana();
+						fragment1.updateView();
 						Log.i("giepp","moje konto updatowane");
 					}
 					if(adapter3 != null){		
@@ -177,6 +182,11 @@ public class GiePPSingleton{
 	public long getMoneyInStock() {
 		return game.getMoneyInStock();
 	}
+	
+	public Stats getStats() {
+		return game.getStats();
+	}
+	
 	public ArrayList<PlayerStock> getOwned(){
 		return game.getOwned();
 	}
@@ -211,7 +221,11 @@ public class GiePPSingleton{
 	public void setFragment1(MyAccountFragment fragment1){
 		this.fragment1 = fragment1;
 	}
-	
+
+	public void setFragment4(StatsFragment fragment4){
+		this.fragment4 = fragment4;
+	}
+
 	public void setAdapter1(AllRecordsAdapter adapter1){
 		this.adapter1 = adapter1;
 	}
