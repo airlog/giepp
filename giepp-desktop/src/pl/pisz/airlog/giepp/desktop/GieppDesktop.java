@@ -14,6 +14,7 @@ import pl.pisz.airlog.giepp.desktop.dialogs.SellStockDialog;
 import pl.pisz.airlog.giepp.desktop.frames.MainFrame;
 import pl.pisz.airlog.giepp.desktop.menus.MainMenuBar;
 import pl.pisz.airlog.giepp.desktop.panels.MyStocksPanel;
+import pl.pisz.airlog.giepp.desktop.panels.ObservedPanel;
 import pl.pisz.airlog.giepp.desktop.panels.RatingsPanel;
 import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
 import pl.pisz.airlog.giepp.desktop.util.HelperTools;
@@ -31,10 +32,11 @@ public class GieppDesktop {
      * @param args
      */
     public static void main(String[] args) {
-        final CurrentStockTable.TableModel currentStockModel = new CurrentStockTable.TableModel();
         final MyStockTable.TableModel myStockModel = new MyStockTable.TableModel();
+        final CurrentStockTable.TableModel currentStockModel = new CurrentStockTable.TableModel();
+        final CurrentStockTable.TableModel observedModel = new CurrentStockTable.TableModel();
         
-        GameUtilities.newInstance(myStockModel, currentStockModel);
+        GameUtilities.newInstance(myStockModel, currentStockModel, observedModel);
         
         // run GUI
         SwingUtilities.invokeLater(new Runnable() {
@@ -54,6 +56,7 @@ public class GieppDesktop {
                
                panels[0] = new MyStocksPanel(myStockModel, buyDialog, sellDialog);
                panels[1] = new RatingsPanel(currentStockModel, buyDialog, sellDialog);
+               panels[2] = new ObservedPanel(observedModel, buyDialog, sellDialog);
                
                final JFrame frame = new MainFrame(panels, titles);                   
                

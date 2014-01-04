@@ -1,5 +1,7 @@
 package pl.pisz.airlog.giepp.desktop.util;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Collections;
 
@@ -15,8 +17,23 @@ public class GameUtilities {
     
     private static Game instance = null;
     
-    private static MyStockTable.TableModel mMyStockTableModel           = null;
-    private static CurrentStockTable.TableModel mCurrentStockTableModel = null;
+    private static MyStockTable.TableModel mMyStockTableModel               = null;
+    private static CurrentStockTable.TableModel mCurrentStockTableModel     = null;
+    private static CurrentStockTable.TableModel mObservedStockTableModel    = null;
+    
+    private static void filterStocks(List<CurrentStock> stocks, String... observed) {
+        LinkedList<CurrentStock> rubbish = new LinkedList<CurrentStock>();
+        for (CurrentStock stock : stocks) {
+            boolean found = false;
+            for (String company : observed) {
+                if (!company.equals(stock.getName())) continue;
+                found = true;
+                break;
+            }
+            if (!found) rubbish.add(stock);
+        }
+        stocks.removeAll(rubbish);
+    }
     
     protected static void checkGame() {
         if (instance == null) throw new IllegalStateException("Game not inited!");
@@ -24,11 +41,13 @@ public class GameUtilities {
         
     public static Game newInstance(
             MyStockTable.TableModel myStockTableModel,
-            CurrentStockTable.TableModel currentStockTableModel) {
+            CurrentStockTable.TableModel currentStockTableModel,
+            CurrentStockTable.TableModel observedStockTableModel) {
         if (instance == null) instance = HelperTools.newGame();
         
         mMyStockTableModel = myStockTableModel;
         mCurrentStockTableModel = currentStockTableModel;
+        mObservedStockTableModel = observedStockTableModel;
         
         return instance;
     }
@@ -88,6 +107,33 @@ public class GameUtilities {
         
         mMyStockTableModel.clear();
         mMyStockTableModel.addAll(stocks);
+    }
+    
+    public static void refreshObservedTable() {
+        String[] observed = GameUtilities.getInstance().getObserved().toArray(new String[] {});
+        List<CurrentStock> stocks = new ArrayList<CurrentStock>(); 
+        
+        stocks.addAll(GameUtilities.getInstance().getCurrent());
+        
+        System.err.println(String.format("stocks before filter: %d", stocks.size()));
+        GameUtilities.filterStocks(stocks, observed);
+        System.err.println(String.format("stocks after filter: %d", stocks.size()));
+                
+        mObservedStockTableModel.clear();
+        mObservedStockTableModel.addAll(stocks);
+    }
+    
+    public static boolean isObserved(String company) {
+        GameUtilities.checkGame();
+        
+        boolean state = false;
+        for (String s : instance.getObserved()) {
+            if (!s.equals(company)) continue;
+            state = true;
+            break;
+        }
+        
+        return state;
     }
         
     private GameUtilities() {}
