@@ -12,7 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.NumberPicker;
+import android.widget.DatePicker;
 import android.widget.TextView;
 
 public class StatsFragment extends Fragment implements View.OnClickListener {
@@ -31,7 +31,9 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
 				dialog.show();
 			}
 			else if (v.getId() == R.id.stats_refresh_archival) {
-				
+				final Dialog dialog = new RefreshArchivalDialog(getActivity());
+				dialog.setTitle("Dane archiwalne");	 		
+				dialog.show();
 			}
 		}
 		
@@ -74,8 +76,6 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
 		}
 }
 
-
-
 class ConfirmDialog extends Dialog implements View.OnClickListener {
 	
 	private Button buttonOK;
@@ -97,6 +97,42 @@ class ConfirmDialog extends Dialog implements View.OnClickListener {
 	public void onClick(View v) {
 		if(v.getId() == R.id.confirm_buttonOK) {
 			GiePPSingleton.getInstance().restartGame();
+		}
+		dismiss();
+	}
+}
+
+class RefreshArchivalDialog extends Dialog implements View.OnClickListener {
+	
+	private DatePicker start;
+	private DatePicker end;
+	private Button buttonOK;
+	private Button buttonNO;
+	
+	public RefreshArchivalDialog(Context ctx) {
+		super(ctx);
+	}
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		setContentView(R.layout.refresh_archival_dialog);
+		buttonOK = (Button) findViewById(R.id.refresh_archival_buttonOK);	
+		buttonNO = (Button) findViewById(R.id.refresh_archival_buttonNO);
+		start = (DatePicker) findViewById(R.id.date_start);
+		end = (DatePicker) findViewById(R.id.date_end);
+		
+		start.setCalendarViewShown(false);
+		end.setCalendarViewShown(false);
+				
+		buttonOK.setOnClickListener(this);
+		buttonNO.setOnClickListener(this);
+	}
+	
+	@Override
+	public void onClick(View v) {
+		if(v.getId() == R.id.refresh_archival_buttonOK) {
+			Log.i("giepp","start: " + start.getDayOfMonth() + "-" + start.getMonth() + "-" + start.getYear());
+			Log.i("giepp","end: " + end.getDayOfMonth() + "-" + end.getMonth() + "-" + end.getYear());
 		}
 		dismiss();
 	}

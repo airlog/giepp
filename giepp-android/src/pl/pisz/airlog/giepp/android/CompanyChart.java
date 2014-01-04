@@ -80,7 +80,7 @@ public class CompanyChart extends View {
 		width -= deltaX;
 		
 		int daysX = width/days;
-		float unitY = height/((max-min)*1.0f); 
+		float unitY = height/((max-min)*1.0f);
 		
 		int maxI = 5;
 		DecimalFormat df = new DecimalFormat("#0.000");
@@ -91,6 +91,7 @@ public class CompanyChart extends View {
 			if(text.charAt(text.length()-1) == '0') text = text.substring(0,text.length()-1);
 			canvas.drawText(text, 0, text.length(), deltaX/4, deltaY+(maxI-i)*height/maxI+5, paint);			
 		}
+		
 		paint.setColor(Color.BLUE);
 		int lastY = history.get(0).getMaxPrice()+history.get(0).getMaxPrice();
 		for (int i = 0; i<history.size(); i++) {
