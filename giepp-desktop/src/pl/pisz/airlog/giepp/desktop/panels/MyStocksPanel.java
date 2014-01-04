@@ -23,7 +23,7 @@ public class MyStocksPanel
             BuyStockDialog buyDialog, SellStockDialog sellDialog) {
         super(new BorderLayout(), false);
         
-        mStockTable = new MyStockTable(tableModel);
+        mStockTable = new MyStockTable(tableModel, buyDialog, sellDialog);
         
         this.initWidgets();
         this.initComponent();

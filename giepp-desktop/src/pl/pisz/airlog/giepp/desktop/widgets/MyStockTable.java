@@ -52,7 +52,14 @@ public class MyStockTable
         public TableModel() {
             super();
             
-            mStocks.add(new PlayerStock("TestingStock", 10000, 21));
+            PlayerStock a = new PlayerStock("TestingStock", 10000, 21),
+                    b = new PlayerStock("JoannaStock", 12112, 16);
+            
+            a.setCurrentValue((double) a.getAmount() * 0.1 * (double) a.getStartPrice());
+            b.setCurrentValue((double) b.getAmount() * 0.1 * (double) b.getStartPrice());
+            
+            mStocks.add(a);
+            mStocks.add(b);
         }
         
         public TableModel add(PlayerStock stock) {
@@ -107,7 +114,7 @@ public class MyStockTable
                 break;
             
             case 3:
-                value = new Integer(666);  // TODO: count current value based on current price
+                value = stock.getCurrentValue();
                 break;
                             
             default: break;
@@ -193,55 +200,33 @@ public class MyStockTable
         }
         
         protected void triggerSortByName(boolean sorted) {
-            Comparator<CurrentStock> comparator = CurrentStock.getByNameComparator();
+            Comparator<PlayerStock> comparator = PlayerStock.getByNameComparator();
             if (sorted) comparator = HelperTools.getReverseComparator(comparator);
             
-//            mTableModel.sort(comparator);
+            mTableModel.sort(comparator);
         }
         
-        protected void triggerSortByTime(boolean sorted) {
-            Comparator<CurrentStock> comparator = CurrentStock.getByTimeComparator();
+        protected void triggerSortByAmount(boolean sorted) {
+            Comparator<PlayerStock> comparator = PlayerStock.getByAmountComparator();
             if (sorted) comparator = HelperTools.getReverseComparator(comparator);
             
-//            mTableModel.sort(comparator);
+            mTableModel.sort(comparator);
         }
         
-        protected void triggerSortByStartPrice(boolean sorted) {
-            Comparator<CurrentStock> comparator = CurrentStock.getByStartPriceComparator();
+        protected void triggerSortByPrice(boolean sorted) {
+            Comparator<PlayerStock> comparator = PlayerStock.getByPriceComparator();
             if (sorted) comparator = HelperTools.getReverseComparator(comparator);
             
-//            mTableModel.sort(comparator);
+            mTableModel.sort(comparator);
         }
         
-        protected void triggerSortByMinPrice(boolean sorted) {
-            Comparator<CurrentStock> comparator = CurrentStock.getByMinPriceComparator();
+        protected void triggerSortByValue(boolean sorted) {
+            Comparator<PlayerStock> comparator = PlayerStock.getByValueComparator();
             if (sorted) comparator = HelperTools.getReverseComparator(comparator);
             
-//            mTableModel.sort(comparator);
+            mTableModel.sort(comparator);
         }
-        
-        protected void triggerSortByMaxPrice(boolean sorted) {
-            Comparator<CurrentStock> comparator = CurrentStock.getByMaxPriceComparator();
-            if (sorted) comparator = HelperTools.getReverseComparator(comparator);
-            
-//            mTableModel.sort(comparator);
-        }
-        
-        protected void triggerSortByEndPrice(boolean sorted) {
-            Comparator<CurrentStock> comparator = CurrentStock.getByEndPriceComparator();
-            if (sorted) comparator = HelperTools.getReverseComparator(comparator);
-            
-//            mTableModel.sort(comparator);
-        }
-        
-        protected void triggerSortByChange(boolean sorted) {
-            Comparator<CurrentStock> comparator = CurrentStock.getByChangeComparator();
-            if (sorted) comparator = HelperTools.getReverseComparator(comparator);
-            
-//            mTableModel.sort(comparator);
-        }
-        
-        
+               
         @Override
         public void mouseClicked(MouseEvent me) {
             if (me.getButton() != MouseEvent.BUTTON1) return;
@@ -249,7 +234,6 @@ public class MyStockTable
             int column = mTable.columnAtPoint(me.getPoint());
             if (column < 0 || column >= mTable.getColumnCount()) return;
             
-            // TODO: adjust to new table model
             boolean sorted = mColumnSorted[column];
             this.changeState(column);
             switch (column) {
@@ -257,22 +241,13 @@ public class MyStockTable
                 this.triggerSortByName(sorted);
                 break;
             case 1:
-                this.triggerSortByTime(sorted);
+                this.triggerSortByAmount(sorted);
                 break;
             case 2:
-                this.triggerSortByStartPrice(sorted);
+                this.triggerSortByPrice(sorted);
                 break;
             case 3:
-                this.triggerSortByMinPrice(sorted);
-                break;
-            case 4:
-                this.triggerSortByMaxPrice(sorted);
-                break;
-            case 5:
-                this.triggerSortByEndPrice(sorted);
-                break;
-            case 6:
-                this.triggerSortByChange(sorted);
+                this.triggerSortByValue(sorted);
                 break;
             }
         }
@@ -302,8 +277,8 @@ public class MyStockTable
     
     private CompanySelectedListener mCompanySelectedListener = null;
     
-    public MyStockTable(TableModel model /*,
-             BuyStockDialog buyDialog, SellStockDialog sellDialog */) {
+    public MyStockTable(TableModel model,
+             BuyStockDialog buyDialog, SellStockDialog sellDialog) {
         super();
         
         mPopupMenu = new CurrentStockPopupMenu(this);
