@@ -118,6 +118,10 @@ public class GiePPSingleton{
 		}).start();
 	}
 	
+	public void restartGame() {
+		game.restartGame();
+	}
+	
 	public void buy(String companyName, int amount) {
 		try {
 			game.buy(companyName,amount);
