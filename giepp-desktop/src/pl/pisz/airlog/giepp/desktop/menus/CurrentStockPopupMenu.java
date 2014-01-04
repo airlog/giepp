@@ -21,11 +21,14 @@ public class CurrentStockPopupMenu
     public static final String ITEM_BUY            = "Kup";
     public static final String ITEM_SELL           = "Sprzedaj";
     public static final String ITEM_OBSERVE        = "Obserwuj";
+    public static final String ITEM_UNOBSERVE      = "Nie obserwuj";
     
     private JMenuItem mStockItem;
     private JMenuItem mBuyItem;
     private JMenuItem mSellItem;
     private JMenuItem mObserveItem;
+    
+    private boolean mLastChange = false;
     
     public CurrentStockPopupMenu(ActionListener al) {
         super();
@@ -74,6 +77,13 @@ public class CurrentStockPopupMenu
     public CurrentStockPopupMenu setStockName(String name) {
         mStockItem.setText(name);
                 
+        return this;
+    }
+    
+    public CurrentStockPopupMenu setObserveCommandFor(String company) {
+        if (GameUtilities.isObserved(company)) mObserveItem.setText(ITEM_UNOBSERVE);
+        else mObserveItem.setText(ITEM_OBSERVE);
+        
         return this;
     }
            

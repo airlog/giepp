@@ -138,8 +138,10 @@ public class BuyStockDialog
         Game game = GameUtilities.getInstance();
         try {
             game.buy(mCompanyStock.getName(), (Integer) mAmountSpinner.getValue());
-            this.setVisible(false);
             
+            GameUtilities.refreshMyStockTable();
+            this.setVisible(false);
+           
             // TODO: wyświetl dialog potwierdzający kupno
         }
         catch (ActionException e) {
