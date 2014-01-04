@@ -243,6 +243,47 @@ public class Game {
 	    }
 	}
 
+	private void toMapDependsOnDate(ArrayList<ArchivedStock> stock) {
+		for (ArchivedStock s : stock) {
+			ArrayList<ArchivedStock> saved = archived.get(s.getName());
+			for (int i = saved.size()-1; i>= 0 ; i--) {
+				if (s.getDate().equals(saved.get(i).getDate())) {
+					System.out.println("Dane dla tej daty juz byly zapisane");
+					return;
+				}
+				if (s.getDate().compareTo(saved.get(i).getDate()) > 0) {
+					continue;
+				}
+				//wstawienie w dobre miejsce
+			}
+			//zapisanie
+		}
+	}
+	public void refreshArchival(int startDay, int startMonth, int startYear, int endDay, int endMonth, int endYear) {
+
+		while (endDay != startDay || endMonth != startMonth || endYear != startYear) {
+			try {
+				ArrayList<ArchivedStock> stock = dataManager.getArchival(endDay,endMonth,endYear);
+				if (stock != null) {
+					toMapDependsOnDate(stock);
+				}
+			} catch (IOException e) {
+				break;
+				//TODO ładne poradzenie sobie z wyjątkiem 
+			} catch (BadDate e){
+				//TODO ładne poradzenie sobie z wyjątkiem 
+			}
+			if (endDay == 0) {
+				endDay=31;
+				endMonth--;
+			}
+			if (endMonth == 0) {
+				endMonth = 12;
+				endYear--;
+			}
+		}
+	}
+	
 	private void updateMaxMinMoney() {
 		long mis = this.getMoneyInStock();
 		if(mis + stats.getMoney() > stats.getMaxMoney()) {
