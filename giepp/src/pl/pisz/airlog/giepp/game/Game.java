@@ -282,7 +282,8 @@ public class Game {
 			//TODO ładne poradzenie sobie z wyjątkiem 
 			System.out.println(e);
 		}
-		this.lastRefresh = calendar.getTime();		
+		this.lastRefresh = calendar.getTime();
+		this.updateMaxMinMoney();
 	}
 		
 	/** Ustawia pola zgodnie z danymi z plikow XML  **/
