@@ -18,9 +18,8 @@ public class Plotter {
 	
 	private int mMax;
 	private int mMin;
-	private int mMarginX;
-	private int mMarginY;
-
+	private int mMarginX;   // ucięcie z lewego boku (legenda)
+	private int mMarginY;   // ucięcie z góry i dołus
 	
 	private int mLegendCount;
 	
@@ -36,14 +35,10 @@ public class Plotter {
 		if (mArchival == null || mArchival.size() == 0) {
 			return;
 		}
-		findMin();
-		findMax();
+		this.findMin();
+		this.findMax();
 	}
 	 
-	/** Zwraca tablicę punktów umożliwiających narysowanie łamanej.
-	* @return lista punktów [x0 y0 x1 y1 ...]
-	*/
-	
 	private void findMin() {
 		int min = mArchival.get(0).getMinPrice(); 
 		
@@ -66,20 +61,31 @@ public class Plotter {
 		mMax = max;
 	}
 	
+	/** Zwraca tablicę punktów umożliwiających narysowanie łamanej.
+	 * @return lista punktów [x0 y0 x1 y1 ...]
+	 */	
 	public float[] getPoints() {
 		if (mArchival == null || mArchival.size() == 0) {
 			return null;
 		}
 		
-		float[] result = new float[4*mArchival.size()];
+		float[] result = new float[4 * mArchival.size()];
 		
 		int days = mArchival.size();
 
-		int height = mHeight - 2*mMarginY;
+		int height = mHeight - 2 * mMarginY;
 		int width = mWidth - mMarginX;
 		
 		int deltaX = width/days;
-		float unitY = height/((mMax-mMin)*1.0f);
+		
+		// unikanie dzielenia przez 0
+		// autor: Joanna
+		if (mMax == mMin) {
+		    mMax += 1;
+		    mMin -= 1;
+		}
+		
+		float unitY = (float) height/(float) (mMax - mMin);
 		
 		for (int i = 0; i<mArchival.size(); i++) {
 			int startX = mMarginX + width - (i+1)*deltaX;
@@ -89,24 +95,25 @@ public class Plotter {
 			int y = (int) ((mMax-sum*0.5f)*unitY);
 
 			result[4*i] = endX;
-			result[4*i+1] = y;
-			result[4*i+2] = startX;
-			result[4*i+3] = y;
+			result[4*i + 1] = y;
+			result[4*i + 2] = startX;
+			result[4*i + 3] = y;
 		}
+		
 		return result;
 	}
 	
 	/** Zwraca tablicę wartości legendy.
-	* @return lista stringów [s0, s1 ...]
-	*/
+	 * @return lista stringów [s0, s1 ...]
+	 */
 	public String[] getVerticalLegendValues() {
 		String[] result = new String[mLegendCount];
 		DecimalFormat df = new DecimalFormat("#0.000");
 
-		for (int i = 0; i<mLegendCount; i++) {
-			float number = ((mMin + (i+1)*1.0f*(mMax-mMin)/(mLegendCount+1))/100.0f); 
+		for (int i = 0; i < mLegendCount; i++) {
+			float number = ((mMin + (i + 1) * (float) (mMax - mMin)/(mLegendCount + 1))/100.0f); 
 			String text = df.format(number);
-			if(text.charAt(text.length()-1) == '0'){
+			if (text.endsWith("0")) {
 				text = text.substring(0,text.length()-1);
 			}
 			result[i] = text; 
@@ -115,16 +122,18 @@ public class Plotter {
 	}
 	 
 	/** Zwraca tablicę współrzędnych X, Y dla legendy.
-	* @return lista punktów [x0 y0 x1 y1 ...]
-	*/
+	 * @return lista punktów [x0 y0 x1 y1 ...]
+	 */
 	public float[] getVerticalLegendPositions() {
 		float[] result = new float[mLegendCount*2];
 
-		for (int i = 0; i<mLegendCount*2; i+=2) {
-			result[i] = mMarginX/4;
-			result[i+1] = mMarginY+(mLegendCount-i/2)*mHeight/(mLegendCount+1);
+		for (int i = 0; i < mLegendCount * 2; i += 2) {
+			result[i] = mMarginX/4;     // margines dla legendy
+			result[i + 1] = mMarginY + (mLegendCount - i/2) * mHeight/(mLegendCount + 1);
 		}
+		
 		return result;
 	}
 	 
 }
+
