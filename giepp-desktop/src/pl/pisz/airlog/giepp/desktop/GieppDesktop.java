@@ -34,6 +34,8 @@ public class GieppDesktop {
         final CurrentStockTable.TableModel currentStockModel = new CurrentStockTable.TableModel();
         final MyStockTable.TableModel myStockModel = new MyStockTable.TableModel();
         
+        GameUtilities.newInstance(myStockModel, currentStockModel);
+        
         // run GUI
         SwingUtilities.invokeLater(new Runnable() {
            @Override
@@ -72,17 +74,8 @@ public class GieppDesktop {
         });
         
         // update data
-        Game game = GameUtilities.getInstance();
-        game.refreshCurrent();
-        final List<CurrentStock> list = game.getCurrent();
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                currentStockModel.clear();
-                currentStockModel.addAll(list);
-            }
-        });
-        game.refreshArchival();
+        GameUtilities.refreshData();
+//        GameUtilities.refreshArchival();
     }
 
 }

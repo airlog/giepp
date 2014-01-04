@@ -52,8 +52,6 @@ public class CurrentStockTable
         
         public TableModel() {
             super();
-            
-            mStocks.add(new CurrentStock("TestingStock", "13:03", 100, 80, 160, 140, new Float(2.0)));
         }
         
         public TableModel add(CurrentStock stock) {
@@ -72,9 +70,10 @@ public class CurrentStockTable
 
         public TableModel clear() {
             int size = mStocks.size();
-            
-            mStocks.clear();
-            this.fireTableRowsDeleted(0, size - 1);
+            if (size > 0) {
+                mStocks.clear();
+                this.fireTableRowsDeleted(0, size - 1);
+            }
             
             return this;
         }

@@ -144,6 +144,8 @@ public class SellStockDialog
         Game game = GameUtilities.getInstance();
         try {
             game.sell(mCompanyStock.getName(), (Integer) mAmountSpinner.getValue());
+
+            GameUtilities.refreshMyStockTable();
             this.setVisible(false);
             
             // TODO: wyświetl dialog potwierdzający sprzedaż

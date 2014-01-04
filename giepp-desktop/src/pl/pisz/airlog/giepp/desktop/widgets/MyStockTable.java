@@ -51,15 +51,6 @@ public class MyStockTable
         
         public TableModel() {
             super();
-            
-            PlayerStock a = new PlayerStock("TestingStock", 10000, 21),
-                    b = new PlayerStock("JoannaStock", 12112, 16);
-            
-            a.setCurrentValue((double) a.getAmount() * 0.1 * (double) a.getStartPrice());
-            b.setCurrentValue((double) b.getAmount() * 0.1 * (double) b.getStartPrice());
-            
-            mStocks.add(a);
-            mStocks.add(b);
         }
         
         public TableModel add(PlayerStock stock) {
@@ -79,8 +70,10 @@ public class MyStockTable
         public TableModel clear() {
             int size = mStocks.size();
             
-            mStocks.clear();
-            this.fireTableRowsDeleted(0, size - 1);
+            if (size > 0) {
+                mStocks.clear();
+                this.fireTableRowsDeleted(0, size - 1);
+            }
             
             return this;
         }
