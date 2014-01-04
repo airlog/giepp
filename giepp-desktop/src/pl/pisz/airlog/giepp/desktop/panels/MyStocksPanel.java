@@ -17,12 +17,14 @@ import pl.pisz.airlog.giepp.desktop.widgets.MyStockTable;
 public class MyStocksPanel
         extends JPanel {
     
+    private MyStockDetailsPanel mDetailsPanel;
     private MyStockTable mStockTable;
     
     public MyStocksPanel(MyStockTable.TableModel tableModel,
             BuyStockDialog buyDialog, SellStockDialog sellDialog) {
         super(new BorderLayout(), false);
         
+        mDetailsPanel = new MyStockDetailsPanel();
         mStockTable = new MyStockTable(tableModel, buyDialog, sellDialog);
         
         this.initWidgets();
@@ -40,6 +42,7 @@ public class MyStocksPanel
         sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         
+        this.add(mDetailsPanel, BorderLayout.NORTH);
         this.add(sp, BorderLayout.CENTER);
     }
 
