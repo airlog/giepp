@@ -34,6 +34,7 @@ public class MyStocksPanel
     private void initWidgets() {
         TableCellRenderer priceRenderer = new MyStockTable.PriceRenderer();
         
+        mStockTable.getColumnModel().getColumn(2).setCellRenderer(priceRenderer);
         mStockTable.getColumnModel().getColumn(3).setCellRenderer(priceRenderer);
     }
     
