@@ -1,13 +1,10 @@
 package pl.pisz.airlog.giepp.desktop;
 
 import java.awt.Dimension;
-import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-
-import pl.pisz.airlog.giepp.data.CurrentStock;
 
 import pl.pisz.airlog.giepp.desktop.dialogs.BuyStockDialog;
 import pl.pisz.airlog.giepp.desktop.dialogs.SellStockDialog;
@@ -18,11 +15,8 @@ import pl.pisz.airlog.giepp.desktop.panels.ObservedPanel;
 import pl.pisz.airlog.giepp.desktop.panels.RatingsPanel;
 import pl.pisz.airlog.giepp.desktop.panels.StatisticPanel;
 import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
-import pl.pisz.airlog.giepp.desktop.util.HelperTools;
 import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
 import pl.pisz.airlog.giepp.desktop.widgets.MyStockTable;
-
-import pl.pisz.airlog.giepp.game.Game;
 
 /**
  * @author Rafal
@@ -43,6 +37,9 @@ public class GieppDesktop {
         SwingUtilities.invokeLater(new Runnable() {
            @Override
            public void run() {               
+               GameUtilities.refreshMyStockTable();
+               GameUtilities.refreshObservedTable();
+               
                final BuyStockDialog buyDialog = new BuyStockDialog(null);
                buyDialog.setMinimumSize(new Dimension(320, 0));
                buyDialog.pack();
@@ -62,6 +59,11 @@ public class GieppDesktop {
                
                MainMenuBar mmb = new MainMenuBar();
                mmb.setMenuListener(new MainMenuBar.MainMenuListener() {
+                   @Override
+                   public void onFileRefresh(java.awt.event.ActionEvent ae) {
+                       GameUtilities.refreshData();
+                   }
+                   
                    @Override
                    public void onFileQuit(java.awt.event.ActionEvent ae) {
                        System.exit(0);

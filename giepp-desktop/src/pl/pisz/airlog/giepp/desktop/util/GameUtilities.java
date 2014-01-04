@@ -69,6 +69,8 @@ public class GameUtilities {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
+                        GameUtilities.refreshObservedTable();   // może być pierwsze sprawdzenie
+                        
                         mCurrentStockTableModel
                         .clear()
                         .addAll(stocks);
