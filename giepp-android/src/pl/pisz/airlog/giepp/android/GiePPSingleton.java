@@ -30,8 +30,9 @@ public class GiePPSingleton{
 	private AllRecordsAdapter adapter1;
 	private ObservedAdapter adapter2;
 	private AccountAdapter adapter3;
-	private Activity act;
+	private MainActivity act;
 	private boolean refreshing;
+	private boolean refreshingArchival;
 	private MyAccountFragment fragment1;
 	private StatsFragment fragment4;
 	
@@ -62,6 +63,10 @@ public class GiePPSingleton{
 				return;
 		}
 		refreshing = true;
+		if (act!= null) {
+			act.updateProgressBar();
+		}
+
 		(new Thread() {
 			
 			@Override
@@ -99,21 +104,16 @@ public class GiePPSingleton{
 							else{
 								Log.i("giepp","adapter3 null");
 							}
+							refreshing = false;
+							if (act!= null) {
+								act.updateProgressBar();
+							}
 						}
 					});
 					Log.i("System.out","aktualne sciagniete");
-/*
-					game.refreshArchival(10);
-					if ( game.getArchived() != null ) {
-						Log.i("System.out","nie null");
-					}
-					
-					Log.i("giepp","Dane archiwalne sciagniete");
-				*/
 				}catch(Exception e){
 					Log.i("giepp","Blad"+e);
 				}
-				refreshing = false;
 			}
 		}).start();
 	}
@@ -168,6 +168,22 @@ public class GiePPSingleton{
 	
 	public ArrayList<CurrentStock> getCurrent(){
 		return game.getCurrent();
+	}
+	
+	public void refreshArchival(int d1, int m1, int y1, int d2, int m2, int y2) {
+		refreshingArchival = true;
+		System.out.println("start: " + d1 + "-" + m1 + "-" + y1);
+		System.out.println("end: " + d2 + "-" + m2 + "-" + y2);
+		game.refreshArchival(d1,m1+1,y1,d2,m2+1,y2);
+		refreshingArchival = false;
+	}
+	
+	public boolean isRefreshingArchival() {
+		return refreshingArchival;
+	}
+
+	public boolean isRefreshingCurrent() {
+		return refreshing;
 	}
 
 	public int getAmount(String companyName) {
@@ -239,7 +255,7 @@ public class GiePPSingleton{
 	public void setAdapter3(AccountAdapter adapter3){
 		this.adapter3 = adapter3;
 	}
-	public void setActivity(Activity act){
+	public void setActivity(MainActivity act){
 		this.act = act;
 	}
 	public void setName(String name){

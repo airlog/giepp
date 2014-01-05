@@ -3,16 +3,18 @@ package pl.pisz.airlog.giepp.android;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class StatsFragment extends Fragment implements View.OnClickListener {
@@ -22,7 +24,8 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
 		private TextView textRestarts;
 		private Button buttonRestart;
 		private Button buttonRefreshArchival;
-		
+		private ProgressBar bar;
+
 		@Override
 		public void onClick(View v) {
 			if (v.getId() == R.id.stats_restart_button) {
@@ -31,7 +34,10 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
 				dialog.show();
 			}
 			else if (v.getId() == R.id.stats_refresh_archival) {
-				final Dialog dialog = new RefreshArchivalDialog(getActivity());
+				if (GiePPSingleton.getInstance().isRefreshingArchival()) {
+					return;
+				}
+				final Dialog dialog = new RefreshArchivalDialog(getActivity(), bar);
 				dialog.setTitle("Dane archiwalne");	 		
 				dialog.show();
 			}
@@ -49,6 +55,12 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
 			buttonRestart = (Button) rootView.findViewById(R.id.stats_restart_button);
 			buttonRefreshArchival = (Button) rootView.findViewById(R.id.stats_refresh_archival);
 			
+			bar = (ProgressBar) rootView.findViewById(R.id.stats_progressBar);
+			bar.setVisibility(View.GONE);
+			if (GiePPSingleton.getInstance().isRefreshingArchival()) {				
+				bar.setVisibility(View.VISIBLE);
+			}
+
 			updateView();
 
 			buttonRestart.setOnClickListener(this);
@@ -108,9 +120,11 @@ class RefreshArchivalDialog extends Dialog implements View.OnClickListener {
 	private DatePicker end;
 	private Button buttonOK;
 	private Button buttonNO;
+	private ProgressBar bar;
 	
-	public RefreshArchivalDialog(Context ctx) {
+	public RefreshArchivalDialog(Context ctx, ProgressBar bar) {
 		super(ctx);
+		this.bar = bar;
 	}
 	
 	@Override
@@ -130,10 +144,28 @@ class RefreshArchivalDialog extends Dialog implements View.OnClickListener {
 	
 	@Override
 	public void onClick(View v) {
-		if(v.getId() == R.id.refresh_archival_buttonOK) {
-			Log.i("giepp","start: " + start.getDayOfMonth() + "-" + start.getMonth() + "-" + start.getYear());
-			Log.i("giepp","end: " + end.getDayOfMonth() + "-" + end.getMonth() + "-" + end.getYear());
+		if (v.getId() == R.id.refresh_archival_buttonOK) {
+			bar.setVisibility(View.VISIBLE);
+			RefreshArchivalTask task = new RefreshArchivalTask();
+			task.execute(start.getDayOfMonth(), start.getMonth(), start.getYear(),end.getDayOfMonth(), end.getMonth(), end.getYear());
 		}
 		dismiss();
 	}
+	
+	private class RefreshArchivalTask extends AsyncTask<Integer, Void, Integer> {
+
+		@Override
+		protected Integer doInBackground(Integer... date) {
+			GiePPSingleton.getInstance().refreshArchival(date[0],date[1],date[2],date[3],date[4],date[5]);
+			return 0;
+		}
+		
+		@Override
+		protected void onPostExecute(Integer i) {
+			if (bar != null) {
+				bar.setVisibility(View.GONE);
+			}
+		}
+	}
+	
 }

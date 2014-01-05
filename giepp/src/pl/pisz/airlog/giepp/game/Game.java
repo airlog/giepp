@@ -272,7 +272,6 @@ public class Game {
 		for (ArchivedStock s : stock) {
 			ArrayList<ArchivedStock> saved = archived.get(s.getName());
 			if(saved == null) {
-				System.out.println("Nie było jeszcze zapisu dla tej firmy");
 				saved = new ArrayList<ArchivedStock>();
 				saved.add(s);
 				archived.put(s.getName(),saved);
@@ -281,7 +280,6 @@ public class Game {
 				boolean done = false; 
 				for (int i = 0 ; i < saved.size() ; i++) {
 					if (s.getDate().equals(saved.get(i).getDate())) {
-				//		System.out.println("Dane dla tej daty juz byly zapisane");
 						return;
 					}
 					//jesli ten na ktorym jestesmy jest wiekszy
@@ -289,35 +287,37 @@ public class Game {
 						continue;
 					}
 					else {
-					//	System.out.println("Zapis dla daty " + s.getDate());
 						saved.add(i,s);
 						done = true;
 						break;
 					}
 				}
 				if (!done) {
-				//	System.out.println("Zapis dla daty " + s.getDate());
 					saved.add(s);					
 				}
 			}
 		}
 		saveFirst(MAX_DAYS_IN_MEMORY);
 		try {
-		    dataManager.saveArchival(archived);		
+			dataManager.saveArchival(archived);		
 	    } catch (IOException e) {
 	        // FIXME: uwaga na błąd
 	    	System.out.println(e);
 	    }
 	}
 	public void refreshArchival(int startDay, int startMonth, int startYear, int endDay, int endMonth, int endYear) {
+		if (startYear >= endYear && startMonth >= endMonth && startDay >= endDay) {
+			return;
+		}
+			
 		startDay--;
 		if (startDay == 0) {
 			startMonth --;
 			startDay = 31;
 		}
-		if (startMonth == -1) {
+		if (startMonth == 0) {
 			startYear--;
-			startMonth = 11;
+			startMonth = 12;
 		}
 		while (endDay != startDay || endMonth != startMonth || endYear != startYear) {
 			if (dateAlreadySaved(endDay, endMonth, endYear)) {
@@ -492,8 +492,7 @@ public class Game {
 		File stats = File.createTempFile("stats", ".xml");
 		Game g = new Game(new GPWDataSource(),
 				new GPWDataParser(),LocalStorage.newInstance(ownedStocks, archiveStocks, observedStocks, stats));
-		g.refreshArchival(14, 11, 2013, 20, 11, 2013);
-		g.refreshArchival(10, 11, 2013, 19, 11, 2013);
+		g.refreshArchival(3, 1, 2014, 2, 1, 2014);
 		Set<String> keys = g.getArchived().keySet();
 		
 		for(String k: keys){
