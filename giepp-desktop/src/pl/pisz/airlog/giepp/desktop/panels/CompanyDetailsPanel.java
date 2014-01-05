@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import pl.pisz.airlog.giepp.data.PlayerStock;
 import pl.pisz.airlog.giepp.desktop.util.HelperTools;
@@ -28,6 +29,8 @@ public class CompanyDetailsPanel
     private JTextField mPriceField = new JTextField();
     private JTextField mStockField = new JTextField();
     
+    private PlotPanel mPlotPanel = new PlotPanel();
+    
     public CompanyDetailsPanel() {
         super(false);
         
@@ -42,13 +45,15 @@ public class CompanyDetailsPanel
         mStockField.setEditable(false);
         mStockField.setBackground(defColor);
         
+        mPlotPanel.setBackground(Color.WHITE);
+        
         this.initComponent();
     }
     
     private void initComponent() {
         FormLayout layout = new FormLayout(
                 "3dlu, right:pref, 3dlu, pref:grow, 3dlu",
-                "3dlu, p, p, p, 3dlu"
+                "3dlu, p, p, p, 3dlu, fill:pref:grow, 3dlu"
                 );
         PanelBuilder builder = new PanelBuilder(layout, this);
         CellConstraints cc = new CellConstraints();
@@ -59,6 +64,7 @@ public class CompanyDetailsPanel
         builder.add(mPriceField, cc.xy(4, 3));
         builder.addLabel("Posiadane akcje", cc.xy(2, 4));
         builder.add(mStockField, cc.xy(4, 4));
+        builder.add(mPlotPanel, cc.xyw(2, 6, 3));
     }
     
     @Override
@@ -74,6 +80,15 @@ public class CompanyDetailsPanel
         PlayerStock companyStock = GameUtilities.getInstance().getOwnedStockByName(company);
         if (companyStock != null) mStockField.setText(companyStock.getAmount().toString());
         else mStockField.setText("0");
+        
+        final String companyName = company;
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                mPlotPanel.setCompany(companyName);
+                mPlotPanel.repaint();
+            }
+        });
     }
         
 }
