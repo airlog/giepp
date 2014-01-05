@@ -1,0 +1,43 @@
+<project name="giepp-all" default="help" basedir=".">
+    <description>
+        select an application to build
+    </description>
+ 
+    <!-- set global properties for this build -->
+    <property name="core.dir" value="giepp"/>    
+    <property name="android.dir" value="giepp-android"/>
+    <property name="desktop.dir" value="giepp-desktop"/>
+     
+    <target name="core">
+        <ant dir="${core.dir}" target="dist" />
+    </target>
+ 
+    <target name="android" depends="core">
+        <copy file="${core.dir}/dist/giepp.jar" todir="${android.dir}/libs/"/>
+        <ant dir="${android.dir}" target="release" />
+    </target>
+    
+    <target name="desktop" depends="core">
+        <ant dir="${desktop.dir}" target="dist">
+            <property name="gieppdir" value="../${core.dir}/dist" />
+        </ant>
+    </target>
+ 
+    <target name="help">
+        <echo/>
+        <echo>    help:        Displays this help.</echo>
+        <echo>    clean:       Removes all compiled files and created directiroies.</echo>
+        <echo>    core:        Builds a GiePP library used by both applications.</echo>
+        <echo>    android:     Builds an Android application. Requires Android SDK.</echo>
+        <echo>    desktop:     Builds a desktop application.</echo>
+        <echo/>
+    </target>
+ 
+    <target name="clean" description="clean up" >
+        <ant dir="${core.dir}" target="clean" />
+        <ant dir="${android.dir}" target="clean" />
+        <delete file="${android.dir}/libs/giepp.jar"/>
+        <ant dir="${desktop.dir}" target="clean" />
+    </target>    
+</project>
+

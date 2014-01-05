@@ -1,6 +1,5 @@
 package pl.pisz.airlog.giepp.desktop.widgets;
 
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -20,49 +19,47 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import pl.pisz.airlog.giepp.data.CurrentStock;
+import pl.pisz.airlog.giepp.data.PlayerStock;
 
 import pl.pisz.airlog.giepp.desktop.dialogs.BuyStockDialog;
 import pl.pisz.airlog.giepp.desktop.dialogs.SellStockDialog;
 import pl.pisz.airlog.giepp.desktop.menus.CurrentStockPopupMenu;
 
 import pl.pisz.airlog.giepp.desktop.util.CompanySelectedListener;
-import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
 import pl.pisz.airlog.giepp.desktop.util.HelperTools;
 
 /**
  * @author Rafal
  *
  */
-public class CurrentStockTable
+public class MyStockTable
         extends JTable
         implements ActionListener {
 
     public static class TableModel
             extends AbstractTableModel {
 
-        public static final int COLUMN_COUNT   = 7;    // tyle informacji przenosi CurrentStock
+        public static final int COLUMN_COUNT   = 4;
         public static final String COLUMN_NAMES[] = {
                     "Nazwa", 
-                    "Ostatnia aktualizacja", "Cena rozpoczęcia",
-                    "Cena minimalna", "Cena maksymalna",
-                    "Cena końcowa", "Zmiana (w %)"
-                };
+                    "Ilość", "Kwota zakupu",
+                    "Wartość",
+                    };
         
-        private ArrayList<CurrentStock> mStocks = new ArrayList<CurrentStock>();
+        private ArrayList<PlayerStock> mStocks = new ArrayList<PlayerStock>();
         
         public TableModel() {
             super();
         }
         
-        public TableModel add(CurrentStock stock) {
+        public TableModel add(PlayerStock stock) {
             mStocks.add(stock);
             this.fireTableDataChanged();
             
             return this;
         }
         
-        public TableModel addAll(Collection<? extends CurrentStock> c) {
+        public TableModel addAll(Collection<? extends PlayerStock> c) {
             mStocks.addAll(c);
             this.fireTableDataChanged();
             
@@ -71,6 +68,7 @@ public class CurrentStockTable
 
         public TableModel clear() {
             int size = mStocks.size();
+            
             if (size > 0) {
                 mStocks.clear();
                 this.fireTableRowsDeleted(0, size - 1);
@@ -93,14 +91,14 @@ public class CurrentStockTable
         public Object getValueAt(int rowIndex, int columnIndex) {
             Object value = null;
             
-            CurrentStock stock = mStocks.get(rowIndex);
+            PlayerStock stock = mStocks.get(rowIndex);
             switch (columnIndex) {
             case 0:
-                value = stock.getName();
+                value = stock.getCompanyName();
                 break;
             
             case 1:
-                value = stock.getTime();
+                value = stock.getAmount();
                 break;
             
             case 2:
@@ -108,21 +106,9 @@ public class CurrentStockTable
                 break;
             
             case 3:
-                value = stock.getMinPrice();
+                value = stock.getCurrentValue();
                 break;
-            
-            case 4:
-                value = stock.getMaxPrice();
-                break;
-            
-            case 5:
-                value = stock.getEndPrice();
-                break;
-            
-            case 6:
-                value = stock.getChange();
-                break;
-                
+                            
             default: break;
             }
             
@@ -139,11 +125,11 @@ public class CurrentStockTable
             return COLUMN_NAMES[columnIndex];
         }
 
-        public CurrentStock getStock(int row) {
+        public PlayerStock getStock(int row) {
             return mStocks.get(row);
         }
         
-        public void sort(Comparator<CurrentStock> comparator) {
+        public void sort(Comparator<PlayerStock> comparator) {
             Collections.sort(mStocks, comparator);
             
             final AbstractTableModel model = this;
@@ -160,12 +146,13 @@ public class CurrentStockTable
     public static class TableMouseAdapter
             extends MouseAdapter {
         
-        public CurrentStockTable mTable;
+        public MyStockTable mTable;
         
-        public TableMouseAdapter(CurrentStockTable table) {
+        public TableMouseAdapter(MyStockTable table) {
             super();
             
-            mTable = table;            
+            mTable = table;
+            
         }
         
         @Override
@@ -175,10 +162,8 @@ public class CurrentStockTable
             int row = mTable.rowAtPoint(me.getPoint());
             if (row >= 0 && row < mTable.getRowCount()) mTable.setRowSelectionInterval(row, row);
             
-            String company = (String) mTable.getModel().getValueAt(row, 0);
             mTable.getPopup()
-                    .setStockName(company)
-                    .setObserveCommandFor(company)
+                    .setStockName((String) mTable.getModel().getValueAt(row, 0))
                     .show(me.getComponent(), me.getX(), me.getY());
         }
         
@@ -187,12 +172,12 @@ public class CurrentStockTable
     public static class HeaderMouseAdapter
             extends MouseAdapter {
         
-        private CurrentStockTable mTable;
+        private MyStockTable mTable;
         private TableModel mTableModel;  
         
         private boolean[] mColumnSorted = new boolean[TableModel.COLUMN_COUNT];
         
-        public HeaderMouseAdapter(CurrentStockTable table, TableModel model) {
+        public HeaderMouseAdapter(MyStockTable table, TableModel model) {
             super();
             
             mTable = table;
@@ -207,62 +192,40 @@ public class CurrentStockTable
         }
         
         protected void triggerSortByName(boolean sorted) {
-            Comparator<CurrentStock> comparator = CurrentStock.getByNameComparator();
+            Comparator<PlayerStock> comparator = PlayerStock.getByNameComparator();
             if (sorted) comparator = HelperTools.getReverseComparator(comparator);
             
             mTableModel.sort(comparator);
         }
         
-        protected void triggerSortByTime(boolean sorted) {
-            Comparator<CurrentStock> comparator = CurrentStock.getByTimeComparator();
+        protected void triggerSortByAmount(boolean sorted) {
+            Comparator<PlayerStock> comparator = PlayerStock.getByAmountComparator();
             if (sorted) comparator = HelperTools.getReverseComparator(comparator);
             
             mTableModel.sort(comparator);
         }
         
-        protected void triggerSortByStartPrice(boolean sorted) {
-            Comparator<CurrentStock> comparator = CurrentStock.getByStartPriceComparator();
+        protected void triggerSortByPrice(boolean sorted) {
+            Comparator<PlayerStock> comparator = PlayerStock.getByPriceComparator();
             if (sorted) comparator = HelperTools.getReverseComparator(comparator);
             
             mTableModel.sort(comparator);
         }
         
-        protected void triggerSortByMinPrice(boolean sorted) {
-            Comparator<CurrentStock> comparator = CurrentStock.getByMinPriceComparator();
+        protected void triggerSortByValue(boolean sorted) {
+            Comparator<PlayerStock> comparator = PlayerStock.getByValueComparator();
             if (sorted) comparator = HelperTools.getReverseComparator(comparator);
             
             mTableModel.sort(comparator);
         }
-        
-        protected void triggerSortByMaxPrice(boolean sorted) {
-            Comparator<CurrentStock> comparator = CurrentStock.getByMaxPriceComparator();
-            if (sorted) comparator = HelperTools.getReverseComparator(comparator);
-            
-            mTableModel.sort(comparator);
-        }
-        
-        protected void triggerSortByEndPrice(boolean sorted) {
-            Comparator<CurrentStock> comparator = CurrentStock.getByEndPriceComparator();
-            if (sorted) comparator = HelperTools.getReverseComparator(comparator);
-            
-            mTableModel.sort(comparator);
-        }
-        
-        protected void triggerSortByChange(boolean sorted) {
-            Comparator<CurrentStock> comparator = CurrentStock.getByChangeComparator();
-            if (sorted) comparator = HelperTools.getReverseComparator(comparator);
-            
-            mTableModel.sort(comparator);
-        }
-        
-        
+               
         @Override
         public void mouseClicked(MouseEvent me) {
             if (me.getButton() != MouseEvent.BUTTON1) return;
                 
             int column = mTable.columnAtPoint(me.getPoint());
             if (column < 0 || column >= mTable.getColumnCount()) return;
-                
+            
             boolean sorted = mColumnSorted[column];
             this.changeState(column);
             switch (column) {
@@ -270,57 +233,19 @@ public class CurrentStockTable
                 this.triggerSortByName(sorted);
                 break;
             case 1:
-                this.triggerSortByTime(sorted);
+                this.triggerSortByAmount(sorted);
                 break;
             case 2:
-                this.triggerSortByStartPrice(sorted);
+                this.triggerSortByPrice(sorted);
                 break;
             case 3:
-                this.triggerSortByMinPrice(sorted);
-                break;
-            case 4:
-                this.triggerSortByMaxPrice(sorted);
-                break;
-            case 5:
-                this.triggerSortByEndPrice(sorted);
-                break;
-            case 6:
-                this.triggerSortByChange(sorted);
+                this.triggerSortByValue(sorted);
                 break;
             }
         }
         
     }
     
-    public static class ChangeRenderer
-            extends DefaultTableCellRenderer {
-    
-        public static Color COLOR_INCREASED = Color.GREEN;
-        public static Color COLOR_DECREASED = Color.RED;
-        
-        private Color mDefaultColor;
-        
-        public ChangeRenderer() {
-            super();
-            
-            mDefaultColor = this.getForeground();
-        }
-        
-        @Override
-        protected void setValue(Object value) {
-            this.setHorizontalAlignment(SwingConstants.RIGHT);
-            super.setValue(value);
-            
-            if (!(value instanceof Float)) return;
-            
-            float f = (Float) value;
-            if (f > 0.0f) this.setForeground(COLOR_INCREASED);
-            else if (f < 0.0f) this.setForeground(COLOR_DECREASED);
-            else this.setForeground(mDefaultColor);
-        }
-        
-    }
-
     public static class PriceRenderer
             extends DefaultTableCellRenderer {
                 
@@ -344,13 +269,13 @@ public class CurrentStockTable
     
     private CompanySelectedListener mCompanySelectedListener = null;
     
-    public CurrentStockTable(TableModel model,
-            BuyStockDialog buyDialog, SellStockDialog sellDialog) {
+    public MyStockTable(TableModel model,
+             BuyStockDialog buyDialog, SellStockDialog sellDialog) {
         super();
         
         mPopupMenu = new CurrentStockPopupMenu(this);
-        mBuyDialog = buyDialog;
-        mSellDialog = sellDialog;
+//        mBuyDialog = buyDialog;
+//        mSellDialog = sellDialog;
         
         this.setModel(model);
         this.addMouseListener(new TableMouseAdapter(this));
@@ -361,27 +286,17 @@ public class CurrentStockTable
     protected void showBuyDialog() {
         if (mBuyDialog.isVisible()) mBuyDialog.setVisible(false);
         
-        mBuyDialog.setCompany(((TableModel) this.getModel()).getStock(this.getSelectedRow()));
-        mBuyDialog.setVisible(true);
+        // TODO: find CurrentStock based on PlayerStock
+//        mBuyDialog.setCompany(((TableModel) this.getModel()).getStock(this.getSelectedRow()));
+//        mBuyDialog.setVisible(true);
     }
     
     protected void showSellDialog() {
         if (mSellDialog.isVisible()) mSellDialog.setVisible(false);
         
-        mSellDialog.setCompany(((TableModel) this.getModel()).getStock(this.getSelectedRow()));
-        mSellDialog.setVisible(true);    
-    }
-    
-    protected void observeStock() {
-        String company = ((TableModel) this.getModel()).getStock(this.getSelectedRow()).getName();
-        GameUtilities.getInstance().addToObserved(company);
-        GameUtilities.refreshObservedTable();
-    }
-    
-    protected void unobserveStock() {
-        String company = ((TableModel) this.getModel()).getStock(this.getSelectedRow()).getName();
-        GameUtilities.getInstance().removeFromObserved(company);
-        GameUtilities.refreshObservedTable();
+        // TODO: find CurrentStock based on PlayerStock
+//        mSellDialog.setCompany(((TableModel) this.getModel()).getStock(this.getSelectedRow()));
+//        mSellDialog.setVisible(true);    
     }
     
     @Override
@@ -399,10 +314,8 @@ public class CurrentStockTable
     
     @Override
     public void actionPerformed(ActionEvent ae) {
-        if (ae.getActionCommand().equals(CurrentStockPopupMenu.ITEM_BUY)) this.showBuyDialog();
-        else if (ae.getActionCommand().equals(CurrentStockPopupMenu.ITEM_SELL)) this.showSellDialog();
-        else if (ae.getActionCommand().equals(CurrentStockPopupMenu.ITEM_OBSERVE)) this.observeStock();
-        else if (ae.getActionCommand().equals(CurrentStockPopupMenu.ITEM_UNOBSERVE)) this.unobserveStock();
+        if (ae.getActionCommand().equals("Kup")) this.showBuyDialog();
+        else if (ae.getActionCommand().equals("Sprzedaj")) this.showSellDialog();
     }
         
     public void setCompanySelectedListener(CompanySelectedListener l) {

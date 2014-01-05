@@ -1,24 +1,22 @@
 package pl.pisz.airlog.giepp.desktop;
 
 import java.awt.Dimension;
-import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import pl.pisz.airlog.giepp.data.CurrentStock;
-
 import pl.pisz.airlog.giepp.desktop.dialogs.BuyStockDialog;
 import pl.pisz.airlog.giepp.desktop.dialogs.SellStockDialog;
 import pl.pisz.airlog.giepp.desktop.frames.MainFrame;
 import pl.pisz.airlog.giepp.desktop.menus.MainMenuBar;
+import pl.pisz.airlog.giepp.desktop.panels.MyStocksPanel;
+import pl.pisz.airlog.giepp.desktop.panels.ObservedPanel;
 import pl.pisz.airlog.giepp.desktop.panels.RatingsPanel;
+import pl.pisz.airlog.giepp.desktop.panels.StatisticPanel;
 import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
-import pl.pisz.airlog.giepp.desktop.util.HelperTools;
 import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
-
-import pl.pisz.airlog.giepp.game.Game;
+import pl.pisz.airlog.giepp.desktop.widgets.MyStockTable;
 
 /**
  * @author Rafal
@@ -29,15 +27,18 @@ public class GieppDesktop {
      * @param args
      */
     public static void main(String[] args) {
+        final MyStockTable.TableModel myStockModel = new MyStockTable.TableModel();
         final CurrentStockTable.TableModel currentStockModel = new CurrentStockTable.TableModel();
+        final CurrentStockTable.TableModel observedModel = new CurrentStockTable.TableModel();
+        
+        GameUtilities.newInstance(myStockModel, currentStockModel, observedModel);
         
         // run GUI
         SwingUtilities.invokeLater(new Runnable() {
            @Override
            public void run() {               
-               String[] titles = new String[] {"Moje konto", "Notowania", "Obserwowane", "Statystyki"};
-               JPanel[] panels = new JPanel[titles.length];
-               for (int i = 0; i < titles.length; i++) panels[i] = HelperTools.newTextPanel(titles[i]);
+               GameUtilities.refreshMyStockTable();
+               GameUtilities.refreshObservedTable();
                
                final BuyStockDialog buyDialog = new BuyStockDialog(null);
                buyDialog.setMinimumSize(new Dimension(320, 0));
@@ -47,12 +48,22 @@ public class GieppDesktop {
                sellDialog.setMinimumSize(new Dimension(320, 0));
                sellDialog.pack();
                
+               String[] titles = new String[] {"Moje konto", "Notowania", "Obserwowane", "Statystyki"};
+               JPanel[] panels = new JPanel[titles.length];               
+               panels[0] = new MyStocksPanel(myStockModel, buyDialog, sellDialog);
                panels[1] = new RatingsPanel(currentStockModel, buyDialog, sellDialog);
+               panels[2] = new ObservedPanel(observedModel, buyDialog, sellDialog);
+               panels[3] = new StatisticPanel();
                
                final JFrame frame = new MainFrame(panels, titles);                   
                
                MainMenuBar mmb = new MainMenuBar();
                mmb.setMenuListener(new MainMenuBar.MainMenuListener() {
+                   @Override
+                   public void onFileRefresh(java.awt.event.ActionEvent ae) {
+                       GameUtilities.refreshData();
+                   }
+                   
                    @Override
                    public void onFileQuit(java.awt.event.ActionEvent ae) {
                        System.exit(0);
@@ -68,17 +79,8 @@ public class GieppDesktop {
         });
         
         // update data
-        Game game = GameUtilities.getInstance();
-        game.refreshCurrent();
-        final List<CurrentStock> list = game.getCurrent();
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                currentStockModel.clear();
-                currentStockModel.addAll(list);
-            }
-        });
-        game.refreshArchival();
+        GameUtilities.refreshData();
+//        GameUtilities.refreshArchival();
     }
 
 }

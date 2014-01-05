@@ -2,7 +2,6 @@ package pl.pisz.airlog.giepp.game;
 
 import java.io.File;
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -243,6 +242,114 @@ public class Game {
 	    }
 	}
 
+	private boolean dateAlreadySaved(int dayI, int monthI, int yearI) {
+		 String dayS = dayI+"";
+		 if (dayI < 10) {
+			 dayS = "0"+dayI;
+		 }
+
+		 String monthS = monthI+"";
+		 if (monthI < 10) {
+			 monthS = "0"+monthI;
+		 }	
+		 String date = yearI + "-" + monthS + "-" + dayS;
+		 
+		 Set<String> keys = archived.keySet();
+			
+		 for (String k: keys) {
+			 ArrayList<ArchivedStock> saved = archived.get(k);
+			 for (ArchivedStock s : saved) {
+				 if (s.getDate().equals(date)) {
+					 return true;
+				 }
+			 }
+			 return false;
+		}
+		 return false;
+	}
+	
+	private void toMap(ArrayList<ArchivedStock> stock) {
+		for (ArchivedStock s : stock) {
+			ArrayList<ArchivedStock> saved = archived.get(s.getName());
+			if(saved == null) {
+				System.out.println("Nie było jeszcze zapisu dla tej firmy");
+				saved = new ArrayList<ArchivedStock>();
+				saved.add(s);
+				archived.put(s.getName(),saved);
+			}
+			else {
+				boolean done = false; 
+				for (int i = 0 ; i < saved.size() ; i++) {
+					if (s.getDate().equals(saved.get(i).getDate())) {
+				//		System.out.println("Dane dla tej daty juz byly zapisane");
+						return;
+					}
+					//jesli ten na ktorym jestesmy jest wiekszy
+					if (s.getDate().compareTo(saved.get(i).getDate()) < 0) {
+						continue;
+					}
+					else {
+					//	System.out.println("Zapis dla daty " + s.getDate());
+						saved.add(i,s);
+						done = true;
+						break;
+					}
+				}
+				if (!done) {
+				//	System.out.println("Zapis dla daty " + s.getDate());
+					saved.add(s);					
+				}
+			}
+		}
+		saveFirst(MAX_DAYS_IN_MEMORY);
+		try {
+		    dataManager.saveArchival(archived);		
+	    } catch (IOException e) {
+	        // FIXME: uwaga na błąd
+	    	System.out.println(e);
+	    }
+	}
+	public void refreshArchival(int startDay, int startMonth, int startYear, int endDay, int endMonth, int endYear) {
+		startDay--;
+		if (startDay == 0) {
+			startMonth --;
+			startDay = 31;
+		}
+		if (startMonth == -1) {
+			startYear--;
+			startMonth = 11;
+		}
+		while (endDay != startDay || endMonth != startMonth || endYear != startYear) {
+			if (dateAlreadySaved(endDay, endMonth, endYear)) {
+				System.out.println("Data zapisana juz" + endYear + "-" + endMonth + "-" + endDay);
+			}
+			else {
+				try {
+					System.out.println("Sciagam dane dla " + endYear + "-" + endMonth + "-" + endDay);
+					ArrayList<ArchivedStock> stock = dataManager.getArchival(endDay,endMonth,endYear);
+					if (stock != null) {
+						toMap(stock);
+					}
+				} catch (IOException e) {
+					break;
+					//TODO ładne poradzenie sobie z wyjątkiem 
+				} catch (BadDate e){
+					System.out.println("Bad Date");
+					//TODO ładne poradzenie sobie z wyjątkiem 
+				}
+			}
+			endDay--;
+			if (endDay == 0) {
+				endDay=31;
+				endMonth--;
+			}
+			if (endMonth == 0) {
+				endMonth = 12;
+				endYear--;
+			}
+		}
+	}
+	
 	private void updateMaxMinMoney() {
 		long mis = this.getMoneyInStock();
 		if(mis + stats.getMoney() > stats.getMaxMoney()) {
@@ -385,6 +492,16 @@ public class Game {
 		File stats = File.createTempFile("stats", ".xml");
 		Game g = new Game(new GPWDataSource(),
 				new GPWDataParser(),LocalStorage.newInstance(ownedStocks, archiveStocks, observedStocks, stats));
+		g.refreshArchival(14, 11, 2013, 20, 11, 2013);
+		g.refreshArchival(10, 11, 2013, 19, 11, 2013);
+		Set<String> keys = g.getArchived().keySet();
+		
+		for(String k: keys){
+			ArrayList<ArchivedStock> l = g.getArchived().get(k);
+			
+			for(int i = 0; i<l.size(); i++)
+				System.out.println(k+": "+l.get(i).getDate()+": "+l.get(i).getMaxPrice());
+		}
 		/*g.refreshArchival(4);
 		ArrayList<ArchivedStock> hist = g.getArchived().get("ZYWIEC");
 		for (ArchivedStock h : hist) {
@@ -398,11 +515,11 @@ public class Game {
 			for(int i = 0; i<l.size(); i++)
 				System.out.println(k+": "+l.get(i).getDate()+": "+l.get(i).getMaxPrice());
 		}
-	*/	g.refreshCurrent();
+		g.refreshCurrent();
 		ArrayList<CurrentStock> cs= g.getCurrent();
 		for (CurrentStock c : cs)
 			System.out.println(c.getName()+": "+c.getEndPrice());
-			
+	*/		
 	}
 
 }
