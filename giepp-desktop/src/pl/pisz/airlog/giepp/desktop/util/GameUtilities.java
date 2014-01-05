@@ -20,7 +20,7 @@ public class GameUtilities {
     private static MyStockTable.TableModel mMyStockTableModel               = null;
     private static CurrentStockTable.TableModel mCurrentStockTableModel     = null;
     private static CurrentStockTable.TableModel mObservedStockTableModel    = null;
-    
+
     private static void filterStocks(List<CurrentStock> stocks, String... observed) {
         LinkedList<CurrentStock> rubbish = new LinkedList<CurrentStock>();
         for (CurrentStock stock : stocks) {
@@ -117,9 +117,7 @@ public class GameUtilities {
         
         stocks.addAll(GameUtilities.getInstance().getCurrent());
         
-        System.err.println(String.format("stocks before filter: %d", stocks.size()));
         GameUtilities.filterStocks(stocks, observed);
-        System.err.println(String.format("stocks after filter: %d", stocks.size()));
                 
         mObservedStockTableModel.clear();
         mObservedStockTableModel.addAll(stocks);

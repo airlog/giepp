@@ -39,7 +39,6 @@ public class StatsTransformer
 
     protected void parseChild(Node child, Stats stats)
             throws IllegalArgumentException {
-        System.err.println(child.getNodeName());
         if (child.getNodeName().equals("money")) {
             try {
                 long money = Long.parseLong(child.getTextContent());
