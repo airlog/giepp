@@ -26,6 +26,7 @@ import pl.pisz.airlog.giepp.desktop.dialogs.SellStockDialog;
 import pl.pisz.airlog.giepp.desktop.menus.CurrentStockPopupMenu;
 
 import pl.pisz.airlog.giepp.desktop.util.CompanySelectedListener;
+import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
 import pl.pisz.airlog.giepp.desktop.util.HelperTools;
 
 /**
@@ -274,29 +275,29 @@ public class MyStockTable
         super();
         
         mPopupMenu = new CurrentStockPopupMenu(this);
-//        mBuyDialog = buyDialog;
-//        mSellDialog = sellDialog;
+        mBuyDialog = buyDialog;
+        mSellDialog = sellDialog;
         
         this.setModel(model);
         this.addMouseListener(new TableMouseAdapter(this));
         this.getTableHeader().setReorderingAllowed(false);
         this.getTableHeader().addMouseListener(new HeaderMouseAdapter(this, model));
     }
-    
+        
     protected void showBuyDialog() {
         if (mBuyDialog.isVisible()) mBuyDialog.setVisible(false);
         
-        // TODO: find CurrentStock based on PlayerStock
-//        mBuyDialog.setCompany(((TableModel) this.getModel()).getStock(this.getSelectedRow()));
-//        mBuyDialog.setVisible(true);
+        String company = ((TableModel) this.getModel()).getStock(this.getSelectedRow()).getCompanyName();
+        mBuyDialog.setCompany(GameUtilities.getCurrentStockByName(company));
+        mBuyDialog.setVisible(true);
     }
     
     protected void showSellDialog() {
         if (mSellDialog.isVisible()) mSellDialog.setVisible(false);
         
-        // TODO: find CurrentStock based on PlayerStock
-//        mSellDialog.setCompany(((TableModel) this.getModel()).getStock(this.getSelectedRow()));
-//        mSellDialog.setVisible(true);    
+        String company = ((TableModel) this.getModel()).getStock(this.getSelectedRow()).getCompanyName();
+        mSellDialog.setCompany(GameUtilities.getCurrentStockByName(company));
+        mSellDialog.setVisible(true);    
     }
     
     @Override

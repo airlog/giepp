@@ -1,9 +1,17 @@
 package pl.pisz.airlog.giepp.desktop.panels;
 
 import java.awt.BorderLayout;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.factories.CC;
+import com.jgoodies.forms.layout.FormLayout;
 
 import pl.pisz.airlog.giepp.data.Stats;
 import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
@@ -24,7 +32,27 @@ public class StatisticPanel
         sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         
+        FormLayout layout = new FormLayout("right:p", "16dlu");
+        JButton refreshButton = new JButton("Odśwież");
+        final StatisticPanel parent = this;
+        refreshButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                parent.reinit();
+                parent.repaint();
+            }
+        });
+        
+        PanelBuilder builder = new PanelBuilder(layout);        
+        builder.add(refreshButton, CC.xy(1, 1));
+        
         this.add(sp, BorderLayout.CENTER);
+        this.add(builder.getPanel(), BorderLayout.NORTH);
+    }
+    
+    private void reinit() {
+        this.removeAll();
+        this.init();
     }
 
     protected JPanel createContentPanel() {
@@ -52,6 +80,7 @@ public class StatisticPanel
                     .setValue(HelperTools.getPriceFormat().format((double) stat.getMaxMoney() * 0.01))
                     .done() 
                 .createPanel();
+        
     }
-    
+        
 }

@@ -70,6 +70,7 @@ public class GameUtilities {
                     @Override
                     public void run() {
                         GameUtilities.refreshObservedTable();   // może być pierwsze sprawdzenie
+                        GameUtilities.refreshMyStockTable();
                         
                         mCurrentStockTableModel
                         .clear()
@@ -94,7 +95,9 @@ public class GameUtilities {
         
         List<PlayerStock> stocks = instance.getOwned();
         List<CurrentStock> currents = instance.getCurrent();
-//        Collections.sort(stocks, PlayerStock.getByNameComparator());
+        
+        // FIXME: to wyszukiwanie jest dosyć wolne, można posortować i bsearch
+        // Collections.sort(stocks, PlayerStock.getByNameComparator());
         for (PlayerStock stock : stocks) {
             CurrentStock current = null;
             for (CurrentStock cs : currents) {
@@ -134,6 +137,16 @@ public class GameUtilities {
         }
         
         return state;
+    }
+    
+    public static CurrentStock getCurrentStockByName(String company) {
+        GameUtilities.checkGame();
+        
+        for (CurrentStock stock : GameUtilities.getInstance().getCurrent()) {
+            if (stock.getName().equals(company)) return stock;
+        }
+        
+        return null;
     }
         
     private GameUtilities() {}
