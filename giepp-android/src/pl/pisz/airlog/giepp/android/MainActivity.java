@@ -10,26 +10,31 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 
 public class MainActivity extends FragmentActivity {
 	
-	SectionsPagerAdapter mSectionsPagerAdapter;
-	ViewPager mViewPager;
+	private SectionsPagerAdapter mSectionsPagerAdapter;
+	private ViewPager mViewPager;
+	private ProgressBar progressBar;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.i("System.out",System.getProperty("http.agent"));
 		System.setProperty("http.agent", "Mozilla/5.0 (X11; Linux x86_64; rv:17.0) Gecko/20121202 Firefox/17.0 Iceweasel/17.0.1");
-		Log.i("System.out",System.getProperty("http.agent"));
 		GiePPSingleton.getInstance().setActivity(this);
+		
 		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		setContentView(R.layout.activity_main);
+		
+		progressBar = (ProgressBar) findViewById(R.id.main_progressBar);
+		updateProgressBar();
 		
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 		
@@ -75,13 +80,22 @@ public class MainActivity extends FragmentActivity {
 	    // Handle presses on the action bar items
 	    switch (item.getItemId()) {
 	        case R.id.action_refresh:
-				GiePPSingleton.getInstance().refresh();
+				GiePPSingleton.getInstance().refreshCurrent();
 	            return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
 	}
 
+	public void updateProgressBar() {
+		if (GiePPSingleton.getInstance().isRefreshingCurrent()) {
+			progressBar.setVisibility(View.VISIBLE);
+		}
+		else {
+			progressBar.setVisibility(View.GONE);
+		}
+
+	}
 	
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 				

@@ -3,12 +3,12 @@ package pl.pisz.airlog.giepp.android;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Set;
 
 import pl.pisz.airlog.giepp.data.ArchivedStock;
 import pl.pisz.airlog.giepp.data.CurrentStock;
 import pl.pisz.airlog.giepp.data.LocalStorage;
 import pl.pisz.airlog.giepp.data.PlayerStock;
+import pl.pisz.airlog.giepp.data.Stats;
 import pl.pisz.airlog.giepp.data.gpw.GPWDataParser;
 import pl.pisz.airlog.giepp.data.gpw.GPWDataSource;
 import pl.pisz.airlog.giepp.game.Game;
@@ -30,9 +30,12 @@ public class GiePPSingleton{
 	private AllRecordsAdapter adapter1;
 	private ObservedAdapter adapter2;
 	private AccountAdapter adapter3;
-	private Activity act;
+	private MainActivity act;
 	private boolean refreshing;
+	private boolean refreshingArchival;
 	private MyAccountFragment fragment1;
+	private StatsFragment fragment4;
+	private CompanyDetailsActivity details;
 	
 	private GiePPSingleton() {
 		try{
@@ -56,11 +59,15 @@ public class GiePPSingleton{
 			System.exit(1);
 		}
 	}
-	public void refresh(){
+	public void refreshCurrent(){
 		if (refreshing) {
 				return;
 		}
 		refreshing = true;
+		if (act!= null) {
+			act.updateProgressBar();
+		}
+
 		(new Thread() {
 			
 			@Override
@@ -72,7 +79,16 @@ public class GiePPSingleton{
 					act.runOnUiThread(new Runnable(){
 						public void run(){
 							if (fragment1 != null) {
-								fragment1.zmiana();
+								fragment1.updateView();
+							}
+							if (details != null) {
+								details.updateMaxToBuySell();
+							}
+							else {
+								Log.i("giepp","details null");
+							}
+							if (fragment4 != null) {
+								fragment4.updateView();
 							}
 							if(adapter1 != null){		
 								adapter1.zmiana(game.getCurrent());
@@ -95,22 +111,26 @@ public class GiePPSingleton{
 							else{
 								Log.i("giepp","adapter3 null");
 							}
+							refreshing = false;
+							if (act!= null) {
+								act.updateProgressBar();
+							}
 						}
 					});
 					Log.i("System.out","aktualne sciagniete");
-
-					game.refreshArchival(10);
-					if ( game.getArchived() != null ) {
-						Log.i("System.out","nie null");
-					}
-					
-					Log.i("giepp","Dane archiwalne sciagniete");
 				}catch(Exception e){
 					Log.i("giepp","Blad"+e);
 				}
-				refreshing = false;
 			}
 		}).start();
+	}
+	
+	public void restartGame() {
+		game.restartGame();
+	}
+	
+	public void setCompanyDetailsActivity(CompanyDetailsActivity details){
+		this.details = details;
 	}
 	
 	public void buy(String companyName, int amount) {
@@ -123,7 +143,7 @@ public class GiePPSingleton{
 			act.runOnUiThread(new Runnable(){
 				public void run(){
 					if (fragment1 != null) {
-						fragment1.zmiana();
+						fragment1.updateView();
 						Log.i("giepp","moje konto updatowane");
 					}
 					if (adapter3 != null) {		
@@ -142,7 +162,7 @@ public class GiePPSingleton{
 			act.runOnUiThread(new Runnable(){
 				public void run(){
 					if (fragment1 != null) {
-						fragment1.zmiana();
+						fragment1.updateView();
 						Log.i("giepp","moje konto updatowane");
 					}
 					if(adapter3 != null){		
@@ -157,8 +177,32 @@ public class GiePPSingleton{
 		}
 	}
 	
-	public ArrayList<CurrentStock> getCurrent(){
+	public ArrayList<CurrentStock> getCurrent() {
 		return game.getCurrent();
+	}
+	
+	public CurrentStock getCurrent(String name) {
+		for(CurrentStock cs : game.getCurrent()) {
+			if (cs.getName().equals(name)) {
+				return cs;
+			}
+		}
+		return null;
+	}
+	public void refreshArchival(int d1, int m1, int y1, int d2, int m2, int y2) {
+		refreshingArchival = true;
+		System.out.println("start: " + d1 + "-" + m1 + "-" + y1);
+		System.out.println("end: " + d2 + "-" + m2 + "-" + y2);
+		game.refreshArchival(d1,m1+1,y1,d2,m2+1,y2);
+		refreshingArchival = false;
+	}
+	
+	public boolean isRefreshingArchival() {
+		return refreshingArchival;
+	}
+
+	public boolean isRefreshingCurrent() {
+		return refreshing;
 	}
 
 	public int getAmount(String companyName) {
@@ -177,6 +221,11 @@ public class GiePPSingleton{
 	public long getMoneyInStock() {
 		return game.getMoneyInStock();
 	}
+	
+	public Stats getStats() {
+		return game.getStats();
+	}
+	
 	public ArrayList<PlayerStock> getOwned(){
 		return game.getOwned();
 	}
@@ -211,7 +260,11 @@ public class GiePPSingleton{
 	public void setFragment1(MyAccountFragment fragment1){
 		this.fragment1 = fragment1;
 	}
-	
+
+	public void setFragment4(StatsFragment fragment4){
+		this.fragment4 = fragment4;
+	}
+
 	public void setAdapter1(AllRecordsAdapter adapter1){
 		this.adapter1 = adapter1;
 	}
@@ -221,7 +274,7 @@ public class GiePPSingleton{
 	public void setAdapter3(AccountAdapter adapter3){
 		this.adapter3 = adapter3;
 	}
-	public void setActivity(Activity act){
+	public void setActivity(MainActivity act){
 		this.act = act;
 	}
 	public void setName(String name){

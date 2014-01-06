@@ -43,7 +43,7 @@ public class MyAccountFragment extends Fragment implements OnItemClickListener {
 			textMoneyAll = (TextView)  rootView.findViewById(R.id.money_all);
 			textStock = (TextView) rootView.findViewById(R.id.stock);
 		
-			zmiana();
+			updateView();
 
 			ListView list =  (ListView) rootView.findViewById(R.id.my_account_list);
 			ArrayList<PlayerStock> o1 = GiePPSingleton.getInstance().getOwned();
@@ -59,9 +59,10 @@ public class MyAccountFragment extends Fragment implements OnItemClickListener {
 			return rootView;
 		}
 		
-		public void zmiana() {
-			double money = GiePPSingleton.getInstance().getMoney()/100.0;
+		public void updateView() {
 			NumberFormat formatter = new DecimalFormat("#0.00");
+
+			double money = GiePPSingleton.getInstance().getMoney()/100.0;
 			String moneyS = formatter.format(money);
 			
 			double stock = GiePPSingleton.getInstance().getMoneyInStock()/100.0;
@@ -73,6 +74,5 @@ public class MyAccountFragment extends Fragment implements OnItemClickListener {
 			textMoney.setText(moneyS+" PLN");
 			textStock.setText(stockS+" PLN");
 			textMoneyAll.setText(allS+" PLN");
-			
 		}
 }

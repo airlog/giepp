@@ -1,10 +1,12 @@
 package pl.pisz.airlog.giepp.android;
 
+import java.text.DecimalFormat;
+
 import pl.pisz.airlog.giepp.data.CurrentStock;
 import pl.pisz.airlog.giepp.data.PlayerStock;
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -24,15 +26,27 @@ public class CompanyDetailsActivity extends Activity implements View.OnClickList
 	private CheckBox checkBox;
 	private TextView owned;
 	
+	private TextView nameTV;
+	private TextView timeTV;
+	private TextView minTV;
+	private TextView maxTV;
+	private TextView priceTV;
+	private TextView changeTV;
+	
+	private DecimalFormat df;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);                
 		this.companyName = GiePPSingleton.getInstance().getName();
 		this.getActionBar().setTitle(companyName);
-
+		GiePPSingleton.getInstance().setCompanyDetailsActivity(this);
+		
 		setContentView(R.layout.company_details);
 		Button buy = (Button) findViewById(R.id.buy);
 		Button sell = (Button) findViewById(R.id.sell);
+		
+		df = new DecimalFormat("#0.00");
 		
 		checkBox = (CheckBox) findViewById(R.id.checkBox);
 		if(GiePPSingleton.getInstance().getObserved().contains(companyName)) {
@@ -40,7 +54,15 @@ public class CompanyDetailsActivity extends Activity implements View.OnClickList
 		}
 		checkBox.setOnCheckedChangeListener(this);
 		
+		nameTV = (TextView) findViewById(R.id.company_details_firma);
+		timeTV = (TextView) findViewById(R.id.company_details_czas);
+		maxTV = (TextView) findViewById(R.id.company_details_max);
+		minTV = (TextView) findViewById(R.id.company_details_min);
+		priceTV = (TextView) findViewById(R.id.company_details_cena);
+		changeTV = (TextView) findViewById(R.id.company_details_zmiana);
+		
 		owned = (TextView) findViewById(R.id.company_details_owned);
+		
 		updateMaxToBuySell();
 
 		buy.setOnClickListener(this);
@@ -81,7 +103,7 @@ public class CompanyDetailsActivity extends Activity implements View.OnClickList
         return true;
     }
 
-    public void updateMaxToBuySell(){
+    public void updateMaxToBuySell() {
 		for(PlayerStock ps : GiePPSingleton.getInstance().getOwned()) {
 			if (ps.getCompanyName().equals(companyName)) {
 				this.maxToSell = ps.getAmount();
@@ -97,6 +119,29 @@ public class CompanyDetailsActivity extends Activity implements View.OnClickList
 			}
 		}
 		owned.setText(GiePPSingleton.getInstance().getAmount(companyName)+"");
+		CurrentStock cs = GiePPSingleton.getInstance().getCurrent(companyName);
+		if (cs == null) {
+			nameTV.setText(companyName);
+			timeTV.setText("");
+			minTV.setText("");
+			maxTV.setText("");
+			priceTV.setText("");
+			changeTV.setText("");
+		} else {
+			nameTV.setText(cs.getName());
+			timeTV.setText(cs.getTime());
+			minTV.setText(df.format(cs.getMinPrice()));
+			maxTV.setText(df.format(cs.getMaxPrice()));
+			priceTV.setText(df.format(cs.getEndPrice()));
+			if (cs.getChange() >= 0) {
+				changeTV.setText("+"+df.format(cs.getChange())+"%");
+				changeTV.setTextColor(Color.GREEN);
+			}
+			else {
+				changeTV.setText(df.format(cs.getChange())+"%");
+				changeTV.setTextColor(Color.RED);
+			}
+		}
     }
 }
 

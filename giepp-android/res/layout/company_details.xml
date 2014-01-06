@@ -1,92 +1,208 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:layout_weight="1.0"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin" >
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <CheckBox
-            android:id="@+id/checkBox"
-            android:text="Obserwowany"
-            android:textSize="16dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left" />
-    </LinearLayout>
-
+    tools:context=".CompanyDetailsActivity" >
+    
+    
      <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:gravity="center_vertical"
-        android:layout_weight="0.5"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"  >
-    
-    <pl.pisz.airlog.giepp.android.CompanyChart
-        android:id="@+id/chart"
-        android:layout_width="fill_parent"  
-        android:layout_height="fill_parent"  
-        />
+        android:layout_height="wrap_content"
+        >
 
+         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent" 
+            android:layout_weight="0.55"
+            android:gravity="center_vertical|left" 
+            
+            >
+            <CheckBox
+	            android:id="@+id/checkBox"
+	            android:text="Obserwowany"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            />
+         </LinearLayout>
+         
+         <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" 
+	        android:layout_weight="0.45"
+	        android:gravity="right"
+	        >
+             <Button
+                android:id="@+id/buy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14dp"
+                android:text="Kup" />
+
+            <Button
+                android:id="@+id/sell"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14dp"
+                android:text="Sprzedaj" />
+        </LinearLayout>      
+         
      </LinearLayout>
      
      <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content">
+
+        <TextView
+                android:textColor="#000000"
+                android:text="Posiadane akcje: "
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+            />
+
+            <TextView
+                    android:id="@+id/company_details_owned"
+                    android:textColor="#000000"
+                    android:text="0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+            />
+     </LinearLayout>     
+
+     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+     
+           <TextView  
+            android:layout_width="fill_parent"  
+            android:layout_height="fill_parent"  
+            android:textColor="#000000"  
+            android:background="#C0C0C0"
+            android:layout_weight="0.5"
+            android:gravity="center_vertical"  
+            android:text="FIRMA, czas" 
+        />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.5"
+            android:background="#C0C0C0"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="MIN, MAX"
+            android:textColor="#000000" />
+  
+        <TextView  
+            android:layout_width="fill_parent"  
+            android:layout_height="fill_parent"  
+            android:textColor="#000000"  
+            android:background="#C0C0C0"
+            android:layout_weight="0.5"  
+            android:gravity="right"  
+            android:singleLine="true"  
+            android:text="CENA, ZMIANA"  
+        />  
+        </LinearLayout>
         
         <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+     
+          <LinearLayout
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:layout_weight="0.5"  
+       android:orientation="vertical" >
+
+       <TextView
+           android:id="@+id/company_details_firma"
            android:layout_width="fill_parent"
-		   android:layout_weight="1.0"
-		   android:layout_height="wrap_content" >
-		
-			<TextView
-				android:textSize="20dp"
-				android:textColor="#000000"
-				android:text="Posiadane akcje: "
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-			/>
-
-			<TextView
-					android:id="@+id/company_details_owned"
-					android:textSize="20dp"
-					android:textColor="#000000"
-					android:text="0"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-			/>
-	    </LinearLayout>
-
-        <LinearLayout
-           android:layout_width="fill_parent"
-		   android:gravity="right"
-		   android:layout_height="wrap_content"
-		   android:layout_weight="1.0"
-		   >
-
-			<Button
-				android:id="@+id/buy"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="Kup" />
-
-			<Button
-				android:id="@+id/sell"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="Sprzedaj" />
-				
-		</LinearLayout>
+           android:layout_height="fill_parent"
+           android:layout_weight="0.5"
+           android:gravity="center"
+           android:text="06MAGNA"
+           android:textColor="#000000" />
+  
+        <TextView
+            android:id="@+id/company_details_czas"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="17:00:00"
+            android:textColor="#000000"
+            android:textSize="10dp" />
+  
     </LinearLayout>
+     <LinearLayout
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:layout_weight="0.5"  
+       android:orientation="vertical" >
 
+       <TextView
+           android:id="@+id/company_details_min"
+           android:layout_width="fill_parent"
+           android:layout_height="fill_parent"
+           android:layout_weight="0.5"
+           android:gravity="center"
+           android:text="19,00"
+           android:textColor="#000000" />
+  
+        <TextView
+            android:id="@+id/company_details_max"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="20,00"
+            android:textColor="#000000"
+             />
+  
+    </LinearLayout>
+       <LinearLayout
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:layout_weight="0.5"  
+       android:orientation="vertical" >
 
+       <TextView
+           android:id="@+id/company_details_cena"
+           android:layout_width="fill_parent"
+           android:layout_height="fill_parent"
+           android:layout_weight="0.5"
+           android:gravity="center"
+           android:text="19,00"
+           android:textColor="#000000" />
+  
+        <TextView
+            android:id="@+id/company_details_zmiana"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="20,00"
+            android:textColor="#000000"
+            android:textSize="12dp"
+             />
+             
+       </LinearLayout>
+     </LinearLayout>
+     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:background="#FFFFFF"
+     >
+       <pl.pisz.airlog.giepp.android.CompanyChart
+            android:id="@+id/chart"
+            android:layout_width="fill_parent"  
+            android:layout_height="fill_parent"  
+        />
+        
+     </LinearLayout>     
+     
 </LinearLayout>
