@@ -165,6 +165,7 @@ public class Game {
 	    }
 	}
 
+	@Deprecated
 	private void toMap(ArrayList<ArchivedStock> stock, TreeMap<String,Integer> downloaded_days) {
 		for (int i = 0 ; i < stock.size(); i++) {
 			ArrayList<ArchivedStock> found = archived.get(stock.get(i).getName());
@@ -182,6 +183,7 @@ public class Game {
 		}
 	}
 
+	@Deprecated
 	private void downloadArchived(int days){
 		int downloaded = 0;
 		int max = days*3;
@@ -305,6 +307,7 @@ public class Game {
 	    	System.out.println(e);
 	    }
 	}
+	
 	public void refreshArchival(int startDay, int startMonth, int startYear, int endDay, int endMonth, int endYear) {
 		if (startYear >= endYear && startMonth >= endMonth && startDay >= endDay) {
 			return;
@@ -372,7 +375,7 @@ public class Game {
 			}
 		}		
 	}
-	
+	@Deprecated
 	public void refreshArchival() {
 		this.downloadArchived(DAYS);
 	}
