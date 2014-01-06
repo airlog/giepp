@@ -37,7 +37,9 @@ public class BuyStockDialog
     private JTextField  mCompanyField = new JTextField();
     private JTextField  mPriceField = new JTextField();
     private JTextField  mMoneyField = new JTextField();
-    private JSpinner    mAmountSpinner = new JSpinner(new SpinnerNumberModel());
+    
+    private SpinnerNumberModel  mModel = new SpinnerNumberModel();
+    private JSpinner            mAmountSpinner;
     
     private JButton mBuyButton = new JButton("Kup");
     private JButton mCancelButton = new JButton("Anuluj");
@@ -56,6 +58,8 @@ public class BuyStockDialog
         mMoneyField.setEditable(false);
         mMoneyField.setBackground(defColor);
         
+        mModel.setMinimum(0);
+        mAmountSpinner = new JSpinner(mModel);
         mAmountSpinner.addChangeListener(this);
         
         mBuyButton.addActionListener(this);
@@ -117,8 +121,8 @@ public class BuyStockDialog
         long money = GameUtilities.getInstance().getMoney();
         int price = mCompanyStock.getEndPrice();
         long max = money/(long) price;
-
-        if (b) {
+        
+        if (b) { 
             this.setPriceValue(price);
             this.setMoneyValue(money);
             mAmountSpinner.setValue(new Integer(0));

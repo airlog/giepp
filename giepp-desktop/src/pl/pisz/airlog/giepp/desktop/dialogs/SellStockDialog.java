@@ -38,7 +38,9 @@ public class SellStockDialog
     private JTextField  mCompanyField = new JTextField();
     private JTextField  mPriceField = new JTextField();
     private JTextField  mAmountField = new JTextField();
-    private JSpinner    mAmountSpinner = new JSpinner(new SpinnerNumberModel());
+    
+    private SpinnerNumberModel  mModel = new SpinnerNumberModel();
+    private JSpinner            mAmountSpinner;
     
     private JButton mSellButton = new JButton("Sprzedaj");
     private JButton mCancelButton = new JButton("Anuluj");
@@ -57,6 +59,8 @@ public class SellStockDialog
         mAmountField.setEditable(false);
         mAmountField.setBackground(defColor);
         
+        mModel.setMinimum(0);
+        mAmountSpinner = new JSpinner(mModel);
         mAmountSpinner.addChangeListener(this);
         
         mSellButton.addActionListener(this);
