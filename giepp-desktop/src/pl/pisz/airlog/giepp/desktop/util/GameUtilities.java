@@ -1,8 +1,9 @@
 package pl.pisz.airlog.giepp.desktop.util;
 
+import java.util.Calendar;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Collections;
 
 import javax.swing.SwingUtilities;
@@ -17,7 +18,7 @@ public class GameUtilities {
     
     private static Game instance = null;
     
-    private static MyStockTable.TableModel mMyStockTableModel               = null;
+    private static MyStockTable.TableModel      mMyStockTableModel          = null;
     private static CurrentStockTable.TableModel mCurrentStockTableModel     = null;
     private static CurrentStockTable.TableModel mObservedStockTableModel    = null;
 
@@ -81,11 +82,31 @@ public class GameUtilities {
         }).start();
     }
     
-    public static void refreshArchival() {
+    public static void refreshArchival(final int days) {
         (new Thread() {
             @Override
             public void run() {
-                GameUtilities.instance.refreshArchival();
+                /* ostatnie 30 dni */
+                long currentTime = System.currentTimeMillis()/1000;
+                long fixedTime = 24 * 3600 * days;
+                
+                System.err.println(String.format("%d\n%d", currentTime, fixedTime));
+                
+                Calendar calendar = Calendar.getInstance();
+                int endDay = calendar.get(Calendar.DAY_OF_MONTH),
+                        endMonth = calendar.get(Calendar.MONTH) + 1,
+                        endYear = calendar.get(Calendar.YEAR);
+                
+                calendar.setTimeInMillis((currentTime - fixedTime)*1000);
+                int startDay = calendar.get(Calendar.DAY_OF_MONTH),
+                        startMonth = calendar.get(Calendar.MONTH) + 1,  // metoda w Game liczy od 1
+                        startYear = calendar.get(Calendar.YEAR);
+                                
+                System.err.println(String.format("Gathering archive: %d-%d-%d => %d-%d-%d",
+                        startDay, startMonth, startYear, endDay, endMonth, endYear));
+                
+                /* pobieranie */
+                GameUtilities.instance.refreshArchival(startDay, startMonth, startYear, endDay, endMonth, endYear);
             }
         }).start();
     }

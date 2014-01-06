@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import pl.pisz.airlog.giepp.desktop.dialogs.BuyStockDialog;
+import pl.pisz.airlog.giepp.desktop.dialogs.DaysSelectDialog;
 import pl.pisz.airlog.giepp.desktop.dialogs.SellStockDialog;
 import pl.pisz.airlog.giepp.desktop.frames.MainFrame;
 import pl.pisz.airlog.giepp.desktop.menus.MainMenuBar;
@@ -48,6 +49,10 @@ public class GieppDesktop {
                sellDialog.setMinimumSize(new Dimension(320, 0));
                sellDialog.pack();
                
+               final DaysSelectDialog daysDialog = new DaysSelectDialog(null);
+               daysDialog.setMinimumSize(new Dimension(320, 0));
+               daysDialog.pack();
+               
                String[] titles = new String[] {"Moje konto", "Notowania", "Obserwowane", "Statystyki"};
                JPanel[] panels = new JPanel[titles.length];               
                panels[0] = new MyStocksPanel(myStockModel, buyDialog, sellDialog);
@@ -71,7 +76,7 @@ public class GieppDesktop {
                    
                    @Override
                    public void onArchiveDownload(java.awt.event.ActionEvent ae) {
-                       GameUtilities.refreshArchival();
+                       daysDialog.setVisible(true);
                    }
                });
                                              
