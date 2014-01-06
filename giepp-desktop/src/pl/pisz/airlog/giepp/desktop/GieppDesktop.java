@@ -1,7 +1,11 @@
 package pl.pisz.airlog.giepp.desktop;
 
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -24,6 +28,25 @@ import pl.pisz.airlog.giepp.desktop.widgets.MyStockTable;
  */
 public class GieppDesktop {
 
+    public static ImageIcon getIcon(String path) {
+        ImageIcon icon = new ImageIcon(path);
+        if (icon.getImage().getWidth(null) < 0) {
+            icon = new ImageIcon(ClassLoader.getSystemClassLoader().getResource(path));
+        }
+        
+        return icon;
+    }
+    
+    public static ImageIcon resizeIcon(ImageIcon src, int nw, int nh) {
+        Image img = src.getImage();
+        
+        BufferedImage bi = new BufferedImage(nw, nh, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = bi.createGraphics();
+        g.drawImage(img, 0, 0, nw, nh, null, null);
+        
+        return new ImageIcon(bi);
+    }
+    
     /**
      * @param args
      */
@@ -54,13 +77,17 @@ public class GieppDesktop {
                daysDialog.pack();
                
                String[] titles = new String[] {"Moje konto", "Notowania", "Obserwowane", "Statystyki"};
-               JPanel[] panels = new JPanel[titles.length];               
+               JPanel[] panels = new JPanel[titles.length];
+               ImageIcon[] icons = new ImageIcon[] {
+                       GieppDesktop.resizeIcon(GieppDesktop.getIcon("res/myaccount.png"), 24, 24),
+                       GieppDesktop.resizeIcon(GieppDesktop.getIcon("res/ratings.png"), 24, 24),
+                       GieppDesktop.resizeIcon(GieppDesktop.getIcon("res/observed.png"), 24, 24),
+                       GieppDesktop.resizeIcon(GieppDesktop.getIcon("res/stats.png"), 24, 24),
+                   };
                panels[0] = new MyStocksPanel(myStockModel, buyDialog, sellDialog);
                panels[1] = new RatingsPanel(currentStockModel, buyDialog, sellDialog);
                panels[2] = new ObservedPanel(observedModel, buyDialog, sellDialog);
                panels[3] = new StatisticPanel();
-               
-               final JFrame frame = new MainFrame(panels, titles);                   
                
                MainMenuBar mmb = new MainMenuBar();
                mmb.setMenuListener(new MainMenuBar.MainMenuListener() {                   
@@ -79,7 +106,11 @@ public class GieppDesktop {
                        daysDialog.setVisible(true);
                    }
                });
-                                             
+               
+               Image icon = GieppDesktop.getIcon("res/icon.png").getImage();
+               
+               final JFrame frame = new MainFrame(panels, titles, icons);
+               if (icon != null) frame.setIconImage(icon);
                frame.setJMenuBar(mmb);
                frame.setMinimumSize(new Dimension(800, 600));
                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -10,6 +10,7 @@
     <property name="dist" value="dist/"/>
     <property name="doc" value="doc/"/>
     <property name="sources" value="src/"/>
+    <property name="resources" value="res/"/>
     <property name="libs" value="libs/"/>
     
     <property name="manifest" value="src/manifest.mf"/>
@@ -34,7 +35,10 @@
     
     <target name="dist" depends="init, giepp">
         <tstamp/>
-        <jar destfile="${dist}/${jar}" basedir="${classes}" manifest="${manifest}"/>
+        <jar destfile="${dist}/${jar}" manifest="${manifest}">
+            <fileset dir="${classes}"/>
+            <fileset dir="." includes="${resources}/"/>
+        </jar>
         <copy todir="${dist}/">
             <path refid="libraries"/>
         </copy>    

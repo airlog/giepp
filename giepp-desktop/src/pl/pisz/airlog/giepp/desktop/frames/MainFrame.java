@@ -1,22 +1,11 @@
 package pl.pisz.airlog.giepp.desktop.frames;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
-
-import pl.pisz.airlog.giepp.data.CurrentStock;
-
-import pl.pisz.airlog.giepp.desktop.menus.MainMenuBar;
-import pl.pisz.airlog.giepp.desktop.panels.RatingsPanel;
-import pl.pisz.airlog.giepp.desktop.util.HelperTools;
-import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
-
-import pl.pisz.airlog.giepp.game.Game;
 
 /**
  * @author Rafal
@@ -28,15 +17,15 @@ public class MainFrame
     
     private JTabbedPane mTabbedPane;
     
-    public MainFrame(JPanel[] tabs, String[] titles) {
+    public MainFrame(JPanel[] tabs, String[] titles, ImageIcon[] icons) {
         super(FRAME_CAPTION);        
         if (tabs.length != titles.length) throw new IllegalArgumentException("need the same amount of tabs and titles");
         
-        this.initTabs(tabs, titles);
+        this.initTabs(tabs, titles, icons);
         this.initComponent();
     }
     
-    private void initTabs(JPanel[] tabs, String[] titles) {
+    private void initTabs(JPanel[] tabs, String[] titles, ImageIcon[] icons) {
         mTabbedPane = new JTabbedPane();
         
         for (int i = 0; i < tabs.length; i++) {
@@ -44,6 +33,7 @@ public class MainFrame
             String title = titles[i];
             
             mTabbedPane.addTab(title, panel);
+            mTabbedPane.setIconAt(i, icons[i]);
         }
     }
     
