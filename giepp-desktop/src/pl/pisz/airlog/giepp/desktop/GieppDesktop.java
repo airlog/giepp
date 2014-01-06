@@ -58,15 +58,20 @@ public class GieppDesktop {
                final JFrame frame = new MainFrame(panels, titles);                   
                
                MainMenuBar mmb = new MainMenuBar();
-               mmb.setMenuListener(new MainMenuBar.MainMenuListener() {
+               mmb.setMenuListener(new MainMenuBar.MainMenuListener() {                   
                    @Override
-                   public void onFileRefresh(java.awt.event.ActionEvent ae) {
+                   public void onFileQuit(java.awt.event.ActionEvent ae) {
+                       System.exit(0);
+                   }
+                   
+                   @Override
+                   public void onRefresh(java.awt.event.ActionEvent ae) {
                        GameUtilities.refreshData();
                    }
                    
                    @Override
-                   public void onFileQuit(java.awt.event.ActionEvent ae) {
-                       System.exit(0);
+                   public void onArchiveDownload(java.awt.event.ActionEvent ae) {
+                       GameUtilities.refreshArchival();
                    }
                });
                                              
@@ -80,7 +85,6 @@ public class GieppDesktop {
         
         // update data
         GameUtilities.refreshData();
-//        GameUtilities.refreshArchival();
     }
 
 }
