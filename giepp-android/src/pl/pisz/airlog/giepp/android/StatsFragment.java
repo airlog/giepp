@@ -135,8 +135,8 @@ class RefreshArchivalDialog extends Dialog implements View.OnClickListener {
 		start = (DatePicker) findViewById(R.id.date_start);
 		end = (DatePicker) findViewById(R.id.date_end);
 		
-		start.setCalendarViewShown(false);
-		end.setCalendarViewShown(false);
+	//	start.setCalendarViewShown(false);
+	//	end.setCalendarViewShown(false);
 				
 		buttonOK.setOnClickListener(this);
 		buttonNO.setOnClickListener(this);

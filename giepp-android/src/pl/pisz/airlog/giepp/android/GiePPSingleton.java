@@ -35,6 +35,7 @@ public class GiePPSingleton{
 	private boolean refreshingArchival;
 	private MyAccountFragment fragment1;
 	private StatsFragment fragment4;
+	private CompanyDetailsActivity details;
 	
 	private GiePPSingleton() {
 		try{
@@ -80,6 +81,12 @@ public class GiePPSingleton{
 							if (fragment1 != null) {
 								fragment1.updateView();
 							}
+							if (details != null) {
+								details.updateMaxToBuySell();
+							}
+							else {
+								Log.i("giepp","details null");
+							}
 							if (fragment4 != null) {
 								fragment4.updateView();
 							}
@@ -120,6 +127,10 @@ public class GiePPSingleton{
 	
 	public void restartGame() {
 		game.restartGame();
+	}
+	
+	public void setCompanyDetailsActivity(CompanyDetailsActivity details){
+		this.details = details;
 	}
 	
 	public void buy(String companyName, int amount) {
@@ -166,10 +177,18 @@ public class GiePPSingleton{
 		}
 	}
 	
-	public ArrayList<CurrentStock> getCurrent(){
+	public ArrayList<CurrentStock> getCurrent() {
 		return game.getCurrent();
 	}
 	
+	public CurrentStock getCurrent(String name) {
+		for(CurrentStock cs : game.getCurrent()) {
+			if (cs.getName().equals(name)) {
+				return cs;
+			}
+		}
+		return null;
+	}
 	public void refreshArchival(int d1, int m1, int y1, int d2, int m2, int y2) {
 		refreshingArchival = true;
 		System.out.println("start: " + d1 + "-" + m1 + "-" + y1);

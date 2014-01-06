@@ -10,6 +10,7 @@
     tools:context=".MyAccountFragment" >
 
     <TextView
+        android:textSize = "24dp" 
         android:textColor="#A0A0A0"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,12 +21,14 @@
         android:layout_height="wrap_content"
     	>
 	    <TextView
+	        android:textSize = "20dp" 
 	        android:textColor="#000000"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="Na koncie: " />
+	        android:text="Pieniądze na koncie: " />
 	    <TextView
 	        android:id="@+id/money"
+	        android:textSize = "20dp" 
 	        android:textColor="#000000"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
@@ -36,12 +39,14 @@
         android:layout_height="wrap_content"
     	>
 	    <TextView
+	        android:textSize = "20dp" 
 	        android:textColor="#000000"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="W akcjach: " />
+	        android:text="Pieniądze w akcjach: " />
 	    <TextView
 	        android:id="@+id/stock"
+	        android:textSize = "20dp" 
 	        android:textColor="#000000"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
@@ -52,18 +57,21 @@
         android:layout_height="wrap_content"
         >
         <TextView
+            android:textSize = "20dp" 
             android:textColor="#000000"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="W sumie: " />
+            android:text="Pieniądze w sumie: " />
         <TextView
             android:id="@+id/money_all"
+            android:textSize = "20dp" 
             android:textColor="#000000"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1000" />
        </LinearLayout>	   
 	   <TextView
+	        android:textSize = "20dp" 
 	        android:textColor="#A0A0A0"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
@@ -72,26 +80,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
     >
-
-	   <TextView
-	       android:layout_width="fill_parent"
-	       android:layout_height="fill_parent"
-	       android:layout_weight="0.5"
-	       android:background="#C0C0C0"
-	       android:gravity="center"
-	       android:text="FIRMA"
-	       android:textColor="#000000" />
-
-	    <TextView
-	        android:layout_width="fill_parent"
-	        android:layout_height="fill_parent"
-	        android:layout_weight="0.5"
+	   <TextView  
+	        android:layout_width="fill_parent"  
+	        android:layout_height="fill_parent"  
+	        android:textColor="#000000"  
 	        android:background="#C0C0C0"
-	        android:gravity="center"
-	        android:singleLine="true"
-	        android:text="ILOŚĆ"
-	        android:textColor="#000000" />
-  
+	        android:layout_weight="0.5"
+	        android:gravity="center_vertical"  
+	        android:text="FIRMA" 
+	        android:textSize = "24dp" 
+	    />
+	    <TextView  
+	        android:layout_width="fill_parent"  
+	        android:layout_height="fill_parent"  
+	        android:textColor="#000000"  
+	        android:background="#C0C0C0"
+	        android:layout_weight="0.5"  
+	        android:gravity="right"  
+	        android:singleLine="true"  
+	        android:text="ILOŚĆ AKCJI"  
+	        android:textSize = "24dp" 
+	    />  
         <TextView  
             android:layout_width="fill_parent"  
             android:layout_height="fill_parent"  
@@ -100,8 +109,20 @@
             android:layout_weight="0.5"  
             android:gravity="right"  
             android:singleLine="true"  
-            android:text="SUMA/zakup"  
+            android:text="ZAKUP PLN"  
+            android:textSize = "24dp" 
         />
+	    <TextView  
+	        android:layout_width="fill_parent"  
+	        android:layout_height="fill_parent"  
+	        android:textColor="#000000"  
+	        android:background="#C0C0C0"
+	        android:layout_weight="0.5"  
+	        android:gravity="right"  
+	        android:singleLine="true"  
+	        android:text="SUMA PLN"  
+	        android:textSize = "24dp" 
+	    />
     </LinearLayout>
 
     <ListView

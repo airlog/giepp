@@ -2,46 +2,53 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-	android:layout_weight="2"	
-    android:padding="5dp" >
+	android:layout_weight="1.5"	>
  
-   <TextView  
-        android:id="@+id/firma"  
-        android:layout_width="fill_parent"  
-        android:layout_height="fill_parent"  
-        android:textColor="#000000"  
+   <LinearLayout
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:layout_weight="0.5"  
+       android:orientation="vertical" >
+
+	   <TextView
+	       android:id="@+id/firma"
+	       android:layout_width="fill_parent"
+	       android:layout_height="fill_parent"
+	       android:layout_weight="0.5"
+	       android:gravity="center"
+	       android:text="06MAGNA"
+	       android:textColor="#000000" />
+  
+	    <TextView
+	        android:id="@+id/czas"
+	        android:layout_width="fill_parent"
+	        android:layout_height="fill_parent"
+	        android:layout_weight="0.5"
+	        android:gravity="center"
+	        android:singleLine="true"
+	        android:text="17:00:00"
+	        android:textColor="#000000"
+	        android:textSize="10dp" />
+  
+	</LinearLayout>
+
+   <TextView
+       android:id="@+id/cena"
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:layout_weight="0.5"
+       android:gravity="right|center_vertical"
+       android:text="1234567,89"
+       android:textColor="#000000" />
+  
+    <TextView
+        android:id="@+id/zmiana"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:layout_weight="0.5"
-        android:gravity="center_vertical"  
-        android:textSize="24dp" 
-    />  
-    <TextView  
-        android:layout_width="fill_parent"  
-        android:layout_height="fill_parent"  
-        android:textColor="#000000"  
-        android:layout_weight="0.5"  
-        android:gravity="right"  
-        android:id="@+id/czas"  
-        android:singleLine="true"  
-        android:textSize = "24dp" 
-    />  
-   <TextView  
-        android:id="@+id/cena"  
-        android:layout_width="fill_parent"  
-        android:layout_height="fill_parent"  
-        android:textColor="#000000"  
-        android:layout_weight="0.5"
-        android:gravity="right"  
-        android:textSize = "24dp" 
-    />  
-    <TextView  
-        android:layout_width="fill_parent"  
-        android:layout_height="fill_parent"  
-        android:textColor="#000000"  
-        android:layout_weight="0.5"  
-        android:gravity="right"  
-        android:id="@+id/zmiana"  
-        android:singleLine="true"  
-        android:textSize = "24dp" 
-    />  
+        android:gravity="center_vertical|right"
+        android:singleLine="true"
+        android:text="+10,89"
+        android:textColor="#000000" />
     
 </LinearLayout>
