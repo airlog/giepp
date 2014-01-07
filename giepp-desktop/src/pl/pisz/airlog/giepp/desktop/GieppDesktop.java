@@ -19,6 +19,7 @@ import pl.pisz.airlog.giepp.desktop.panels.MyStocksPanel;
 import pl.pisz.airlog.giepp.desktop.panels.ObservedPanel;
 import pl.pisz.airlog.giepp.desktop.panels.RatingsPanel;
 import pl.pisz.airlog.giepp.desktop.panels.StatisticPanel;
+import pl.pisz.airlog.giepp.desktop.panels.StatusBar;
 import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
 import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
 import pl.pisz.airlog.giepp.desktop.widgets.MyStockTable;
@@ -69,7 +70,9 @@ public class GieppDesktop {
         
         RatingsPanel ratingsPanel = new RatingsPanel(currentStockModel, buyDialog, sellDialog);
         RatingsPanel observedPanel = new ObservedPanel(observedModel, buyDialog, sellDialog);
-        GameUtilities.newInstance(myStockModel, currentStockModel, observedModel, ratingsPanel, observedPanel);
+        final StatusBar statusBar = new StatusBar();
+        GameUtilities.newInstance(myStockModel, currentStockModel, observedModel,
+                ratingsPanel, observedPanel, statusBar);
         
         final String[] titles = new String[] {"Moje konto", "Notowania", "Obserwowane", "Statystyki"};
         JPanel[] mainPanels = new JPanel[titles.length];
@@ -111,7 +114,9 @@ public class GieppDesktop {
                
                Image icon = GieppDesktop.getIcon("res/icon.png").getImage();
                
-               final JFrame frame = new MainFrame(panels, titles, icons);
+               final MainFrame frame = new MainFrame(panels, titles, icons);
+               frame.setStatusBar(statusBar);
+               
                if (icon != null) frame.setIconImage(icon);
                frame.setJMenuBar(mmb);
                frame.setMinimumSize(new Dimension(800, 600));

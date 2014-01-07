@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 import pl.pisz.airlog.giepp.data.CurrentStock;
 import pl.pisz.airlog.giepp.data.PlayerStock;
 import pl.pisz.airlog.giepp.desktop.panels.RatingsPanel;
+import pl.pisz.airlog.giepp.desktop.panels.StatusBar;
 import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
 import pl.pisz.airlog.giepp.desktop.widgets.MyStockTable;
 import pl.pisz.airlog.giepp.game.Game;
@@ -26,6 +27,8 @@ public class GameUtilities {
 
     private static RatingsPanel mRatingsPanel   = null;
     private static RatingsPanel mObservedPanel  = null;
+    
+    private static StatusBar   mStatusBar  = null;
     
     private static void filterStocks(List<CurrentStock> stocks, String... observed) {
         LinkedList<CurrentStock> rubbish = new LinkedList<CurrentStock>();
@@ -50,7 +53,8 @@ public class GameUtilities {
             CurrentStockTable.TableModel currentStockTableModel,
             CurrentStockTable.TableModel observedStockTableModel,
             RatingsPanel ratingsPanel,
-            RatingsPanel observedPanel) {
+            RatingsPanel observedPanel,
+            StatusBar statusBar) {
         if (instance == null) instance = HelperTools.newGame();
         
         mMyStockTableModel = myStockTableModel;
@@ -59,6 +63,8 @@ public class GameUtilities {
         
         mRatingsPanel = ratingsPanel;
         mObservedPanel = observedPanel;
+        
+        mStatusBar = statusBar;
         
         return instance;
     }
@@ -107,7 +113,10 @@ public class GameUtilities {
         }).start();
     }
     
+    // odpalane tylko z wątku GUI
     public static void refreshArchival(final int days) {
+        mStatusBar.triggerProgressBar("   Pobieranie archiw...   ");
+        
         (new Thread() {
             @Override
             public void run() {
@@ -132,6 +141,13 @@ public class GameUtilities {
                 
                 /* pobieranie */
                 GameUtilities.instance.refreshArchival(startDay, startMonth, startYear, endDay, endMonth, endYear);
+            
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        mStatusBar.triggerProgressBar(null);
+                    }
+                });
             }
         }).start();
     }

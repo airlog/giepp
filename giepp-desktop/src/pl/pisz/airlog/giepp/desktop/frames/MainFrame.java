@@ -16,6 +16,7 @@ public class MainFrame
     private static final String FRAME_CAPTION   = "giepp-desktop";
     
     private JTabbedPane mTabbedPane;
+    private JPanel      mStatusBar;
     
     public MainFrame(JPanel[] tabs, String[] titles, ImageIcon[] icons) {
         super(FRAME_CAPTION);        
@@ -25,9 +26,8 @@ public class MainFrame
         this.initComponent();
     }
     
-    private void initTabs(JPanel[] tabs, String[] titles, ImageIcon[] icons) {
+    private void initTabs(JPanel[] tabs, String[] titles, ImageIcon[] icons) {        
         mTabbedPane = new JTabbedPane();
-        
         for (int i = 0; i < tabs.length; i++) {
             JPanel panel = tabs[i];
             String title = titles[i];
@@ -40,6 +40,11 @@ public class MainFrame
     private void initComponent() {
         this.setLayout(new BorderLayout());
         this.add(mTabbedPane, BorderLayout.CENTER);
+    }
+    
+    public void setStatusBar(JPanel statusBar) {
+        mStatusBar = statusBar;
+        this.add(mStatusBar, BorderLayout.SOUTH);
     }
     
 }
