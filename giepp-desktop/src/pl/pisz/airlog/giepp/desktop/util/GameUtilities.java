@@ -1,5 +1,6 @@
 package pl.pisz.airlog.giepp.desktop.util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import javax.swing.SwingUtilities;
 
 import pl.pisz.airlog.giepp.data.CurrentStock;
 import pl.pisz.airlog.giepp.data.PlayerStock;
+import pl.pisz.airlog.giepp.desktop.panels.RatingsPanel;
 import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
 import pl.pisz.airlog.giepp.desktop.widgets.MyStockTable;
 import pl.pisz.airlog.giepp.game.Game;
@@ -22,6 +24,9 @@ public class GameUtilities {
     private static CurrentStockTable.TableModel mCurrentStockTableModel     = null;
     private static CurrentStockTable.TableModel mObservedStockTableModel    = null;
 
+    private static RatingsPanel mRatingsPanel   = null;
+    private static RatingsPanel mObservedPanel  = null;
+    
     private static void filterStocks(List<CurrentStock> stocks, String... observed) {
         LinkedList<CurrentStock> rubbish = new LinkedList<CurrentStock>();
         for (CurrentStock stock : stocks) {
@@ -43,12 +48,17 @@ public class GameUtilities {
     public static Game newInstance(
             MyStockTable.TableModel myStockTableModel,
             CurrentStockTable.TableModel currentStockTableModel,
-            CurrentStockTable.TableModel observedStockTableModel) {
+            CurrentStockTable.TableModel observedStockTableModel,
+            RatingsPanel ratingsPanel,
+            RatingsPanel observedPanel) {
         if (instance == null) instance = HelperTools.newGame();
         
         mMyStockTableModel = myStockTableModel;
         mCurrentStockTableModel = currentStockTableModel;
         mObservedStockTableModel = observedStockTableModel;
+        
+        mRatingsPanel = ratingsPanel;
+        mObservedPanel = observedPanel;
         
         return instance;
     }
@@ -57,9 +67,13 @@ public class GameUtilities {
         GameUtilities.checkGame();
         return instance;
     }
-        
+    
+    // uruchamiać tylko z wątku GUI
     public static void refreshData() {
         GameUtilities.checkGame();
+        
+        mRatingsPanel.showProgress();
+        mObservedPanel.showProgress();
         
         (new Thread() {
             @Override
@@ -67,17 +81,28 @@ public class GameUtilities {
                 GameUtilities.instance.refreshCurrent();
                 final List<CurrentStock> stocks = GameUtilities.instance.getCurrent();
                 Collections.sort(stocks, CurrentStock.getByNameComparator());
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        GameUtilities.refreshObservedTable();   // może być pierwsze sprawdzenie
-                        GameUtilities.refreshMyStockTable();
-                        
-                        mCurrentStockTableModel
-                        .clear()
-                        .addAll(stocks);
-                    }
-                });
+                try {
+                    SwingUtilities.invokeAndWait(new Runnable() {
+                        @Override
+                        public void run() {
+                            GameUtilities.refreshObservedTable();   // może być pierwsze sprawdzenie
+                            GameUtilities.refreshMyStockTable();
+                            
+                            mCurrentStockTableModel
+                            .clear()
+                            .addAll(stocks);
+                            
+                            mRatingsPanel.showRatings();
+                            mObservedPanel.showRatings();
+                        }
+                    });
+                }
+                catch (InvocationTargetException e) {
+                    System.err.println(e);
+                }
+                catch (InterruptedException e) {
+                    System.err.println(e);
+                }
             }
         }).start();
     }
