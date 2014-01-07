@@ -163,8 +163,10 @@ public class MyStockTable
             int row = mTable.rowAtPoint(me.getPoint());
             if (row >= 0 && row < mTable.getRowCount()) mTable.setRowSelectionInterval(row, row);
             
+            String company = (String) mTable.getModel().getValueAt(row, 0);
             mTable.getPopup()
-                    .setStockName((String) mTable.getModel().getValueAt(row, 0))
+                    .setStockName(company)
+                    .setObserveCommandFor(company)
                     .show(me.getComponent(), me.getX(), me.getY());
         }
         
@@ -300,6 +302,18 @@ public class MyStockTable
         mSellDialog.setVisible(true);    
     }
     
+    protected void observeStock() {
+        String company = ((TableModel) this.getModel()).getStock(this.getSelectedRow()).getCompanyName();
+        GameUtilities.getInstance().addToObserved(company);
+        GameUtilities.refreshObservedTable();
+    }
+    
+    protected void unobserveStock() {
+        String company = ((TableModel) this.getModel()).getStock(this.getSelectedRow()).getCompanyName();
+        GameUtilities.getInstance().removeFromObserved(company);
+        GameUtilities.refreshObservedTable();
+    }
+    
     @Override
     public void valueChanged(ListSelectionEvent lse) {
         super.valueChanged(lse);
@@ -317,6 +331,8 @@ public class MyStockTable
     public void actionPerformed(ActionEvent ae) {
         if (ae.getActionCommand().equals("Kup")) this.showBuyDialog();
         else if (ae.getActionCommand().equals("Sprzedaj")) this.showSellDialog();
+        else if (ae.getActionCommand().equals(CurrentStockPopupMenu.ITEM_OBSERVE)) this.observeStock();
+        else if (ae.getActionCommand().equals(CurrentStockPopupMenu.ITEM_UNOBSERVE)) this.unobserveStock();
     }
         
     public void setCompanySelectedListener(CompanySelectedListener l) {

@@ -3,6 +3,7 @@ package pl.pisz.airlog.giepp.desktop.panels;
 import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.table.TableCellRenderer;
@@ -20,22 +21,24 @@ public class RatingsPanel
 
     private JSplitPane mSplitPane;
     
+    private JPanel mProgressPanel;
     private CompanyDetailsPanel mDetailsPanel;
     
+    private JProgressBar mProgressBar;
     private CurrentStockTable mStockTable;
     
-    /**
-     * 
-     */
     public RatingsPanel(CurrentStockTable.TableModel tableModel,
             BuyStockDialog buyDialog, SellStockDialog sellDialog) {
-        super(new BorderLayout(), false);
+        super(new BorderLayout(), false);        
         
-        mStockTable = new CurrentStockTable(tableModel, buyDialog, sellDialog);
+        mProgressPanel = new JPanel();
         mDetailsPanel = new CompanyDetailsPanel();
         
+        mProgressBar = new JProgressBar();
+        mStockTable = new CurrentStockTable(tableModel, buyDialog, sellDialog);
+        
         this.initWidgets();
-        this.initComponent();
+        this.initComponents();
     }
     
     private void initWidgets() {
@@ -50,7 +53,7 @@ public class RatingsPanel
         mStockTable.setCompanySelectedListener(mDetailsPanel);
     }
     
-    private void initComponent() {
+    private void initComponents() {
         JScrollPane sp = new JScrollPane(mStockTable);
         sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -58,7 +61,26 @@ public class RatingsPanel
         mSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, sp, mDetailsPanel);
         mSplitPane.setOneTouchExpandable(true);
         
+        mProgressBar.setIndeterminate(true);
+        mProgressPanel.add(mProgressBar);
+                
         this.add(mSplitPane);
     }
-
+    
+    public void showProgress() {
+        this.remove(mSplitPane);
+        this.add(mProgressPanel);
+        this.revalidate();
+        this.repaint(0, 0, this.getWidth(), this.getHeight());
+    }
+    
+    public void showRatings() {
+        this.remove(mProgressPanel);
+        this.add(mSplitPane);
+        this.revalidate();
+        this.repaint(0, 0, this.getWidth(), this.getHeight());
+        
+        mSplitPane.setDividerLocation(0.5);
+    }
+    
 }
