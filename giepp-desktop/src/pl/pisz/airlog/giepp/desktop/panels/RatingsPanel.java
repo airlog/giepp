@@ -79,6 +79,8 @@ public class RatingsPanel
         this.add(mSplitPane);
         this.revalidate();
         this.repaint(0, 0, this.getWidth(), this.getHeight());
+        
+        mSplitPane.setDividerLocation(0.5);
     }
     
 }
