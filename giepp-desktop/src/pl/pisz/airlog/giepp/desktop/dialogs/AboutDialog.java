@@ -33,7 +33,7 @@ public class AboutDialog
         try {
             this.initComponent();
         } catch (IOException e) {
-            System.err.println("Can't create AboutFrame: " + e);
+            System.err.println("Can't create AboutDialog (" + e + ")");
             
             JPanel container = new JPanel(new BorderLayout());
             container.add(mImagePanel, BorderLayout.CENTER);
