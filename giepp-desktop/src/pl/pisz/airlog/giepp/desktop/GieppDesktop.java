@@ -68,21 +68,9 @@ public class GieppDesktop {
         daysDialog.setMinimumSize(new Dimension(320, 0));
         daysDialog.pack();
         
-        RatingsPanel ratingsPanel = new RatingsPanel(currentStockModel, buyDialog, sellDialog);
-        RatingsPanel observedPanel = new ObservedPanel(observedModel, buyDialog, sellDialog);
         final StatusBar statusBar = new StatusBar();
-        GameUtilities.newInstance(myStockModel, currentStockModel, observedModel,
-                ratingsPanel, observedPanel, statusBar);
-        
-        final String[] titles = new String[] {"Moje konto", "Notowania", "Obserwowane", "Statystyki"};
-        JPanel[] mainPanels = new JPanel[titles.length];
+        GameUtilities.newInstance(myStockModel, currentStockModel, observedModel, statusBar);        
 
-        mainPanels[0] = new MyStocksPanel(myStockModel, buyDialog, sellDialog);
-        mainPanels[1] = ratingsPanel;
-        mainPanels[2] = observedPanel;
-        mainPanels[3] = new StatisticPanel();
-                
-        final JPanel[] panels = mainPanels;
         // run GUI
         SwingUtilities.invokeLater(new Runnable() {
            @Override
@@ -92,8 +80,14 @@ public class GieppDesktop {
                        GieppDesktop.resizeIcon(GieppDesktop.getIcon("res/ratings.png"), 24, 24),
                        GieppDesktop.resizeIcon(GieppDesktop.getIcon("res/observed.png"), 24, 24),
                        GieppDesktop.resizeIcon(GieppDesktop.getIcon("res/stats.png"), 24, 24),
-                   };
-               
+                   };             
+               String[] titles = new String[] {"Moje konto", "Notowania", "Obserwowane", "Statystyki"};
+               JPanel[] panels = new JPanel[titles.length];
+               panels[0] = new MyStocksPanel(myStockModel, buyDialog, sellDialog);
+               panels[1] = new RatingsPanel(currentStockModel, buyDialog, sellDialog);
+               panels[2] = new ObservedPanel(observedModel, buyDialog, sellDialog);
+               panels[3] = new StatisticPanel();
+                              
                MainMenuBar mmb = new MainMenuBar();
                mmb.setMenuListener(new MainMenuBar.MainMenuListener() {                   
                    @Override

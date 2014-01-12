@@ -8,29 +8,43 @@ import javax.swing.JProgressBar;
 public class StatusBar
         extends JPanel {
 
-    private JProgressBar mProgressBar = new JProgressBar();
+    private JProgressBar mArchiveProgressBar = new JProgressBar();
+    private JProgressBar mCurrentProgressBar = new JProgressBar();
     
     public StatusBar() {
         super(new FlowLayout(FlowLayout.RIGHT));
         
-        mProgressBar.setIndeterminate(true);
-        mProgressBar.setVisible(false);
+        mArchiveProgressBar.setIndeterminate(true);
+        mArchiveProgressBar.setVisible(false);
         
-        this.add(mProgressBar);
+        mCurrentProgressBar.setIndeterminate(true);
+        mCurrentProgressBar.setVisible(false);
+        
+        this.add(mArchiveProgressBar);
+        this.add(mCurrentProgressBar);
     }
     
-    public void triggerProgressBar(String caption) {
-        if (mProgressBar.isVisible()) {
-            mProgressBar.setVisible(false);
+    protected void triggerProgressBar(JProgressBar progressBar, String caption) {
+        if (progressBar.isVisible()) {
+            progressBar.setVisible(false);
             return;
         }
         
         if (caption != null) {
-            mProgressBar.setString(caption);
-            mProgressBar.setStringPainted(true);
+            progressBar.setString(caption);
+            progressBar.setStringPainted(true);
         }
-        else mProgressBar.setStringPainted(false);
-        mProgressBar.setVisible(true);
+        else progressBar.setStringPainted(false);
+        
+        progressBar.setVisible(true);
+    }
+    
+    public void triggerArchiveProgressBar(String caption) {
+        this.triggerProgressBar(mArchiveProgressBar, caption);
+    }
+    
+    public void triggerCurrentProgressBar(String caption) {
+        this.triggerProgressBar(mCurrentProgressBar, caption);
     }
     
 }

@@ -19,22 +19,16 @@ import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
 public class RatingsPanel
         extends JPanel {
 
-    private JSplitPane mSplitPane;
-    
-    private JPanel mProgressPanel;
+    private JSplitPane mSplitPane;    
     private CompanyDetailsPanel mDetailsPanel;
-    
-    private JProgressBar mProgressBar;
     private CurrentStockTable mStockTable;
     
     public RatingsPanel(CurrentStockTable.TableModel tableModel,
             BuyStockDialog buyDialog, SellStockDialog sellDialog) {
         super(new BorderLayout(), false);        
         
-        mProgressPanel = new JPanel();
         mDetailsPanel = new CompanyDetailsPanel();
         
-        mProgressBar = new JProgressBar();
         mStockTable = new CurrentStockTable(tableModel, buyDialog, sellDialog);
         
         this.initWidgets();
@@ -60,27 +54,8 @@ public class RatingsPanel
         
         mSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, sp, mDetailsPanel);
         mSplitPane.setOneTouchExpandable(true);
-        
-        mProgressBar.setIndeterminate(true);
-        mProgressPanel.add(mProgressBar);
-                
+                        
         this.add(mSplitPane);
     }
-    
-    public void showProgress() {
-        this.remove(mSplitPane);
-        this.add(mProgressPanel);
-        this.revalidate();
-        this.repaint(0, 0, this.getWidth(), this.getHeight());
-    }
-    
-    public void showRatings() {
-        this.remove(mProgressPanel);
-        this.add(mSplitPane);
-        this.revalidate();
-        this.repaint(0, 0, this.getWidth(), this.getHeight());
         
-        mSplitPane.setDividerLocation(0.5);
-    }
-    
 }

@@ -24,9 +24,6 @@ public class GameUtilities {
     private static MyStockTable.TableModel      mMyStockTableModel          = null;
     private static CurrentStockTable.TableModel mCurrentStockTableModel     = null;
     private static CurrentStockTable.TableModel mObservedStockTableModel    = null;
-
-    private static RatingsPanel mRatingsPanel   = null;
-    private static RatingsPanel mObservedPanel  = null;
     
     private static StatusBar   mStatusBar  = null;
     
@@ -52,18 +49,13 @@ public class GameUtilities {
             MyStockTable.TableModel myStockTableModel,
             CurrentStockTable.TableModel currentStockTableModel,
             CurrentStockTable.TableModel observedStockTableModel,
-            RatingsPanel ratingsPanel,
-            RatingsPanel observedPanel,
             StatusBar statusBar) {
         if (instance == null) instance = HelperTools.newGame();
         
         mMyStockTableModel = myStockTableModel;
         mCurrentStockTableModel = currentStockTableModel;
         mObservedStockTableModel = observedStockTableModel;
-        
-        mRatingsPanel = ratingsPanel;
-        mObservedPanel = observedPanel;
-        
+                
         mStatusBar = statusBar;
         
         return instance;
@@ -78,8 +70,7 @@ public class GameUtilities {
     public static void refreshData() {
         GameUtilities.checkGame();
         
-        mRatingsPanel.showProgress();
-        mObservedPanel.showProgress();
+        mStatusBar.triggerCurrentProgressBar("   Pobieranie notowań   ");
         
         (new Thread() {
             @Override
@@ -97,9 +88,8 @@ public class GameUtilities {
                             mCurrentStockTableModel
                             .clear()
                             .addAll(stocks);
-                            
-                            mRatingsPanel.showRatings();
-                            mObservedPanel.showRatings();
+                                                        
+                            mStatusBar.triggerCurrentProgressBar(null);
                         }
                     });
                 }
@@ -115,7 +105,7 @@ public class GameUtilities {
     
     // odpalane tylko z wątku GUI
     public static void refreshArchival(final int days) {
-        mStatusBar.triggerProgressBar("   Pobieranie archiw...   ");
+        mStatusBar.triggerArchiveProgressBar("   Pobieranie archiw...   ");
         
         (new Thread() {
             @Override
@@ -145,7 +135,7 @@ public class GameUtilities {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        mStatusBar.triggerProgressBar(null);
+                        mStatusBar.triggerArchiveProgressBar(null);
                     }
                 });
             }
