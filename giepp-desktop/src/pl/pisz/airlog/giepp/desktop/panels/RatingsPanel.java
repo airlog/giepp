@@ -3,7 +3,6 @@ package pl.pisz.airlog.giepp.desktop.panels;
 import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.table.TableCellRenderer;
@@ -22,6 +21,8 @@ public class RatingsPanel
     private JSplitPane mSplitPane;    
     private CompanyDetailsPanel mDetailsPanel;
     private CurrentStockTable mStockTable;
+    
+    private boolean mFirstRendering = true;
     
     public RatingsPanel(CurrentStockTable.TableModel tableModel,
             BuyStockDialog buyDialog, SellStockDialog sellDialog) {
@@ -56,6 +57,16 @@ public class RatingsPanel
         mSplitPane.setOneTouchExpandable(true);
                         
         this.add(mSplitPane);
+    }
+    
+    @Override
+    public void setVisible(boolean b) {
+        if (b && mFirstRendering) {
+            mSplitPane.setDividerLocation(0.5);
+            mFirstRendering = false;
+        }
+        
+        super.setVisible(b);
     }
         
 }
