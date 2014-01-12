@@ -4,9 +4,21 @@
     </description>
  
     <!-- set global properties for this build -->
+    <property name="javadoc.dir" value="doc/javadoc"/> 
     <property name="core.dir" value="giepp"/>    
     <property name="android.dir" value="giepp-android"/>
     <property name="desktop.dir" value="giepp-desktop"/>
+     
+    <target name="doc">
+        <javadoc destdir="${javadoc.dir}">
+            <fileset dir="${core.dir}/src">
+                <include name="**/*.java"/>
+            </fileset>
+            <fileset dir="${desktop.dir}/src">
+                <include name="**/*.java"/>
+            </fileset>
+        </javadoc>
+    </target>
      
     <target name="core">
         <ant dir="${core.dir}" target="dist" />
@@ -34,6 +46,7 @@
     </target>
  
     <target name="clean" description="clean up" >
+        <delete dir="${javadoc.dir}"/>
         <ant dir="${core.dir}" target="clean" />
         <ant dir="${android.dir}" target="clean" />
         <delete file="${android.dir}/libs/giepp.jar"/>
