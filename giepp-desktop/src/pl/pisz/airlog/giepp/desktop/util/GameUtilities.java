@@ -1,22 +1,24 @@
 package pl.pisz.airlog.giepp.desktop.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Calendar;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Collections;
-
-import javax.swing.SwingUtilities;
 
 import pl.pisz.airlog.giepp.data.CurrentStock;
 import pl.pisz.airlog.giepp.data.PlayerStock;
-import pl.pisz.airlog.giepp.desktop.panels.RatingsPanel;
+import pl.pisz.airlog.giepp.game.Game;
+
 import pl.pisz.airlog.giepp.desktop.panels.StatusBar;
 import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
 import pl.pisz.airlog.giepp.desktop.widgets.MyStockTable;
-import pl.pisz.airlog.giepp.game.Game;
 
+/** Klasa jest wrapperem na {@link Game} i ułatwia wykonywanie wielu operacji.
+ * @author Rafal
+ * @see Game
+ *
+ * Pierwszą metodą wywoływaną przed wywołaniem GUI powinno być
+ * {@link GameUtilities#newInstance(pl.pisz.airlog.giepp.desktop.widgets.MyStockTable.TableModel, pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable.TableModel, pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable.TableModel, StatusBar)}.
+ */
 public class GameUtilities {
     
     private static Game instance = null;
@@ -27,6 +29,15 @@ public class GameUtilities {
     
     private static StatusBar   mStatusBar  = null;
     
+    private static Thread mRefreshRatingsThread = null;
+    private static Thread mRefreshArchiveThread = null;
+    
+    /** Usuwa firmy nie zawarte w drugim argumencie.
+     * Wykorzystywane w wyświetlaniu danych w {@link GameUtilities#mObservedStockTableModel}.
+     * 
+     * @param stocks    filtrowana lista
+     * @param observed  firmy o tych nazwach pozostaną w liście
+     */
     private static void filterStocks(List<CurrentStock> stocks, String... observed) {
         LinkedList<CurrentStock> rubbish = new LinkedList<CurrentStock>();
         for (CurrentStock stock : stocks) {
@@ -41,10 +52,20 @@ public class GameUtilities {
         stocks.removeAll(rubbish);
     }
     
+    /** Sprawdza czy obiekt {@link Game} został już utworzony.
+     * @throws IllegalStateException    obiekt {@link Game} nie został jeszcze utworzony
+     */
     protected static void checkGame() {
         if (instance == null) throw new IllegalStateException("Game not inited!");
     }
-        
+    
+    /** Tworzy nowy obiekt klasy {@link Game} i 'wrappuje go'.
+     * @param myStockTableModel model tabeli z widoku <i>Moje konto</i>
+     * @param currentStockTableModel    model tabeli z widoku <i>Notowania</i>
+     * @param observedStockTableModel   model tabeli z widoku <i>Obserwowane</i>
+     * @param statusBar
+     * @return  utworzony obiekt {@link Game}
+     */
     public static Game newInstance(
             MyStockTable.TableModel myStockTableModel,
             CurrentStockTable.TableModel currentStockTableModel,
@@ -57,91 +78,66 @@ public class GameUtilities {
         mObservedStockTableModel = observedStockTableModel;
                 
         mStatusBar = statusBar;
-        
+                
         return instance;
     }
     
+    /** Zwraca wrappowaną obiekt klasy {@link Game}.
+     * @return wrappowany obiekt
+     */
     public static Game getInstance() {
         GameUtilities.checkGame();
         return instance;
     }
     
-    // uruchamiać tylko z wątku GUI
+    /** Odświeża aktualne notowania.
+     * @see GameUtilities#refreshArchival(int)
+     * @see RefreshRatingsTask
+     * 
+     * @see SwingUtilities#invokeAndWait(Runnable)
+     * @see SwingUtilities#invokeLater(Runnable)
+     * 
+     * Gwaratuje, że tylko jeden wątek będzie odświeżał dane. Metodę należy uruchamiać jedynie
+     * z wątku GUI.
+     */
     public static void refreshData() {
         GameUtilities.checkGame();
         
+        if (mRefreshRatingsThread != null && mRefreshRatingsThread.isAlive()) {
+            System.err.println("Tylko jeden wątek odświeżania notowań może być aktywny!");
+            return;
+        }
+        
         mStatusBar.triggerCurrentProgressBar("   Pobieranie notowań   ");
-        
-        (new Thread() {
-            @Override
-            public void run() {
-                GameUtilities.instance.refreshCurrent();
-                final List<CurrentStock> stocks = GameUtilities.instance.getCurrent();
-                Collections.sort(stocks, CurrentStock.getByNameComparator());
-                try {
-                    SwingUtilities.invokeAndWait(new Runnable() {
-                        @Override
-                        public void run() {
-                            GameUtilities.refreshObservedTable();   // może być pierwsze sprawdzenie
-                            GameUtilities.refreshMyStockTable();
-                            
-                            mCurrentStockTableModel
-                            .clear()
-                            .addAll(stocks);
-                                                        
-                            mStatusBar.triggerCurrentProgressBar(null);
-                        }
-                    });
-                }
-                catch (InvocationTargetException e) {
-                    System.err.println(e);
-                }
-                catch (InterruptedException e) {
-                    System.err.println(e);
-                }
-            }
-        }).start();
+        mRefreshRatingsThread = new Thread(new RefreshRatingsTask(mStatusBar, mCurrentStockTableModel));
+        mRefreshRatingsThread.start();
     }
     
-    // odpalane tylko z wątku GUI
+    /** Odświeża dane archiwalne.
+     * @see GameUtilities#refreshArchival(int)
+     * @see RefreshArchiveTask
+     * 
+     * @see SwingUtilities#invokeAndWait(Runnable)
+     * @see SwingUtilities#invokeLater(Runnable)
+     * 
+     * Gwaratuje, że tylko jeden wątek będzie odświeżał dane. Metodę należy uruchamiać jedynie
+     * z wątku GUI.
+     */
     public static void refreshArchival(final int days) {
-        mStatusBar.triggerArchiveProgressBar("   Pobieranie archiw...   ");
         
-        (new Thread() {
-            @Override
-            public void run() {
-                /* ostatnie 30 dni */
-                long currentTime = System.currentTimeMillis()/1000;
-                long fixedTime = 24 * 3600 * days;
-                
-                System.err.println(String.format("%d\n%d", currentTime, fixedTime));
-                
-                Calendar calendar = Calendar.getInstance();
-                int endDay = calendar.get(Calendar.DAY_OF_MONTH),
-                        endMonth = calendar.get(Calendar.MONTH) + 1,
-                        endYear = calendar.get(Calendar.YEAR);
-                
-                calendar.setTimeInMillis((currentTime - fixedTime)*1000);
-                int startDay = calendar.get(Calendar.DAY_OF_MONTH),
-                        startMonth = calendar.get(Calendar.MONTH) + 1,  // metoda w Game liczy od 1
-                        startYear = calendar.get(Calendar.YEAR);
-                                
-                System.err.println(String.format("Gathering archive: %d-%d-%d => %d-%d-%d",
-                        startDay, startMonth, startYear, endDay, endMonth, endYear));
-                
-                /* pobieranie */
-                GameUtilities.instance.refreshArchival(startDay, startMonth, startYear, endDay, endMonth, endYear);
-            
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        mStatusBar.triggerArchiveProgressBar(null);
-                    }
-                });
-            }
-        }).start();
+        if (mRefreshArchiveThread != null && mRefreshArchiveThread.isAlive()) {
+            System.err.println("Tylko jeden wątek odświeżania archiwum może być aktywny!");
+            return;
+        }
+        
+        mStatusBar.triggerArchiveProgressBar("   Pobieranie archiw...   ");        
+        mRefreshArchiveThread = new Thread(new RefreshArchiveTask(mStatusBar, days));
+        mRefreshArchiveThread.start();
     }
     
+    /** Odświeża dane zawarte w {@link GameUtilities#mMyStockTableModel}.
+     * 
+     */
     public static void refreshMyStockTable() {
         GameUtilities.checkGame();
         
@@ -166,6 +162,9 @@ public class GameUtilities {
         mMyStockTableModel.addAll(stocks);
     }
     
+    /** Odświeża dane zawarte w {@link GameUtilities#mObservedStockTableModel}.
+     * 
+     */
     public static void refreshObservedTable() {
         String[] observed = GameUtilities.getInstance().getObserved().toArray(new String[] {});
         List<CurrentStock> stocks = new ArrayList<CurrentStock>(); 
@@ -178,6 +177,10 @@ public class GameUtilities {
         mObservedStockTableModel.addAll(stocks);
     }
     
+    /** Sprawdza czy firma o zadanej nazwie znajduje się w obserwoanych.
+     * @param company   nazwa sprawdzanej firmy
+     * @return  <i>true</i> jeśli jest obserwowana, <i>false</i> w przeciwnym wypadku
+     */
     public static boolean isObserved(String company) {
         GameUtilities.checkGame();
         
@@ -191,6 +194,10 @@ public class GameUtilities {
         return state;
     }
     
+    /** Zwraca obiekt klasy {@link CurrentStock} odpowiadający zadanej nazwie firmy.
+     * @param company   nazwa szukanej firmy
+     * @return  obiekt {@link CurrentStock} lub <i>null</i> jeśli nie znaleziono
+     */
     public static CurrentStock getCurrentStockByName(String company) {
         GameUtilities.checkGame();
         
@@ -200,7 +207,7 @@ public class GameUtilities {
         
         return null;
     }
-        
+    
     private GameUtilities() {}
         
 }
