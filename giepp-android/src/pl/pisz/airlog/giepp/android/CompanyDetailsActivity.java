@@ -130,9 +130,9 @@ public class CompanyDetailsActivity extends Activity implements View.OnClickList
 		} else {
 			nameTV.setText(cs.getName());
 			timeTV.setText(cs.getTime());
-			minTV.setText(df.format(cs.getMinPrice()));
-			maxTV.setText(df.format(cs.getMaxPrice()));
-			priceTV.setText(df.format(cs.getEndPrice()));
+			minTV.setText(df.format(cs.getMinPrice()/100.0));
+			maxTV.setText(df.format(cs.getMaxPrice()/100.0));
+			priceTV.setText(df.format(cs.getEndPrice()/100.0));
 			if (cs.getChange() >= 0) {
 				changeTV.setText("+"+df.format(cs.getChange())+"%");
 				changeTV.setTextColor(Color.GREEN);

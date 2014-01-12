@@ -84,32 +84,17 @@ public class GiePPSingleton{
 							if (details != null) {
 								details.updateMaxToBuySell();
 							}
-							else {
-								Log.i("giepp","details null");
-							}
 							if (fragment4 != null) {
 								fragment4.updateView();
 							}
 							if(adapter1 != null){		
 								adapter1.zmiana(game.getCurrent());
-								Log.i("giepp","lista1 updatowana");
-							}
-							else{
-								Log.i("giepp","adapter1 null");
 							}
 							if(adapter2 != null){
 								adapter2.zmiana(game.getCurrent(),game.getObserved());
-								Log.i("giepp","lista2 updatowana");
-							}
-							else{
-								Log.i("giepp","adapter2 null");
 							}
 							if(adapter3 != null){		
 								adapter3.zmiana(game.getOwned());
-								Log.i("giepp","lista3 updatowana");
-							}
-							else{
-								Log.i("giepp","adapter3 null");
 							}
 							refreshing = false;
 							if (act!= null) {
@@ -127,6 +112,21 @@ public class GiePPSingleton{
 	
 	public void restartGame() {
 		game.restartGame();
+		if (details != null) {
+			details.updateMaxToBuySell();
+		}
+		if (fragment1 != null) {
+			fragment1.updateView();
+		}
+		if (fragment4 != null) {
+			fragment4.updateView();
+		}
+		if(adapter2 != null){
+			adapter2.zmiana(game.getCurrent(),game.getObserved());
+		}
+		if(adapter3 != null){		
+			adapter3.zmiana(game.getOwned());
+		}
 	}
 	
 	public void setCompanyDetailsActivity(CompanyDetailsActivity details){
