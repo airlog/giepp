@@ -5,11 +5,18 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
+import java.io.File;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import pl.pisz.airlog.giepp.desktop.dialogs.AboutDialog;
 import pl.pisz.airlog.giepp.desktop.dialogs.BuyStockDialog;
 import pl.pisz.airlog.giepp.desktop.dialogs.DaysSelectDialog;
 import pl.pisz.airlog.giepp.desktop.dialogs.SellStockDialog;
@@ -24,11 +31,21 @@ import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
 import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
 import pl.pisz.airlog.giepp.desktop.widgets.MyStockTable;
 
-/**
- * @author Rafal
- */
 public class GieppDesktop {
 
+    private static int VERSION_MAJOR           = 1;
+    private static int VERSION_MINOR           = 0;
+    private static int VERSION_PATCH           = 0;
+    private static String VERSION_DECORATOR    = "beta";
+        
+    public static String getVersion() {
+        return String.format("%d.%d.%d-%s", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_DECORATOR);
+    }
+    
+    public static String getCompilationDate() {
+        return "2014-01-12";
+    }
+    
     public static ImageIcon getIcon(String path) {
         ImageIcon icon = new ImageIcon(path);
         if (icon.getImage().getWidth(null) < 0) {
@@ -36,6 +53,18 @@ public class GieppDesktop {
         }
         
         return icon;
+    }
+    
+    public static URL getUrlForResource(String path) {
+        URL url = null;
+        try {
+            url = (new File(path)).toURI().toURL();
+        }
+        catch (MalformedURLException e) {
+            url = ClassLoader.getSystemClassLoader().getResource(path);
+        }
+        
+        return url;
     }
     
     public static ImageIcon resizeIcon(ImageIcon src, int nw, int nh) {
@@ -48,26 +77,11 @@ public class GieppDesktop {
         return new ImageIcon(bi);
     }
     
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         final MyStockTable.TableModel myStockModel = new MyStockTable.TableModel();
         final CurrentStockTable.TableModel currentStockModel = new CurrentStockTable.TableModel();
         final CurrentStockTable.TableModel observedModel = new CurrentStockTable.TableModel();
-                
-        final BuyStockDialog buyDialog = new BuyStockDialog(null);
-        buyDialog.setMinimumSize(new Dimension(320, 0));
-        buyDialog.pack();
-        
-        final SellStockDialog sellDialog = new SellStockDialog(null);
-        sellDialog.setMinimumSize(new Dimension(320, 0));
-        sellDialog.pack();
-        
-        final DaysSelectDialog daysDialog = new DaysSelectDialog(null);
-        daysDialog.setMinimumSize(new Dimension(320, 0));
-        daysDialog.pack();
-        
+                        
         final StatusBar statusBar = new StatusBar();
         GameUtilities.newInstance(myStockModel, currentStockModel, observedModel, statusBar);        
 
@@ -75,6 +89,18 @@ public class GieppDesktop {
         SwingUtilities.invokeLater(new Runnable() {
            @Override
            public void run() {               
+               final BuyStockDialog buyDialog = new BuyStockDialog(null);
+               buyDialog.setMinimumSize(new Dimension(320, 0));
+               buyDialog.pack();
+               
+               final SellStockDialog sellDialog = new SellStockDialog(null);
+               sellDialog.setMinimumSize(new Dimension(320, 0));
+               sellDialog.pack();
+               
+               final DaysSelectDialog daysDialog = new DaysSelectDialog(null);
+               daysDialog.setMinimumSize(new Dimension(320, 0));
+               daysDialog.pack();
+               
                ImageIcon[] icons = new ImageIcon[] {
                        GieppDesktop.resizeIcon(GieppDesktop.getIcon("res/myaccount.png"), 24, 24),
                        GieppDesktop.resizeIcon(GieppDesktop.getIcon("res/ratings.png"), 24, 24),
@@ -87,11 +113,23 @@ public class GieppDesktop {
                panels[1] = new RatingsPanel(currentStockModel, buyDialog, sellDialog);
                panels[2] = new ObservedPanel(observedModel, buyDialog, sellDialog);
                panels[3] = new StatisticPanel();
-                              
+                                             
+               Image icon = GieppDesktop.getIcon("res/icon.png").getImage();
+               
+               final MainFrame frame = new MainFrame(panels, titles, icons);
+               frame.setStatusBar(statusBar);
+               
+               final JDialog aboutDialog = new AboutDialog(frame, icon);
+               aboutDialog.setMinimumSize(new Dimension(480, 320));
+               aboutDialog.setResizable(false);
+               
                MainMenuBar mmb = new MainMenuBar();
                mmb.setMenuListener(new MainMenuBar.MainMenuListener() {                   
                    @Override
                    public void onFileQuit(java.awt.event.ActionEvent ae) {
+                       buyDialog.setVisible(false);
+                       sellDialog.setVisible(false);
+                       daysDialog.setVisible(false);
                        System.exit(0);
                    }
                    
@@ -104,12 +142,12 @@ public class GieppDesktop {
                    public void onArchiveDownload(java.awt.event.ActionEvent ae) {
                        daysDialog.setVisible(true);
                    }
+                   
+                   @Override
+                   public void onHelpAbout(java.awt.event.ActionEvent ae) {
+                       aboutDialog.setVisible(true);
+                   }
                });
-               
-               Image icon = GieppDesktop.getIcon("res/icon.png").getImage();
-               
-               final MainFrame frame = new MainFrame(panels, titles, icons);
-               frame.setStatusBar(statusBar);
                
                if (icon != null) frame.setIconImage(icon);
                frame.setJMenuBar(mmb);
