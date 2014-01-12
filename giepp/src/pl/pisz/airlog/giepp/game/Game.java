@@ -25,13 +25,13 @@ public class Game {
 
 	private static final int MAX_TIME = 900000;				//15 minut
 	private static final int DAYS = 5;
-	private static final int MAX_DAYS_IN_MEMORY = 30;
+	private static final int MAX_DAYS_IN_MEMORY = 60;
 	
 	public static final long MONEY_ON_START = 1000000;		//10 000 zl
-	
-//	private Long money;
-//	private Integer restarts;
-	
+
+	public static final int MIN_COMMISSION = 500; 			//5 zł
+	public static final double COMMISSION = 0.004;			//0.4%
+		
 	private Stats stats;
 	
 	private DataManager dataManager;
@@ -74,6 +74,29 @@ public class Game {
 	    return null;
 	}
 	
+	/** Zwraca największą możliwą ilość akcji danej firmy, jaką można kupić za posiadane
+	 * pieniądze uwzględniając prowizję.**/
+	public int maximumToBuy(String companyName) {
+		int price = (int) getEndPrice(companyName);
+		if (price == 0) return 0;
+		int amount = (int) (stats.getMoney()/(price*(1+COMMISSION)));
+		amount = Math.min(amount,(int)(stats.getMoney()-MIN_COMMISSION)/price);
+		return amount;
+	}
+
+	/** Zwraca najmniejsza możliwą ilość akcji danej firmy, jaką można sprzedać
+	 *  uwzględniając prowizję.**/
+	public int minimumToSell(String companyName) {
+		if (stats.getMoney() >= MIN_COMMISSION) return 0;
+		
+		int price = (int) getEndPrice(companyName);
+		if (price == 0) return -1;
+		
+		int amount = (int) ((MIN_COMMISSION-stats.getMoney())/price);
+		//amount = Math.min(amount,(int) (MIN_COMMISSION/(price*COMMISSION)));
+		return amount;
+	}
+
 	public void buy(String company, int amount) throws ActionException {
 		if (amount < 0) throw new ActionException(ActionError.NEGATIVE_AMOUNT);
 	    if (!this.isDataValid()) throw new ActionException(ActionError.TOO_OLD_DATA);
@@ -81,31 +104,27 @@ public class Game {
 	    long money = stats.getMoney();
 	    
 		/* wyszukanie aktualnej ceny za jeden pakiet akcji */
-		int price = -1;
-		for (int i = 0; i < current.size(); i++) {
-			if (current.get(i).getName().equals(company)) {
-				price = current.get(i).getEndPrice();
-				break;
-			}
-		}
-		if (price == -1) {
+	    int price = (int) getEndPrice(company);
+		if (price <= 0) {
 			throw new ActionException(ActionError.COMPANY_NOT_FOUND);
 		}
-		if (price * amount > money) {
+		int commission = (int) (COMMISSION*price*amount);
+		commission = Math.max(commission,MIN_COMMISSION);
+		if (price * amount + commission > money) {
 			throw new ActionException(ActionError.LACK_OF_MONEY);
 		}
 
 		/* aktualizacja danych gracza */
-		money -= price*amount;    // nowy stan gotówki
+		money -= (price*amount+commission);    // nowy stan gotówki
 		
 		// uaktualnienie lub dodanie kupionych pakietów
 		PlayerStock stock = this.getOwnedStockByName(company);
 		if (stock == null) {
-			owned.add(new PlayerStock(company, amount, price*amount));
+			owned.add(new PlayerStock(company, amount, price*amount+commission));
 		}
 		else {
 			stock.setAmount(stock.getAmount()+amount);
-			stock.setStartPrice(stock.getStartPrice()+price*amount);
+			stock.setStartPrice(stock.getStartPrice()+price*amount+commission);
 		}
 		
 		stats.setMoney(money);
@@ -132,26 +151,25 @@ public class Game {
 		}
 		
 		/* wyszukanie aktualnej ceny za jeden pakiet akcji */
-		int price = -1;
-		for (int i = 0; i<current.size(); i++) {
-			if (current.get(i).getName().equals(company)) {
-				price = current.get(i).getEndPrice();
-				break;
-			}
-		}
-		if (price == -1) {
+		int price = (int) getEndPrice(company);
+		if (price <= 0) {
 			throw new ActionException(ActionError.COMPANY_NOT_FOUND);
 		}
 		
+		int commission = (int) (amount*price*COMMISSION);
+		commission = Math.max(commission, MIN_COMMISSION);
+		if (money + amount*price - commission < 0) {
+			throw new ActionException(ActionError.LACK_OF_MONEY);
+		}
 		/* aktualizacja danych */
-		money += amount*price;
+		money += (amount*price - commission);
 		
 		if (stock.getAmount() == amount) {
 			owned.remove(stock);
 		}
 		else {
 			stock.setAmount(stock.getAmount()-amount);
-			stock.setStartPrice(stock.getStartPrice()-price*amount);
+			stock.setStartPrice(stock.getStartPrice()-price*amount+commission);
 		}
 		
 		stats.setMoney(money);
