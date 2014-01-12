@@ -69,7 +69,8 @@ public class Plotter {
 			return null;
 		}
 		
-		float[] result = new float[4 * mArchival.size()];
+		float[] result = new float[2 * mArchival.size()];
+//		float[] result = new float[4 * mArchival.size()];
 		
 		int days = mArchival.size();
 
@@ -88,16 +89,18 @@ public class Plotter {
 		float unitY = (float) height/(float) (mMax - mMin);
 		
 		for (int i = 0; i<mArchival.size(); i++) {
-			int startX = mMarginX + width - (i+1)*deltaX;
-			int endX = mMarginX + width - (i)*deltaX;
+			int x = (int) (mMarginX + width - (i+0.5)*deltaX);
+//			int endX = mMarginX + width - (i)*deltaX;
 			
 			int sum = mArchival.get(i).getMaxPrice() + mArchival.get(i).getMinPrice();
 			int y = (int) ((mMax-sum*0.5f)*unitY);
 
-			result[4*i] = endX;
-			result[4*i + 1] = y;
-			result[4*i + 2] = startX;
-			result[4*i + 3] = y;
+			result[2*i] = x;
+			result[2*i+1] = y;			
+//			result[4*i] = endX;
+//			result[4*i + 1] = y;
+//			result[4*i + 2] = startX;
+//			result[4*i + 3] = y;
 		}
 		
 		return result;
