@@ -13,11 +13,11 @@ import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
 import pl.pisz.airlog.giepp.desktop.widgets.MyStockTable;
 
 /** Klasa jest wrapperem na {@link Game} i ułatwia wykonywanie wielu operacji.
- * @author Rafal
- * @see Game
- *
  * Pierwszą metodą wywoływaną przed wywołaniem GUI powinno być
  * {@link GameUtilities#newInstance(pl.pisz.airlog.giepp.desktop.widgets.MyStockTable.TableModel, pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable.TableModel, pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable.TableModel, StatusBar)}.
+ *
+ * @author Rafal
+ * @see Game
  */
 public class GameUtilities {
     
@@ -91,14 +91,14 @@ public class GameUtilities {
     }
     
     /** Odświeża aktualne notowania.
+     * Gwaratuje, że tylko jeden wątek będzie odświeżał dane. Metodę należy uruchamiać jedynie
+     * z wątku GUI.
+     *
      * @see GameUtilities#refreshArchival(int)
      * @see RefreshRatingsTask
      * 
-     * @see SwingUtilities#invokeAndWait(Runnable)
-     * @see SwingUtilities#invokeLater(Runnable)
-     * 
-     * Gwaratuje, że tylko jeden wątek będzie odświeżał dane. Metodę należy uruchamiać jedynie
-     * z wątku GUI.
+     * @see javax.swing.SwingUtilities#invokeAndWait(Runnable)
+     * @see javax.swing.SwingUtilities#invokeLater(Runnable)
      */
     public static void refreshData() {
         GameUtilities.checkGame();
@@ -114,14 +114,14 @@ public class GameUtilities {
     }
     
     /** Odświeża dane archiwalne.
+     * Gwaratuje, że tylko jeden wątek będzie odświeżał dane. Metodę należy uruchamiać jedynie
+     * z wątku GUI.
+     *
      * @see GameUtilities#refreshArchival(int)
      * @see RefreshArchiveTask
      * 
-     * @see SwingUtilities#invokeAndWait(Runnable)
-     * @see SwingUtilities#invokeLater(Runnable)
-     * 
-     * Gwaratuje, że tylko jeden wątek będzie odświeżał dane. Metodę należy uruchamiać jedynie
-     * z wątku GUI.
+     * @see javax.swing.SwingUtilities#invokeAndWait(Runnable)
+     * @see javax.swing.SwingUtilities#invokeLater(Runnable)
      */
     public static void refreshArchival(final int days) {
         
