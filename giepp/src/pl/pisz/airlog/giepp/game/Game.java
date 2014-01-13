@@ -74,6 +74,23 @@ public class Game {
 	    return null;
 	}
 	
+	/** Zapisuje stan obiektu, a tym samym gry.
+	 * @return <i>true</i> jeśli poprawnie zapisano grę
+	 */
+	public boolean saveGame() {
+	    try {
+	        this.dataManager.saveArchival(this.archived);
+	        this.dataManager.saveObserved(this.observed);
+	        this.dataManager.saveOwned(this.owned);
+	        this.dataManager.saveStats(this.stats);
+	    } catch (IOException e) {
+	        return false;
+	    }
+	    
+	    return true;
+	}
+	
+	
 	/** Zwraca największą możliwą ilość akcji danej firmy, jaką można kupić za posiadane
 	 * pieniądze uwzględniając prowizję.**/
 	public int maximumToBuy(String companyName) {

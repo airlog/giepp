@@ -3,6 +3,7 @@ package pl.pisz.airlog.giepp.desktop;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 
 import java.io.File;
@@ -13,6 +14,7 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -35,11 +37,11 @@ public class GieppDesktop {
 
     private static int VERSION_MAJOR           = 1;
     private static int VERSION_MINOR           = 0;
-    private static int VERSION_PATCH           = 1;
+    private static int VERSION_PATCH           = 2;
     private static String VERSION_DECORATOR    = "beta";
         
     public static String getVersion() {
-        return String.format("%d.%d.%d-%s", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_DECORATOR);
+        return String.format("%d.%d-%s-%d", VERSION_MAJOR, VERSION_MINOR, VERSION_DECORATOR, VERSION_PATCH);
     }
     
     public static String getReleasedDate() {
@@ -60,7 +62,7 @@ public class GieppDesktop {
         try {
             File file = new File(path);
             if (file.exists()) url = file.toURI().toURL();
-            url = ClassLoader.getSystemClassLoader().getResource(path);    
+            else url = ClassLoader.getSystemClassLoader().getResource(path);    
         }
         catch (MalformedURLException e) {
             url = ClassLoader.getSystemClassLoader().getResource(path);
@@ -125,10 +127,10 @@ public class GieppDesktop {
                aboutDialog.setMinimumSize(new Dimension(480, 320));
                aboutDialog.setResizable(false);
                
-               MainMenuBar mmb = new MainMenuBar();
+               final MainMenuBar mmb = new MainMenuBar();
                mmb.setMenuListener(new MainMenuBar.MainMenuListener() {                   
                    @Override
-                   public void onFileQuit(java.awt.event.ActionEvent ae) {
+                   public void onFileQuit(ActionEvent ae) {
                        buyDialog.setVisible(false);
                        sellDialog.setVisible(false);
                        daysDialog.setVisible(false);
@@ -136,17 +138,38 @@ public class GieppDesktop {
                    }
                    
                    @Override
-                   public void onRefresh(java.awt.event.ActionEvent ae) {
+                   public void onFileNew(ActionEvent ae) {
+                       if (JOptionPane.showConfirmDialog(mmb,"Jesteś pewny, że chcesz rozpocząć grę od nowa?") == JOptionPane.OK_OPTION) {
+                           GameUtilities.getInstance().restartGame();
+                           GameUtilities.refreshMyStockTable();
+                           GameUtilities.refreshObservedTable();
+                       }
+                   }
+                   
+                   @Override
+                   public void onSaveGame(ActionEvent ae) {
+                       if (!GameUtilities.getInstance().saveGame()) {
+                           JOptionPane.showMessageDialog(
+                                   mmb.getParent(),
+                                   "Nie udało się zapisać stanu gry.",
+                                   "Błąd zapisu",
+                                   JOptionPane.ERROR_MESSAGE
+                               );
+                       }
+                   }
+                   
+                   @Override
+                   public void onRefresh(ActionEvent ae) {
                        GameUtilities.refreshData();
                    }
                    
                    @Override
-                   public void onArchiveDownload(java.awt.event.ActionEvent ae) {
+                   public void onArchiveDownload(ActionEvent ae) {
                        daysDialog.setVisible(true);
                    }
                    
                    @Override
-                   public void onHelpAbout(java.awt.event.ActionEvent ae) {
+                   public void onHelpAbout(ActionEvent ae) {
                        aboutDialog.setVisible(true);
                    }
                });
