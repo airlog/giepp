@@ -33,7 +33,7 @@ public class AboutDialog
         try {
             this.initComponent();
         } catch (IOException e) {
-            System.err.println("Can't create AboutDialog (" + e + ")");
+            System.err.println("Can't create AboutFrame: " + e);
             
             JPanel container = new JPanel(new BorderLayout());
             container.add(mImagePanel, BorderLayout.CENTER);
@@ -53,7 +53,7 @@ public class AboutDialog
         title.setFont(title.getFont().deriveFont(18.0f));
                 
         JPanel versionPanel = this.newPropertyPanel("wersja:", GieppDesktop.getVersion());
-        JPanel datePanel = this.newPropertyPanel("wydano:", GieppDesktop.getCompilationDate());
+        JPanel datePanel = this.newPropertyPanel("wydano:", GieppDesktop.getReleasedDate());
         JPanel propertyPanel = new JPanel(new GridLayout(2, 1));
         propertyPanel.add(versionPanel);
         propertyPanel.add(datePanel);

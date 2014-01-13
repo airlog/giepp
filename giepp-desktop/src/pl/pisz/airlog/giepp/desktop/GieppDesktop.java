@@ -5,17 +5,10 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -35,55 +28,21 @@ import pl.pisz.airlog.giepp.desktop.panels.RatingsPanel;
 import pl.pisz.airlog.giepp.desktop.panels.StatisticPanel;
 import pl.pisz.airlog.giepp.desktop.panels.StatusBar;
 import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
-import pl.pisz.airlog.giepp.desktop.util.Pair;
-import pl.pisz.airlog.giepp.desktop.util.PropertyLoader;
-import pl.pisz.airlog.giepp.desktop.util.SimplePropertyLoader;
 import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
 import pl.pisz.airlog.giepp.desktop.widgets.MyStockTable;
 
 public class GieppDesktop {
 
-    private static String VERSION_MAJOR        = null;
-    private static String VERSION_MINOR        = null;
-    private static String VERSION_PATCH        = null;
-    private static String VERSION_DECORATOR    = null;
-    
-    private static GieppProperties newProperties(String path) {
-        PropertyLoader loader = new SimplePropertyLoader();
-        BufferedReader reader = null;
-        
-        InputStream stream = null;
-        for (int i = 0; i < 2; i++) {
-            try {
-                if (i == 0) stream = new FileInputStream(new File(path));
-                else stream = ClassLoader.getSystemClassLoader().getResourceAsStream(path);
-                
-                reader = new BufferedReader(new InputStreamReader(stream));
-                loader.parse(reader);
-                break;
-            } catch (IOException e) {
-                if (i == 0) System.err.println("Warning: couldn't load config from system, will try JAR");
-                else System.err.println("Warning: couldn't load config from JAR");
-            } catch (NullPointerException e) {
-                System.err.println("Warning: null when loading properties! (i = " + i + ")");
-            } finally {
-                try {
-                    if (reader != null) reader.close();
-                } catch (IOException e) {
-                    System.err.println(e);
-                }
-            }
-        }
-        
-        List<Pair<String, String>> pairs = loader.getProperties();
-        return new GieppProperties(pairs);
-    }
+    private static int VERSION_MAJOR           = 1;
+    private static int VERSION_MINOR           = 0;
+    private static int VERSION_PATCH           = 1;
+    private static String VERSION_DECORATOR    = "beta";
         
     public static String getVersion() {
-        return String.format("%s.%s.%s-%s", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_DECORATOR);
+        return String.format("%d.%d.%d-%s", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_DECORATOR);
     }
     
-    public static String getCompilationDate() {
+    public static String getReleasedDate() {
         return "2014-01-12";
     }
     
@@ -101,7 +60,7 @@ public class GieppDesktop {
         try {
             File file = new File(path);
             if (file.exists()) url = file.toURI().toURL();
-            else url = ClassLoader.getSystemClassLoader().getResource(path);
+            url = ClassLoader.getSystemClassLoader().getResource(path);    
         }
         catch (MalformedURLException e) {
             url = ClassLoader.getSystemClassLoader().getResource(path);
@@ -120,13 +79,7 @@ public class GieppDesktop {
         return new ImageIcon(bi);
     }
     
-    public static void main(String[] args) {        
-        GieppProperties properties = GieppDesktop.newProperties("res/config.cfg");
-        GieppDesktop.VERSION_MAJOR = properties.getProperty(GieppProperties.KEY_VERSION_MAJOR);
-        GieppDesktop.VERSION_MINOR = properties.getProperty(GieppProperties.KEY_VERSION_MINOR);
-        GieppDesktop.VERSION_PATCH = properties.getProperty(GieppProperties.KEY_VERSION_PATCH);
-        GieppDesktop.VERSION_DECORATOR = properties.getProperty(GieppProperties.KEY_VERSION_DECORATOR);
-        
+    public static void main(String[] args) {
         final MyStockTable.TableModel myStockModel = new MyStockTable.TableModel();
         final CurrentStockTable.TableModel currentStockModel = new CurrentStockTable.TableModel();
         final CurrentStockTable.TableModel observedModel = new CurrentStockTable.TableModel();
