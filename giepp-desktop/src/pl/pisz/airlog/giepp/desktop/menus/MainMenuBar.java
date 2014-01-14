@@ -21,17 +21,23 @@ public class MainMenuBar
         
         private static final String NAME = "Plik";
         
-        private static final String ITEM_NEW     = "Nowa gra";
-        private static final String ITEM_QUIT    = "Wyjdź";
+        private static final String ITEM_NEW    = "Nowa gra";
+        private static final String ITEM_SAVE   = "Zapisz grę";
+        private static final String ITEM_QUIT   = "Wyjdź";
         
         private JMenuItem mNewItem;
+        private JMenuItem mSaveItem;
         private JMenuItem mQuitItem;
         
         public FileMenu(ActionListener actionListener) {
             super(NAME);
             
             mNewItem = new JMenuItem(ITEM_NEW);
-            mNewItem.addActionListener(actionListener);          
+            mNewItem.addActionListener(actionListener);
+            
+            mSaveItem = new JMenuItem(ITEM_SAVE);
+            mSaveItem.addActionListener(actionListener);
+            mSaveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
             
             mQuitItem = new JMenuItem(ITEM_QUIT);
             mQuitItem.addActionListener(actionListener);
@@ -42,6 +48,7 @@ public class MainMenuBar
         
         private void initComponent() {
             this.add(mNewItem);
+            this.add(mSaveItem);
             this.addSeparator();
             this.add(mQuitItem);
         }
@@ -107,7 +114,9 @@ public class MainMenuBar
     public static class MainMenuListener {
         
         public void onFileNew(ActionEvent ae) {}
-                
+        
+        public void onSaveGame(ActionEvent ae) {}
+        
         public void onFileQuit(ActionEvent ae) {}
         
         public void onRefresh(ActionEvent ae) {}
@@ -145,12 +154,12 @@ public class MainMenuBar
 
     @Override
     public void actionPerformed(ActionEvent ae) {
-        System.out.println(ae);
         if (mMenuListener == null) return;
         
         Object source = ae.getSource();
         if (source == mFileMenu.mQuitItem) mMenuListener.onFileQuit(ae);
         else if (source == mFileMenu.mNewItem) mMenuListener.onFileNew(ae);
+        else if (source == mFileMenu.mSaveItem) mMenuListener.onSaveGame(ae);
         else if (source == mToolsMenu.mRefreshItem) mMenuListener.onRefresh(ae);
         else if (source == mToolsMenu.mArchiveDownload) mMenuListener.onArchiveDownload(ae);
         else if (source == mHelpMenu.mAboutItem) mMenuListener.onHelpAbout(ae);

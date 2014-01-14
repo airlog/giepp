@@ -78,5 +78,5 @@ public class MyStockDetailsPanel
         this.updateFields();        
         super.paintComponent(g);
     }
-    
+        
 }
