@@ -141,12 +141,12 @@ public class CompanyDetailsActivity extends Activity implements View.OnClickList
 }
 
 
-class BuySellDialog extends Dialog implements View.OnClickListener, OnValueChangeListener {
+class BuySellDialog extends Dialog implements View.OnClickListener {
 	
 	private NumberPicker np;
 	private Button buttonOK;
 	private Button buttonNO;
-	private int amount;
+//	private int amount;
 	private int max;
 	private int min;
 	private String companyName;
@@ -173,31 +173,29 @@ class BuySellDialog extends Dialog implements View.OnClickListener, OnValueChang
 		np.setMaxValue(max);
         np.setMinValue(min);
         np.setWrapSelectorWheel(true);
-        np.setOnValueChangedListener(this);
+    //  np.setOnValueChangedListener(this);
         buttonOK = (Button) findViewById(R.id.buttonOK);	
         buttonNO = (Button) findViewById(R.id.buttonNO);
         buttonOK.setOnClickListener(this);
         buttonNO.setOnClickListener(this);
    }
 	
-	public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+/*	public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
 		amount = newVal;
 	    Log.i("value is",""+newVal);
 
 	}
-
+*/
     public void onClick(View v){
     	if(v.getId() == R.id.buttonOK) {
     		switch (type) {
     			default:
     			case 1:
-    				Log.i("giepp","Kupuje " + amount + " akcji " + companyName);
-    				GiePPSingleton.getInstance().buy(companyName,amount);
+    				GiePPSingleton.getInstance().buy(companyName,np.getValue());
     				act.updateMaxToBuySell();
     				break;
     			case 2:
-    				GiePPSingleton.getInstance().sell(companyName,amount);
-    				Log.i("giepp","Sprzedaje " + amount + " akcji " + companyName);
+    				GiePPSingleton.getInstance().sell(companyName,np.getValue());
     				act.updateMaxToBuySell();
     				break;
     		}

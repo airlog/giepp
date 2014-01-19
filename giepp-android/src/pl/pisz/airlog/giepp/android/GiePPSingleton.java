@@ -3,6 +3,7 @@ package pl.pisz.airlog.giepp.android;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 
 import pl.pisz.airlog.giepp.data.ArchivedStock;
 import pl.pisz.airlog.giepp.data.CurrentStock;
@@ -12,8 +13,11 @@ import pl.pisz.airlog.giepp.data.Stats;
 import pl.pisz.airlog.giepp.data.gpw.GPWDataParser;
 import pl.pisz.airlog.giepp.data.gpw.GPWDataSource;
 import pl.pisz.airlog.giepp.game.Game;
+import android.app.AlertDialog;
 import android.os.Environment;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
 public class GiePPSingleton{
 	
@@ -142,10 +146,6 @@ public class GiePPSingleton{
 	public void buy(String companyName, int amount) {
 		try {
 			game.buy(companyName,amount);
-		}catch( Exception e){
-			Log.i("giepp","Blad1: " + e);
-		}
-		try {
 			act.runOnUiThread(new Runnable(){
 				public void run(){
 					if (fragment1 != null) {
@@ -158,8 +158,20 @@ public class GiePPSingleton{
 					}
 				}
 			});
-		}catch(Exception e){
-			Log.i("giepp","Blad2: " + e);
+		}catch( Exception e){
+			Log.i("giepp","Blad1: " + e);
+			try {
+				act.runOnUiThread(new Runnable(){
+					public void run(){
+						AlertDialog.Builder builder = new AlertDialog.Builder(details);
+						builder.setTitle("Nie udało się wykonać działania");
+						builder.setMessage("Odśwież aktualne dane.");
+						builder.setCancelable(true);
+						AlertDialog dialog = builder.create();
+						dialog.show();
+					}
+				});
+			} catch (Exception e2){}
 		}
 	}
 	public void sell(String companyName, int amount){
@@ -180,6 +192,18 @@ public class GiePPSingleton{
 		}
 		catch(Exception e){
 			Log.i("giepp","nie udalo sie: " + e);
+			try {
+				act.runOnUiThread(new Runnable(){
+					public void run(){
+						AlertDialog.Builder builder = new AlertDialog.Builder(details);
+						builder.setTitle("Nie udało się wykonać działania");
+						builder.setMessage("Odśwież aktualne dane.");
+						builder.setCancelable(true);
+						AlertDialog dialog = builder.create();
+						dialog.show();
+					}
+				});
+			} catch (Exception e2){}
 		}
 	}
 	
@@ -195,12 +219,30 @@ public class GiePPSingleton{
 		}
 		return null;
 	}
-	public void refreshArchival(int d1, int m1, int y1, int d2, int m2, int y2) {
+	public void refreshArchival(final ProgressBar bar, final int d1, final int m1, final int y1, 
+			final int d2, final int m2, final int y2) {
 		refreshingArchival = true;
 		System.out.println("start: " + d1 + "-" + m1 + "-" + y1);
 		System.out.println("end: " + d2 + "-" + m2 + "-" + y2);
-		game.refreshArchival(d1,m1+1,y1,d2,m2+1,y2);
-		refreshingArchival = false;
+		bar.setVisibility(View.VISIBLE);
+		(new Thread() {
+			public void run() {
+				game.refreshArchival(d1,m1+1,y1,d2,m2+1,y2);
+				if (fragment4 != null) {
+					fragment4.updateView();
+				}
+				refreshingArchival = false;
+				try {
+					act.runOnUiThread(new Runnable(){
+						public void run(){
+							if (bar != null) {
+								bar.setVisibility(View.GONE);
+							}
+						}
+					});
+				} catch (Exception e2){}
+			}
+		}).start();
 	}
 	
 	public boolean isRefreshingArchival() {
@@ -257,7 +299,18 @@ public class GiePPSingleton{
 			}
 		});
 	}
-	public ArrayList<ArchivedStock> getArchival(String name){
+	
+	public String getLastArchivalDate() {
+		Set<String> keys = game.getArchived().keySet();
+		for(String k: keys){
+			if ( game.getArchived().get(k).size() > 0) {
+				return game.getArchived().get(k).get(0).getDate();
+			}
+		}		
+		return "brak";
+	}
+	
+	public ArrayList<ArchivedStock> getArchival(String name) {
 		return game.getArchived().get(name);
 	}
 	public ArrayList<String> getObserved(){
