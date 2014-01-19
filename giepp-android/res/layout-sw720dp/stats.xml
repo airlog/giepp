@@ -100,6 +100,25 @@
         android:layout_marginTop="20dp"
         android:text="DANE ARCHIWALNE" />
         
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+            <TextView
+                android:textColor="#000000"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize = "20dp" 
+                android:text="Ostanie dane z dnia: " />
+            <TextView
+                android:id="@+id/stats_last_date"
+                android:textColor="#000000"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize = "20dp" 
+                android:text="brak" />
+       </LinearLayout>
+         
        <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

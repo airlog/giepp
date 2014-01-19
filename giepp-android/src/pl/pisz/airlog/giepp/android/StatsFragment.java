@@ -22,6 +22,7 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
 		private TextView textMaxMoney;
 		private TextView textMinMoney;
 		private TextView textRestarts;
+		private TextView textLastDate;
 		private Button buttonRestart;
 		private Button buttonRefreshArchival;
 		private ProgressBar bar;
@@ -51,7 +52,8 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
 			textMaxMoney = (TextView) rootView.findViewById(R.id.stats_max_money);
 			textMinMoney = (TextView) rootView.findViewById(R.id.stats_min_money);
 			textRestarts = (TextView) rootView.findViewById(R.id.stats_restarts);
-			
+			textLastDate = (TextView) rootView.findViewById(R.id.stats_last_date)
+					;
 			buttonRestart = (Button) rootView.findViewById(R.id.stats_restart_button);
 			buttonRefreshArchival = (Button) rootView.findViewById(R.id.stats_refresh_archival);
 			
@@ -85,6 +87,7 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
 			textMaxMoney.setText(maxMoneyS+" PLN");
 			textMinMoney.setText(minMoneyS+" PLN");
 			textRestarts.setText(restarts+"");
+			textLastDate.setText(GiePPSingleton.getInstance().getLastArchivalDate());
 		}
 }
 
@@ -145,14 +148,16 @@ class RefreshArchivalDialog extends Dialog implements View.OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.refresh_archival_buttonOK) {
-			bar.setVisibility(View.VISIBLE);
-			RefreshArchivalTask task = new RefreshArchivalTask();
-			task.execute(start.getDayOfMonth(), start.getMonth(), start.getYear(),end.getDayOfMonth(), end.getMonth(), end.getYear());
+	//		bar.setVisibility(View.VISIBLE);
+			GiePPSingleton.getInstance().refreshArchival(bar, start.getDayOfMonth(), start.getMonth(), start.getYear(),
+						end.getDayOfMonth(), end.getMonth(), end.getYear());
+	//		RefreshArchivalTask task = new RefreshArchivalTask();
+	//		task.execute(start.getDayOfMonth(), start.getMonth(), start.getYear(),end.getDayOfMonth(), end.getMonth(), end.getYear());
 		}
 		dismiss();
 	}
 	
-	private class RefreshArchivalTask extends AsyncTask<Integer, Void, Integer> {
+	/*private class RefreshArchivalTask extends AsyncTask<Integer, Void, Integer> {
 
 		@Override
 		protected Integer doInBackground(Integer... date) {
@@ -166,6 +171,6 @@ class RefreshArchivalDialog extends Dialog implements View.OnClickListener {
 				bar.setVisibility(View.GONE);
 			}
 		}
-	}
+	}*/
 	
 }
