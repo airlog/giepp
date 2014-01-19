@@ -12,7 +12,6 @@ import pl.pisz.airlog.giepp.data.Stats;
 import pl.pisz.airlog.giepp.data.gpw.GPWDataParser;
 import pl.pisz.airlog.giepp.data.gpw.GPWDataSource;
 import pl.pisz.airlog.giepp.game.Game;
-import android.app.Activity;
 import android.os.Environment;
 import android.util.Log;
 
@@ -108,6 +107,13 @@ public class GiePPSingleton{
 				}
 			}
 		}).start();
+	}
+	
+	public int getMaximumToBuy(String companyName) {
+		return game.maximumToBuy(companyName);
+	}
+	public int getMinimumToSell(String companyName) {
+		return game.minimumToSell(companyName);
 	}
 	
 	public void restartGame() {

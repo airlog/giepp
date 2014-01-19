@@ -4,4 +4,8 @@
           android:title="Odswież"
           android:showAsAction="always"
      />
+    <item android:id="@+id/menu_about"
+          android:title="O aplikacji"
+          android:showAsAction="never"
+     />
 </menu>
