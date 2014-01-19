@@ -25,7 +25,7 @@ public class Game {
 
 	private static final int MAX_TIME = 900000;				//15 minut
 	private static final int DAYS = 5;
-	private static final int MAX_DAYS_IN_MEMORY = 60;
+	private static final int MAX_DAYS_IN_MEMORY = 30;
 	
 	public static final long MONEY_ON_START = 1000000;		//10 000 zl
 
@@ -423,12 +423,12 @@ public class Game {
 		this.calendar = Calendar.getInstance();
 		try {
 			this.current = dataManager.getCurrent();
+			this.lastRefresh = calendar.getTime();
+			this.updateMaxMinMoney();
 		} catch (IOException e) {
 			//TODO ładne poradzenie sobie z wyjątkiem 
 			System.out.println(e);
 		}
-		this.lastRefresh = calendar.getTime();
-		this.updateMaxMinMoney();
 	}
 		
 	/** Ustawia pola zgodnie z danymi z plikow XML  **/
