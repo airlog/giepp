@@ -115,7 +115,7 @@ public class Game {
 	}
 
 	public void buy(String company, int amount) throws ActionException {
-		if (amount < 0) throw new ActionException(ActionError.NEGATIVE_AMOUNT);
+		if (amount <= 0) throw new ActionException(ActionError.NEGATIVE_AMOUNT);
 	    if (!this.isDataValid()) throw new ActionException(ActionError.TOO_OLD_DATA);
 		
 	    long money = stats.getMoney();
@@ -156,7 +156,7 @@ public class Game {
 	}
 
 	public void sell(String company, int amount) throws ActionException {
-	    if (amount < 0) throw new ActionException(ActionError.NEGATIVE_AMOUNT);
+	    if (amount <= 0) throw new ActionException(ActionError.NEGATIVE_AMOUNT);
 	    if (!this.isDataValid()) throw new ActionException(ActionError.TOO_OLD_DATA);
 		
 	    long money = stats.getMoney();
