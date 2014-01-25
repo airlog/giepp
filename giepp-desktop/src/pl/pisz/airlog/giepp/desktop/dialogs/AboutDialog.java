@@ -1,7 +1,6 @@
 package pl.pisz.airlog.giepp.desktop.dialogs;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -18,13 +17,22 @@ import javax.swing.JPanel;
 import pl.pisz.airlog.giepp.desktop.GieppDesktop;
 import pl.pisz.airlog.giepp.desktop.panels.ImagePanel;
 
-public class AboutDialog
-        extends JDialog {
+/** Okno dialogowe z informacją o aplikacji.
+ * Okno dialogowe wymaga pewnych plików (składników). Jeśli ich nie otrzyma, lub nie będzie miało do nich
+ * dostępu utworzone zostanie okno alternatywne.
+ *
+ * @author Rafal
+ */
+public class AboutDialog extends JDialog {
 
     public static final String CAPTION  = "GiePP - O aplikacji";
             
     private JPanel mImagePanel;
     
+    /** Tworzy nowy obiekt.
+     * @param parent    okno tworzące dialog
+     * @param appLogo   logo aplikacji
+     */
     public AboutDialog(JFrame parent, Image appLogo) {
         super(parent, CAPTION);
         
@@ -71,6 +79,13 @@ public class AboutDialog
         this.add(panel, BorderLayout.SOUTH);
     }
     
+    /** Tworzy nowy panel.
+     * Utworzony panel prezentuje jakąś wartość pod określonym tagiem.
+     * 
+     * @param tag   krótka nazwa prezentowanej wartości
+     * @param value prezentowana wartość
+     * @return  panel
+     */
     protected JPanel newPropertyPanel(String tag, String value) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         
