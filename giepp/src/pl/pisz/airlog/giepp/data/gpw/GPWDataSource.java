@@ -6,6 +6,7 @@ import java.net.*;
 import java.io.*;
 
 /** Klasa służąca do pobierania danych ze strony gpw.pl.
+ * @author Joanna
  */
 public class GPWDataSource implements DataSource {
 

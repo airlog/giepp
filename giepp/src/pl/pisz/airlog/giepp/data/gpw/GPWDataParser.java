@@ -9,13 +9,14 @@ import java.util.regex.Matcher;
 import java.util.ArrayList;
 
 /** Klasa służąca do parsowania tekstu stron ściagniętych ze strony gpw.pl.
+ * @author Joanna
 */
 public class GPWDataParser implements DataParser {
 	
 	private Pattern patternArchive;
 	private Pattern patternCurrent;
 
-	/** Twprzy obiekt tej klasy.*/
+	/** Tworzy obiekt tej klasy.*/
 	public GPWDataParser() {
 		patternArchive = Pattern.compile(".*<td [^<>]*>([^<>]*)</td>[^<>]*<td [^<>]*>[^<>]*</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>([^<>]*)</td>[^<>]*<td>([^<>]*)</td>[^<>]*<td>([^<>]*)</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>[^<>]*</td>");
 		patternCurrent = Pattern.compile(".*<td>.*</td><td class=\"left nowrap\"><a[^<>]*>([^<>]*)</a></td><td class=\"left\">[^<>]*</td><td class=\"left\">PLN</td><td>([^<>]*)</td><td>([^<>]*)</td><td>[^<>]*</td><td>([^<>]*)</td><td>([^<>]*)</td><td>([^<>]*)</td><td>([^<>]*)</td><td>([^<>]*)</td><td>[^<>]*</td><td>[^<>]*</td>");
