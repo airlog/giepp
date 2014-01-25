@@ -5,6 +5,8 @@ import pl.pisz.airlog.giepp.data.DataSource;
 import java.net.*;
 import java.io.*;
 
+/** Klasa służąca do pobierania danych ze strony gpw.pl.
+ */
 public class GPWDataSource implements DataSource {
 
     protected String getData(BufferedReader in)
@@ -25,8 +27,14 @@ public class GPWDataSource implements DataSource {
         return data;
     }
     
-	/** Zwraca stronę z notowaniami archiwalnymi z podanego dnia **/
-    public String retrieveArchiveData(int dayI, int monthI, int yearI) throws IOException{
+	/** Ściąga stronę z notowaniami archiwalnymi z podanego dnia 
+		@param dayI - dzień, z którego mają być notowania 
+		@param monthI - numer miesiąca, z którego mają być notowania
+		@param yearI - rok, z którego mają być notowania
+		@return tekst ściągniętej strony
+		@throws IOException
+	**/
+    public String retrieveArchiveData(int dayI, int monthI, int yearI) throws IOException {
         String dayS = dayI+"";
         if (dayI < 10) {
             dayS = "0"+dayI;
@@ -44,8 +52,11 @@ public class GPWDataSource implements DataSource {
         return this.getData(in);
     }
 	
-	/** Zwraca stronę z notowaniami aktualnymi**/
-    public String retrieveCurrentData() throws IOException{
+	/** Ściąga stronę z notowaniami aktualnymi 
+		@return tekst ściągniętej strony
+		@throws IOException
+	**/
+    public String retrieveCurrentData() throws IOException {
         String address = "http://www.gpw.pl//ajaxindex.php?action=GPWQuotations&start=showTable&tab=all&lang=PL&default_order=";
         URL url = new URL(address);
         BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));

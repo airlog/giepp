@@ -8,17 +8,24 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.ArrayList;
 
+/** Klasa służąca do parsowania tekstu stron ściagniętych ze strony gpw.pl.
+*/
 public class GPWDataParser implements DataParser {
 	
 	private Pattern patternArchive;
 	private Pattern patternCurrent;
 
+	/** Twprzy obiekt tej klasy.*/
 	public GPWDataParser() {
 		patternArchive = Pattern.compile(".*<td [^<>]*>([^<>]*)</td>[^<>]*<td [^<>]*>[^<>]*</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>([^<>]*)</td>[^<>]*<td>([^<>]*)</td>[^<>]*<td>([^<>]*)</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>[^<>]*</td>[^<>]*<td>[^<>]*</td>");
 		patternCurrent = Pattern.compile(".*<td>.*</td><td class=\"left nowrap\"><a[^<>]*>([^<>]*)</a></td><td class=\"left\">[^<>]*</td><td class=\"left\">PLN</td><td>([^<>]*)</td><td>([^<>]*)</td><td>[^<>]*</td><td>([^<>]*)</td><td>([^<>]*)</td><td>([^<>]*)</td><td>([^<>]*)</td><td>([^<>]*)</td><td>[^<>]*</td><td>[^<>]*</td>");
 	}
 
-	/** Zwraca listę notowań archiwalnych z podanego dnia. Jeśli dla danego dnia nie ma wyników to wyrzuca wyjątek BadDate **/
+	/** Zwraca listę notowań archiwalnych z podanej strony.
+	 * @param site - tekst strony, która ma byc sparsowana
+	 * @return znalezione notowania
+	 * @throws BadDate - jeśli dla danej strony nie było żadnych wyników
+	 * */
 	public ArrayList<ArchivedStock> parseArchive(String site) throws BadDate {
 		String table = findTable(site);
 		String[] lines = splitToLines(table);
@@ -40,7 +47,10 @@ public class GPWDataParser implements DataParser {
 		}
 	}
 	
-	/** Zwraca aktualną listę notowań **/
+	/** Zwraca listę aktualnych notowań z podanej strony.
+	 * @param site - tekst strony, która ma byc sparsowana
+	 * @return znalezione notowania
+	 * */
 	public ArrayList<CurrentStock> parseCurrent(String site) {
 		String table = findTable(site);
 		String[] lines = splitToLines(table);	
