@@ -2,8 +2,6 @@ package pl.pisz.airlog.giepp.desktop.panels;
 
 import java.awt.Color;
 
-import java.util.List;
-
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -17,12 +15,16 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-/**
+/** Panel wyświetlający informacje o wybranej firmie.
+ * 
+ * Panel implementuje interfejs {@link CompanySelectedListener}, który umożliwia wychwycenie zdarzeń
+ * wyboru firmy z tabeli. Na tej podstawie w danych gry szukane są informacje o określonej firmie,
+ * które następnie są filtrowane i wyświetlane.
+ * 
  * @author Rafal
- *
+ * @see PlotPanel
  */
-public class CompanyDetailsPanel
-        extends JPanel
+public class CompanyDetailsPanel extends JPanel
         implements CompanySelectedListener {
     
     private JTextField mCompanyField = new JTextField();
@@ -31,6 +33,9 @@ public class CompanyDetailsPanel
     
     private PlotPanel mPlotPanel = new PlotPanel();
     
+    /** Tworzy nowy obiekt.
+     *
+     */
     public CompanyDetailsPanel() {
         super(false);
         
@@ -67,6 +72,9 @@ public class CompanyDetailsPanel
         builder.add(mPlotPanel, cc.xyw(2, 6, 3));
     }
     
+    /** Implementacja interfejsu.
+     * @see CompanySelectedListener
+     */
     @Override
     public void onCompanySelected(String company) {
         if (company == null) return;

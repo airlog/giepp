@@ -9,14 +9,16 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
-/**
+/** Pasek głównego menu aplikacji.
+ * Klasa implementuje {@link ActionListener} i sama nasłuchuje na kliknięcia odpowiednich obiektów
+ * w menu. Następnie rozpoznaje kliknęty obiekt i wywołuje odpowiednią metodę.
+ * 
  * @author Rafal
  */
-public class MainMenuBar
-        extends JMenuBar
+public class MainMenuBar extends JMenuBar
         implements ActionListener {
 
-    public static class FileMenu
+    private static class FileMenu
             extends JMenu {
         
         private static final String NAME = "Plik";
@@ -55,7 +57,7 @@ public class MainMenuBar
         
     }
     
-    public static class ToolsMenu        
+    private static class ToolsMenu        
             extends JMenu {
         
         private static final String NAME = "Narzędzia";
@@ -87,7 +89,7 @@ public class MainMenuBar
         
     }
     
-    public static class HelpMenu
+    private static class HelpMenu
         extends JMenu {
     
         private static final String NAME = "Pomoc";
@@ -111,18 +113,41 @@ public class MainMenuBar
     
     }
     
+    /** Klasa z metodami wywołanymi po kliknęciu odpowiednich obiektów w menu.
+     * Metody oferowane przez klasę są puste - wymagają implemetacji.
+     *
+     * @author Rafal
+     */
     public static class MainMenuListener {
         
+        /** Zakończenie obecnej i rozpoczęcie nowej rozgrywki.
+         * @param ae
+         */
         public void onFileNew(ActionEvent ae) {}
         
+        /** Zapisanie stanu obecnej rozgrywki.
+         * @param ae
+         */
         public void onSaveGame(ActionEvent ae) {}
         
+        /** Wyjście z aplikacji.
+         * @param ae
+         */
         public void onFileQuit(ActionEvent ae) {}
         
+        /** Odświeżenie notowań ciągłych.
+         * @param ae
+         */
         public void onRefresh(ActionEvent ae) {}
         
+        /** Odświeżenie notowań archiwalnych.
+         * @param ae
+         */
         public void onArchiveDownload(ActionEvent ae) {}
         
+        /** Wyświetlenie okna dialogowego z informacjami o aplikacji.
+         * @param ae
+         */
         public void onHelpAbout(ActionEvent ae) {}
                 
     }
@@ -133,7 +158,7 @@ public class MainMenuBar
     
     private MainMenuListener mMenuListener = null;
     
-    /**
+    /** Tworzy nowy obiekt.
      * 
      */
     public MainMenuBar() {
@@ -152,6 +177,10 @@ public class MainMenuBar
         this.add(mHelpMenu);
     }
 
+    /** Wywołuje odpowiednie metody zależnie od źródła sygnału.
+     * @param ae
+     * @see MainMenuListener
+     */
     @Override
     public void actionPerformed(ActionEvent ae) {
         if (mMenuListener == null) return;
@@ -165,7 +194,7 @@ public class MainMenuBar
         else if (source == mHelpMenu.mAboutItem) mMenuListener.onHelpAbout(ae);
     }
     
-    /**
+    /** Ustawia klasę przetwarzającą sygnały.
      * @param mml   reference to a listener
      */
     public void setMenuListener(MainMenuListener mml) {
