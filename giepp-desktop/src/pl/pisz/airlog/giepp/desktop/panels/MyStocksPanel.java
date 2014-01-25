@@ -10,16 +10,24 @@ import pl.pisz.airlog.giepp.desktop.dialogs.BuyStockDialog;
 import pl.pisz.airlog.giepp.desktop.dialogs.SellStockDialog;
 import pl.pisz.airlog.giepp.desktop.widgets.MyStockTable;
 
-/**
+/** Panel widoku mojego konta.
+ * Panel zawiera informacje o aktualnym stanie konta i tabelę prezentującą aktualnie posiadane
+ * akcje.
+ * 
  * @author Rafal
- *
+ * @see MyStockTable
+ * @see MyStockDetailsPanel
  */
-public class MyStocksPanel
-        extends JPanel {
+public class MyStocksPanel extends JPanel {
     
     private MyStockDetailsPanel mDetailsPanel;
     private MyStockTable mStockTable;
     
+    /** Tworzy nowy obiekt.
+     * @param tableModel    model tabeli wykorzystywanej w widoku
+     * @param buyDialog     okno dialogowe zakupu
+     * @param sellDialog    okno dialogowe sprzedaży
+     */
     public MyStocksPanel(MyStockTable.TableModel tableModel,
             BuyStockDialog buyDialog, SellStockDialog sellDialog) {
         super(new BorderLayout(), false);

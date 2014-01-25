@@ -10,9 +10,15 @@ import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
 import pl.pisz.airlog.giepp.desktop.util.HelperTools;
 import pl.pisz.airlog.giepp.desktop.util.StatisticBuilder;
 
-public class StatisticPanel
-        extends JPanel {
+/** Panel wyświetlający statystyki gracza.
+ * @author Rafal
+ * @see StatisticBuilder
+ */
+public class StatisticPanel extends JPanel {
 
+    /** Tworzy nowy obiekt.
+     * 
+     */
     public StatisticPanel() {
         super(new BorderLayout());
         
@@ -32,6 +38,9 @@ public class StatisticPanel
         this.init();
     }
 
+    /** Metoda tworzy wygląd ekranu statystyk korzystając z określonych statystyk.
+     * @return  panel z ładnie sformatowanymi statystykami
+     */
     protected JPanel createContentPanel() {
         Stats stat = GameUtilities.getInstance().getStats();
         
@@ -60,6 +69,9 @@ public class StatisticPanel
         
     }
     
+    /**
+     * Dane odświeżane są przy każdym wyświetleniu panelu.
+     */
     @Override
     public void setVisible(boolean b) {
         if (b) {  // wymuś odświeżanie statystyk

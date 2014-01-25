@@ -10,8 +10,14 @@ import pl.pisz.airlog.giepp.data.ArchivedStock;
 import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
 import pl.pisz.airlog.giepp.plot.Plotter;
 
-public class PlotPanel
-        extends JPanel {
+/** Panel wyświetlający wykres notowań archiwalnych określonej firmy.
+ * 
+ * Panel wyświetla wykres rysowany przy pomocy klasy {@link Plotter}.
+ * 
+ * @author Rafal
+ * @see Plotter
+ */
+public class PlotPanel extends JPanel {
 
     private static final int PLOT_LEGEND_COUNT      = 4;
     private static final int PLOT_MIN_HEIGHT        = 150;
@@ -43,6 +49,10 @@ public class PlotPanel
         this.drawLegend(g, legend, values);
     }
     
+    /** Konwertuje tablicę liczb zmiennoprzecinkowych w tablicę liczb całkowitych.
+     * @param array tablica liczb zmiennoprzecinkowych
+     * @return  tablica liczb całkowitych powstaych w wyniku zwykłego rzutowania
+     */
     protected int[] floatArrayToIntArray(float[] array) {
         int[] res = new int[array.length];
         
@@ -52,10 +62,18 @@ public class PlotPanel
         return res;
     }
     
+    /** Zwraca kolekcję danych archiwalnych dla żądanej firmy.
+     * @param company   nazwa firmy
+     * @return  lista danych archiwalnych
+     */
     protected ArrayList<ArchivedStock> getArchiveForCompany(String company) {
         return GameUtilities.getInstance().getArchived(company);
     }
     
+    /** Umożliwa szybkie narysowanie krzywej korzystając z danych zwracanych przez {@link Plotter}.
+     * @param g         kontroler rysowania
+     * @param points    tablica punktów w postaci <i>[x0 y0 x1 y1 ...]</i>
+     */
     protected void drawLines(Graphics g, int[] points) {
         int linesCount = points.length>>2;  // podziel przez 4 (4 wartości na narysowanie linii)
         int[] xPoints = new int[linesCount<<1];
@@ -72,7 +90,12 @@ public class PlotPanel
         g.setColor(PLOT_LINE_COLOR);
         g.drawPolyline(xPoints, yPoints, xPoints.length);
     }
-    
+
+    /** Umożliwia szybkie narysowanie legendy korzystając z danych zwracanych przez {link Plotter}.
+     * @param g         kontroler rysowania
+     * @param legend    lista punktów, w których rysować legendę (postać: [x0 y0 x1 y1 ...])
+     * @param values
+     */
     protected void drawLegend(Graphics g, int[] legend, String... values) {
         g.setColor(PLOT_LEGEND_COLOR);
         int vi = 0;
@@ -81,6 +104,10 @@ public class PlotPanel
         }
     }
     
+    /** Ustawia nazwę firmy, dla której wykres ma zostać utworzony.
+     * @param company   nazwa firmy
+     * @return  ten obiekt
+     */
     public PlotPanel setCompany(String company) {
         mCompany = company;
         return this;
