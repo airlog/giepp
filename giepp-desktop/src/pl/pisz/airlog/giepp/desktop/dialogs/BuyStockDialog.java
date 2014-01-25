@@ -24,9 +24,9 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-/**
+/** Okno dialogowe umożliwiające kupienie pakietów akcji.
  * @author Rafal
- *
+ * @see BuyStockDialog
  */
 public class BuyStockDialog
         extends JDialog
@@ -44,6 +44,9 @@ public class BuyStockDialog
     private JButton mBuyButton = new JButton("Kup");
     private JButton mCancelButton = new JButton("Anuluj");
     
+    /** Tworzy nowy obiekt.
+     * @param owner okno wywołujące dialog
+     */
     public BuyStockDialog(JFrame owner) {
         super(owner, "Kup akcje");
         
@@ -94,26 +97,43 @@ public class BuyStockDialog
         builder.add(insidePanel, cc.xyw(2, 8, 4));
     }
 
+    /** Ustawia cenę w odpowiednim formacie i w odpowiednim polu tekstowym.
+     * @param price cena w groszach
+     */
     protected void setPriceValue(Integer price) {
         mPriceField.setText(HelperTools.getPriceFormat().format(
                 (double) price * 0.01 * (double) ((Integer) mAmountSpinner.getValue()).intValue()));
     }
     
+    /** Ustawia pieniądze w odpowiednim formacie i w odpowiednim polu tekstowym.
+     * @param money pieniądze w groszach
+     */
     protected void setMoneyValue(Long money) {
         mMoneyField.setText(HelperTools.getPriceFormat().format((double) money * 0.01));
     }
     
+    /** Przekierowuje odebrane sygnały zależnie od ich źródła.
+     * @see BuyStockDialog#onBuyClicked()
+     * @see BuyStockDialog#onCancelClicked()
+     */
     @Override
     public void actionPerformed(ActionEvent ae) {
         if (ae.getSource() == mBuyButton) this.onBuyClicked();
         else if (ae.getSource() == mCancelButton) this.onCancelClicked();
     }
     
+    /** Reagowanie na zmiany stanu ilości sprzedawanych akcji.
+     * 
+     */
     @Override
     public void stateChanged(ChangeEvent ce) {
         this.setPriceValue(mCompanyStock.getEndPrice());
     }
     
+    /** 
+     * @throws IllegalStateException gdy nie ustawiono obiektu akcji
+     * @see BuyStockDialog#setCompany(CurrentStock)
+     */
     @Override
     public void setVisible(boolean b) {
         if (mCompanyStock == null) throw new IllegalStateException("Must set stock before showing the dialog");
@@ -136,6 +156,9 @@ public class BuyStockDialog
         super.setVisible(b);
     }
     
+    /** Metoda wywoływania po zatwierdzeniu kupna przez użytkownika.
+     * Wybrana ilość akcji jest kupowana poprzez klasę {@link Game}.
+     */
     public void onBuyClicked() {
         this.stateChanged(null);
         
@@ -155,10 +178,16 @@ public class BuyStockDialog
         }
     }
     
+    /** Metoda wywoływana po anulowaniu kupna.
+     * Domyślnie powoduje ukrycie okna dialogowego.
+     */
     public void onCancelClicked() {
         this.setVisible(false);
     }
 
+    /** Ustawia obiekt akcji, którą chcemy kupić.
+     * @param stock obiekt akcji do kupienia.
+     */
     public void setCompany(CurrentStock stock) {
         mCompanyStock = stock;
     }

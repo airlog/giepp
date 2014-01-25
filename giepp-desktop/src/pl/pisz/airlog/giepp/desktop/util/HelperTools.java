@@ -13,6 +13,9 @@ import pl.pisz.airlog.giepp.data.gpw.GPWDataSource;
 
 import pl.pisz.airlog.giepp.game.Game;
 
+/** Zawiera rzadko wykorzystywane metody.
+ * @author Rafal
+ */
 public class HelperTools {
 
     private static final String APPLICATION_DIR_NAME = ".giepp";
@@ -26,14 +29,28 @@ public class HelperTools {
         return new File(HelperTools.getUserHomePath() + sep + APPLICATION_DIR_NAME);
     }
     
+    /** Korzystając z właściwości Java określa ścieżke do katalogu domowego użytkownika.
+     * @return  ścieżka do katalogu domowego użytkownika
+     * @see System#getProperty(String)
+     */
     protected static String getUserHomePath() {
         return System.getProperty("user.home");
     }
     
+    /** Korzystając z właściwości Java określa separator plików wykorzystywany w systemie.
+     * @return  separator
+     * @see System#getProperty(String)
+     */
     protected static String getFileSeparator() {
         return System.getProperty("file.separator");
     }
-        
+    
+    /** Rozpoczyna nową grę i tworzy odpowiednie pliki przechowujące stan gry.
+     * Ta metoda powinna być wywoływana jedynie podczas uruchomienia i nie należy wykorzystywać
+     * jej do restartowania stanu gry (od tego jest dedykowana metoda).
+     * 
+     * @return  nowy obiekt {@link Game}
+     */
     public static Game newGame() {
         File dir = HelperTools.getApplicationPath();
         if (!dir.exists()) dir.mkdirs();
@@ -57,6 +74,10 @@ public class HelperTools {
         return new Game(new GPWDataSource(), new GPWDataParser(), localStorage);
     }
     
+    /** Odwraca działanie danego {@link Comparator}.
+     * @param comparator    komparator do odwrócenia
+     * @return  nowy komparator działający odwrotnie
+     */
     public static <T> Comparator<T> getReverseComparator(Comparator<T> comparator) {
         final Comparator<T> comp = comparator;
         return new Comparator<T>() {
@@ -67,6 +88,9 @@ public class HelperTools {
         };
     }
     
+    /** Format cen wykorzystywany w aplikacji.
+     * @return  obowiązujący format cen
+     */
     public static DecimalFormat getPriceFormat() {
         return PRICE_FORMAT;
     }

@@ -30,16 +30,22 @@ import pl.pisz.airlog.giepp.desktop.util.CompanySelectedListener;
 import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
 import pl.pisz.airlog.giepp.desktop.util.HelperTools;
 
-/**
- * @author Rafal
+/** Tabela prezentująca aktualne notowania akcji.
  *
+ * Klasa zapewnia obiekty bezpośrednio wykorzystywane przez tabelę, mające mniejsze lub większe
+ * z nią połączenie. Klasa implementuje także interfejs {@link ActionListener} co umożliwa jej
+ * reagowanie na kliknięcia myszą na pola w tabeli.
+ *
+ * @author Rafal
  */
-public class CurrentStockTable
-        extends JTable
+public class CurrentStockTable extends JTable
         implements ActionListener {
 
-    public static class TableModel
-            extends AbstractTableModel {
+    /** Jedyny akceptowalny model tabeli.
+     * @author Rafal
+     * @see MyStockTable.TableModel
+     */
+    public static final class TableModel extends AbstractTableModel {
 
         public static final int COLUMN_COUNT   = 7;    // tyle informacji przenosi CurrentStock
         public static final String COLUMN_NAMES[] = {
@@ -157,8 +163,11 @@ public class CurrentStockTable
         
     }
     
-    public static class TableMouseAdapter
-            extends MouseAdapter {
+    /** Implementacja adaptera myszy dla wierszy tabeli.
+     * @author Rafal
+     * @see MyStockTable.TableMouseAdapter
+     */
+    public static class TableMouseAdapter extends MouseAdapter {
         
         public CurrentStockTable mTable;
         
@@ -184,6 +193,12 @@ public class CurrentStockTable
         
     }
     
+    /** Implementacja adaptera myszy dla nagłówka tabeli.
+     * 
+     * Kliknięcie w nagłówek tabeli powoduje posortowanie jej zgodnie z określonym porządkiem.
+     * 
+     * @author Rafal
+     */
     public static class HeaderMouseAdapter
             extends MouseAdapter {
         
@@ -192,6 +207,10 @@ public class CurrentStockTable
         
         private boolean[] mColumnSorted = new boolean[TableModel.COLUMN_COUNT];
         
+        /** Tworzy nowy obiekt.
+         * @param table tabela
+         * @param model model tabeli
+         */
         public HeaderMouseAdapter(CurrentStockTable table, TableModel model) {
             super();
             
@@ -199,6 +218,13 @@ public class CurrentStockTable
             mTableModel = model;
         }
         
+        /** Zmienia stan danej kolumny.
+         * 
+         * Przez stan kolumny rozumiane jest czy tabela jest względem niej posortowana. Umożliwa
+         * to dynamiczny wybór porządku wierszy.
+         * 
+         * @param pos   numer kolumny
+         */
         protected void changeState(int pos) {
             for (int i = 0; i < mColumnSorted.length; i++) {
                 if (i == pos) mColumnSorted[i] = !mColumnSorted[i];
@@ -206,6 +232,9 @@ public class CurrentStockTable
             }
         }
         
+        /** Sortuje wiersze po nazwie.
+         * @param sorted    jeśli <i>true</i> wiersze zostaną posortowane odwrotnie
+         */
         protected void triggerSortByName(boolean sorted) {
             Comparator<CurrentStock> comparator = CurrentStock.getByNameComparator();
             if (sorted) comparator = HelperTools.getReverseComparator(comparator);
@@ -213,6 +242,9 @@ public class CurrentStockTable
             mTableModel.sort(comparator);
         }
         
+        /** Sortuje wiersze po dacie aktualizacji.
+         * @param sorted    jeśli <i>true</i> wiersze zostaną posortowane odwrotnie
+         */
         protected void triggerSortByTime(boolean sorted) {
             Comparator<CurrentStock> comparator = CurrentStock.getByTimeComparator();
             if (sorted) comparator = HelperTools.getReverseComparator(comparator);
@@ -220,6 +252,9 @@ public class CurrentStockTable
             mTableModel.sort(comparator);
         }
         
+        /** Sortuje wiersze po cenie otwarcia.
+         * @param sorted    jeśli <i>true</i> wiersze zostaną posortowane odwrotnie
+         */
         protected void triggerSortByStartPrice(boolean sorted) {
             Comparator<CurrentStock> comparator = CurrentStock.getByStartPriceComparator();
             if (sorted) comparator = HelperTools.getReverseComparator(comparator);
@@ -227,6 +262,9 @@ public class CurrentStockTable
             mTableModel.sort(comparator);
         }
         
+        /** Sortuje wiersze po cenie minimalnej w danym dniu.
+         * @param sorted    jeśli <i>true</i> wiersze zostaną posortowane odwrotnie
+         */
         protected void triggerSortByMinPrice(boolean sorted) {
             Comparator<CurrentStock> comparator = CurrentStock.getByMinPriceComparator();
             if (sorted) comparator = HelperTools.getReverseComparator(comparator);
@@ -234,6 +272,9 @@ public class CurrentStockTable
             mTableModel.sort(comparator);
         }
         
+        /** Sortuje wiersze po cenie maksymlanej w danym dniu.
+         * @param sorted    jeśli <i>true</i> wiersze zostaną posortowane odwrotnie
+         */
         protected void triggerSortByMaxPrice(boolean sorted) {
             Comparator<CurrentStock> comparator = CurrentStock.getByMaxPriceComparator();
             if (sorted) comparator = HelperTools.getReverseComparator(comparator);
@@ -241,6 +282,9 @@ public class CurrentStockTable
             mTableModel.sort(comparator);
         }
         
+        /** Sortuje wiersze po aktualnej cenie.
+         * @param sorted    jeśli <i>true</i> wiersze zostaną posortowane odwrotnie
+         */
         protected void triggerSortByEndPrice(boolean sorted) {
             Comparator<CurrentStock> comparator = CurrentStock.getByEndPriceComparator();
             if (sorted) comparator = HelperTools.getReverseComparator(comparator);
@@ -248,14 +292,16 @@ public class CurrentStockTable
             mTableModel.sort(comparator);
         }
         
+        /** Sortuje wiersze po procentach zmiany.
+         * @param sorted    jeśli <i>true</i> wiersze zostaną posortowane odwrotnie
+         */
         protected void triggerSortByChange(boolean sorted) {
             Comparator<CurrentStock> comparator = CurrentStock.getByChangeComparator();
             if (sorted) comparator = HelperTools.getReverseComparator(comparator);
             
             mTableModel.sort(comparator);
         }
-        
-        
+          
         @Override
         public void mouseClicked(MouseEvent me) {
             if (me.getButton() != MouseEvent.BUTTON1) return;
@@ -291,7 +337,10 @@ public class CurrentStockTable
         }
         
     }
-    
+
+    /** Definiuje sposób wyświetlania zmiany (pola) w tabeli.
+     * @author Rafal
+     */
     public static class ChangeRenderer
             extends DefaultTableCellRenderer {
     
@@ -321,6 +370,10 @@ public class CurrentStockTable
         
     }
 
+    /** Definiuje sposób wyświetlania cen w tabeli.
+     * @author Rafal
+     * @see MyStockTable.PriceRenderer
+     */
     public static class PriceRenderer
             extends DefaultTableCellRenderer {
                 
@@ -344,6 +397,11 @@ public class CurrentStockTable
     
     private CompanySelectedListener mCompanySelectedListener = null;
     
+    /** Tworzy nowy obiekt.
+     * @param model         model tabeli
+     * @param buyDialog     okno dialogowe zakupu
+     * @param sellDialog    okno dialogowe sprzedaży
+     */
     public CurrentStockTable(TableModel model,
             BuyStockDialog buyDialog, SellStockDialog sellDialog) {
         super();
@@ -358,6 +416,7 @@ public class CurrentStockTable
         this.getTableHeader().addMouseListener(new HeaderMouseAdapter(this, model));
     }
     
+    /** Wyświetla okno zakupu. */
     protected void showBuyDialog() {
         if (mBuyDialog.isVisible()) mBuyDialog.setVisible(false);
         
@@ -365,6 +424,7 @@ public class CurrentStockTable
         mBuyDialog.setVisible(true);
     }
     
+    /** Wyświetla okno sprzedaży. */
     protected void showSellDialog() {
         if (mSellDialog.isVisible()) mSellDialog.setVisible(false);
         
@@ -372,12 +432,14 @@ public class CurrentStockTable
         mSellDialog.setVisible(true);    
     }
     
+    /** Dodaje zaznaczony wiersz do obserwowanych. */
     protected void observeStock() {
         String company = ((TableModel) this.getModel()).getStock(this.getSelectedRow()).getName();
         GameUtilities.getInstance().addToObserved(company);
         GameUtilities.refreshObservedTable();
     }
     
+    /** Usuwa zaznaczony wiersz z obserwowanych. */
     protected void unobserveStock() {
         String company = ((TableModel) this.getModel()).getStock(this.getSelectedRow()).getName();
         GameUtilities.getInstance().removeFromObserved(company);
@@ -397,6 +459,7 @@ public class CurrentStockTable
         mCompanySelectedListener.onCompanySelected((String) this.getModel().getValueAt(row, 0));
     }
     
+    /** Obsługa kliknięć myszy na menu kontekstowe. */
     @Override
     public void actionPerformed(ActionEvent ae) {
         if (ae.getActionCommand().equals(CurrentStockPopupMenu.ITEM_BUY)) this.showBuyDialog();
@@ -405,10 +468,16 @@ public class CurrentStockTable
         else if (ae.getActionCommand().equals(CurrentStockPopupMenu.ITEM_UNOBSERVE)) this.unobserveStock();
     }
         
+    /** Ustawia obiekt nasłuchujący na zmiany wybranego wiersza.
+     * @param l
+     */
     public void setCompanySelectedListener(CompanySelectedListener l) {
         mCompanySelectedListener = l;
     }
-    
+
+    /**
+     * @return  menu kontekstowe tabeli
+     */
     public CurrentStockPopupMenu getPopup() {
         return mPopupMenu;
     }

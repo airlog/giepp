@@ -33,21 +33,34 @@ import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
 import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
 import pl.pisz.airlog.giepp.desktop.widgets.MyStockTable;
 
+/** Klasa nadzorująca działanie programu.
+ * @author Rafal
+ */
 public class GieppDesktop {
 
     private static int VERSION_MAJOR           = 1;
     private static int VERSION_MINOR           = 0;
     private static int VERSION_PATCH           = 2;
     private static String VERSION_DECORATOR    = "beta";
-        
+    
+    /** Aktualna wersja programu.
+     * @return  aktualna wersja programu jako string
+     */
     public static String getVersion() {
         return String.format("%d.%d-%s-%d", VERSION_MAJOR, VERSION_MINOR, VERSION_DECORATOR, VERSION_PATCH);
     }
     
+    /** Data wydania aktualnej wersji progamu.
+     * @return  data wydania
+     */
     public static String getReleasedDate() {
         return "2014-01-12";
     }
     
+    /** Ładuje grafikę z podanej ścieżki, obsługuje również archiwa JAR.
+     * @param path  ścieżka do grafiki
+     * @return  wczytana grafika
+     */
     public static ImageIcon getIcon(String path) {
         ImageIcon icon = new ImageIcon(path);
         if (icon.getImage().getWidth(null) < 0) {
@@ -57,6 +70,10 @@ public class GieppDesktop {
         return icon;
     }
     
+    /** Tworzy adres URL danego pliku lub jeśli nie istnieje jego odpowiednika w archiwum JAR.
+     * @param path  ścieżka do pliku
+     * @return  odpowiadający ścieżke adres URL
+     */
     public static URL getUrlForResource(String path) {
         URL url = null;
         try {
@@ -71,6 +88,12 @@ public class GieppDesktop {
         return url;
     }
     
+    /** Zmienia rozmiar grafiki.
+     * @param src   grafika
+     * @param nw    nowa szerokość
+     * @param nh    nowa wysokość
+     * @return  grafika po transformacjach
+     */
     public static ImageIcon resizeIcon(ImageIcon src, int nw, int nh) {
         Image img = src.getImage();
         
@@ -81,6 +104,9 @@ public class GieppDesktop {
         return new ImageIcon(bi);
     }
     
+    /** Uruchamia aplikację.
+     * @param args  niewykorzystywane
+     */
     public static void main(String[] args) {
         final MyStockTable.TableModel myStockModel = new MyStockTable.TableModel();
         final CurrentStockTable.TableModel currentStockModel = new CurrentStockTable.TableModel();
