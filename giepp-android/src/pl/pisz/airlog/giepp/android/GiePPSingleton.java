@@ -12,6 +12,8 @@ import pl.pisz.airlog.giepp.data.PlayerStock;
 import pl.pisz.airlog.giepp.data.Stats;
 import pl.pisz.airlog.giepp.data.gpw.GPWDataParser;
 import pl.pisz.airlog.giepp.data.gpw.GPWDataSource;
+import pl.pisz.airlog.giepp.game.ActionError;
+import pl.pisz.airlog.giepp.game.ActionException;
 import pl.pisz.airlog.giepp.game.Game;
 import android.app.AlertDialog;
 import android.os.Environment;
@@ -158,8 +160,10 @@ public class GiePPSingleton{
 					}
 				}
 			});
-		}catch( Exception e){
-			Log.i("giepp","Blad1: " + e);
+		} catch( ActionException e){
+			if (e.getReason() != ActionError.TOO_OLD_DATA) {
+				return;
+			}
 			try {
 				act.runOnUiThread(new Runnable(){
 					public void run(){
@@ -189,9 +193,10 @@ public class GiePPSingleton{
 					}
 				}
 			});
-		}
-		catch(Exception e){
-			Log.i("giepp","nie udalo sie: " + e);
+		} catch( ActionException e){
+			if (e.getReason() != ActionError.TOO_OLD_DATA) {
+				return;
+			}
 			try {
 				act.runOnUiThread(new Runnable(){
 					public void run(){
