@@ -20,13 +20,22 @@ public class Plotter {
 	private int mMin;
 	private int mMarginX;   // ucięcie z lewego boku (legenda)
 	private int mMarginY;   // ucięcie z góry i dołus
+	private int mMarginBottom; //usciecie na legende u dolu
 	
 	private int mLegendCount;
-	
+	private int mDateCount = 2;
+
+	/** Tworzy nowy obiekt. Ustawia wartości pól zgodnie z argumentami
+	 * @param archival - dane archiwalne dla danej firmy
+	 * @param width - szerokość prostokąta, na którym ma się znajdować wykres 
+	 * @param height - wysokość prostokąta, na którym ma się znajdować wykres 
+	 * @param legendCount - liczba, na którą podzielona ma być podziałka pionowa wykresu
+	 * */
 	public Plotter(ArrayList<ArchivedStock> archival, int width, int height, int legendCount) {
 		mArchival = archival;
 		mWidth = width;
-		mHeight = height;
+		mMarginBottom = 20;
+		mHeight = height - mMarginBottom;
 		mLegendCount = legendCount;
 		
 		mMarginX = mWidth/10;
@@ -75,7 +84,7 @@ public class Plotter {
 		int days = mArchival.size();
 
 		int height = mHeight - 2 * mMarginY;
-		int width = mWidth - mMarginX;
+		int width = mWidth - 2 * mMarginX;
 		
 		int deltaX = width/days;
 		
@@ -106,7 +115,7 @@ public class Plotter {
 		return result;
 	}
 	
-	/** Zwraca tablicę wartości legendy.
+	/** Zwraca tablicę wartości legendy dla legendy pionowej.
 	 * @return lista stringów [s0, s1 ...]
 	 */
 	public String[] getVerticalLegendValues() {
@@ -124,7 +133,7 @@ public class Plotter {
 		return result;
 	}
 	 
-	/** Zwraca tablicę współrzędnych X, Y dla legendy.
+	/** Zwraca tablicę współrzędnych X, Y dla legendy pionowej.
 	 * @return lista punktów [x0 y0 x1 y1 ...]
 	 */
 	public float[] getVerticalLegendPositions() {
@@ -137,6 +146,33 @@ public class Plotter {
 		
 		return result;
 	}
-	 
-}
+	
+	/** Zwraca tablicę wartości legendy dla legendy poziomej.
+	 * @return lista stringów [s0, s1 ...]
+	 */
+	public String[] getHorizontalLegendValues() {
+		String[] values = new String[mDateCount];
+		int size = mArchival.size();
+		float delta = size*1.0f/(mDateCount+1);
+		for (int i = 0; i < mDateCount-1; i++) {
+			values[i] = mArchival.get(int(delta*i)).getDate();
+		}
+		values[mDateCount-1] = mArchival.get(size-1).getDate();
+		return values;
+	}
 
+	/** Zwraca tablicę współrzędnych X, Y dla legendy poziomej.
+	 * @return lista punktów [x0 y0 x1 y1 ...]
+	 */
+	public float[] getHorizontalLegendPosition() {
+		int width = mWidth - 2 * mMarginX;
+		float[] values = new float[2*mDateCount];
+		int size = mArchival.size();
+		float delta = size/(mDateCount+1);
+		for (int i = 0; i < mDateCount; i++) {
+			values[2*i] = mMarginX + width*i/(mDateCount-1); 			
+			values[2*i+1] = mHeight + mMarginBottom/2; 
+		}
+		return values;	
+	}	
+}
