@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
@@ -17,6 +18,7 @@ import javax.swing.event.ChangeListener;
 import pl.pisz.airlog.giepp.data.CurrentStock;
 import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
 import pl.pisz.airlog.giepp.desktop.util.HelperTools;
+import pl.pisz.airlog.giepp.game.ActionError;
 import pl.pisz.airlog.giepp.game.ActionException;
 import pl.pisz.airlog.giepp.game.Game;
 
@@ -169,12 +171,19 @@ public class BuyStockDialog
             GameUtilities.refreshMyStockTable();
             this.setVisible(false);
            
-            // TODO: wyświetl dialog potwierdzający kupno
+            JOptionPane.showMessageDialog(this, "Kupiono pakiet akcji!");
         }
         catch (ActionException e) {
             System.err.println(e);
             
-            // TODO: wyświetl dialog z błędem
+            String message = "Nie można dokonać transakcji!";
+            if (e.getReason() == ActionError.TOO_OLD_DATA) message = "Za stare dane, zaktualizuj notowania ciągłę!";
+            JOptionPane.showMessageDialog(
+                    this,
+                    message,
+                    "Transakcja nieudana",
+                    JOptionPane.ERROR_MESSAGE
+                );
         }
     }
     
