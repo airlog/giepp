@@ -25,12 +25,7 @@ public class Plotter {
 	private int mLegendCount;
 	private int mDateCount = 2;
 
-	/** Tworzy nowy obiekt. Ustawia wartości pól zgodnie z argumentami
-	 * @param archival - dane archiwalne dla danej firmy
-	 * @param width - szerokość prostokąta, na którym ma się znajdować wykres 
-	 * @param height - wysokość prostokąta, na którym ma się znajdować wykres 
-	 * @param legendCount - liczba, na którą podzielona ma być podziałka pionowa wykresu
-	 * */
+	@Deprecated
 	public Plotter(ArrayList<ArchivedStock> archival, int width, int height, int legendCount) {
 		mArchival = archival;
 		mWidth = width;
@@ -47,7 +42,31 @@ public class Plotter {
 		this.findMin();
 		this.findMax();
 	}
-	 
+
+	/** Tworzy nowy obiekt. Ustawia wartości pól zgodnie z argumentami
+	 * @param archival - dane archiwalne dla danej firmy
+	 * @param width - szerokość prostokąta, na którym ma się znajdować wykres 
+	 * @param height - wysokość prostokąta, na którym ma się znajdować wykres 
+	 * @param legendCount - liczba, na którą podzielona ma być podziałka pionowa wykresu
+	 * */
+	public Plotter(ArrayList<ArchivedStock> archival, int width, int height, int legendVCount, int legendHCount) {
+		mArchival = archival;
+		mWidth = width;
+		mMarginBottom = 20;
+		mHeight = height - mMarginBottom;
+		mLegendCount = legendVCount;
+		mDateCount = legendHCount;
+		
+		mMarginX = mWidth/10;
+		mMarginY = 2;
+		
+		if (mArchival == null || mArchival.size() == 0) {
+			return;
+		}
+		this.findMin();
+		this.findMax();
+	}	
+	
 	private void findMin() {
 		int min = mArchival.get(0).getMinPrice(); 
 		
@@ -155,7 +174,7 @@ public class Plotter {
 		int size = mArchival.size();
 		float delta = size*1.0f/(mDateCount+1);
 		for (int i = 0; i < mDateCount-1; i++) {
-			values[i] = mArchival.get(int(delta*i)).getDate();
+			values[i] = mArchival.get(size - 1 - (int)(delta*i)).getDate();
 		}
 		values[mDateCount-1] = mArchival.get(size-1).getDate();
 		return values;
@@ -167,11 +186,11 @@ public class Plotter {
 	public float[] getHorizontalLegendPosition() {
 		int width = mWidth - 2 * mMarginX;
 		float[] values = new float[2*mDateCount];
-		int size = mArchival.size();
-		float delta = size/(mDateCount+1);
+	//	int size = mArchival.size();
+	//	float delta = size*1.0f/(mDateCount+1);
 		for (int i = 0; i < mDateCount; i++) {
 			values[2*i] = mMarginX + width*i/(mDateCount-1); 			
-			values[2*i+1] = mHeight + mMarginBottom/2; 
+			values[2*i+1] = mHeight + mMarginBottom; 
 		}
 		return values;	
 	}	
