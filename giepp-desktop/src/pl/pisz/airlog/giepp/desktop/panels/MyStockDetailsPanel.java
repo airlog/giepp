@@ -14,17 +14,18 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-/**
+/** Panel prezentujący aktualny stan konta.
  * @author Rafal
- *
  */
-public class MyStockDetailsPanel
-        extends JPanel {
+public class MyStockDetailsPanel extends JPanel {
     
     private JTextField mMoneyField = new JTextField();
     private JTextField mStockField = new JTextField();
     private JTextField mTotalField = new JTextField();
     
+    /** Tworzy nowy obiekt.
+     * 
+     */
     public MyStockDetailsPanel() {
         super(false);
         
@@ -58,10 +59,17 @@ public class MyStockDetailsPanel
         builder.add(mTotalField, cc.xy(4, 4));
     }
     
+    /** Ustawia ładnie sformatowaną cenę w określonym polu tekstowym.
+     * @param textField pole tekstowe
+     * @param price     cena do sformatowania
+     */
     protected void setPriceText(JTextField textField, double price) {
         textField.setText(HelperTools.getPriceFormat().format(price));
     }
     
+    /** Uaktualnia pola, pobierając aktualny stan gry.
+     * @see GameUtilities
+     */
     protected void updateFields() {
         Game game = GameUtilities.getInstance();
         
@@ -73,10 +81,13 @@ public class MyStockDetailsPanel
         this.setPriceText(mTotalField, money + value);
     }
     
+    /**
+     * Każde odmalowanie widoku powoduje aktualizację wyświetlanych wartości.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         this.updateFields();        
         super.paintComponent(g);
     }
-    
+        
 }

@@ -11,12 +11,16 @@ import pl.pisz.airlog.giepp.desktop.dialogs.BuyStockDialog;
 import pl.pisz.airlog.giepp.desktop.dialogs.SellStockDialog;
 import pl.pisz.airlog.giepp.desktop.widgets.CurrentStockTable;
 
-/**
+/** Panel wyświetlający widok notowań ciągłych.
+ * 
+ * Panel zawiera dwa ekrany podzielone belką, której umiejscowienie jest konfigurowalne. Na jednym
+ * ekranie znajduje się tabela z aktualnymi notowaniami, a na drugim szczegóły wybranej spółki.
+ * 
  * @author Rafal
- *
+ * @see CompanyDetailsPanel
+ * @see CurrentStockTable
  */
-public class RatingsPanel
-        extends JPanel {
+public class RatingsPanel extends JPanel {
 
     private JSplitPane mSplitPane;    
     private CompanyDetailsPanel mDetailsPanel;

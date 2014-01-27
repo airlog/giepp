@@ -7,6 +7,7 @@ import java.util.Comparator;
  * startPrice, minPrice, maxPrice - mogą być przydatne przy podejmowaniu decyzji 
  * change - zmiana ceny od otwarcia, wyrażona w procentach, może być przydatna przy podejmowaniu decyzji 
  * time - czas ostatniej transakcji
+ * @author Rafał, Joanna 
  * **/
 public class CurrentStock extends ArchivedStock {
 
@@ -108,6 +109,16 @@ public class CurrentStock extends ArchivedStock {
         };
     }
 	
+	/** Konstruktor, w którym ustawiane są wartości trzymane w tej klasie. Wywoływany jest w nim
+	 * konstruktor z klasy {link ArchivedStock}.
+	 * @param name - nazwa firmy
+	 * @param time - czas ostatniej tranzakcji
+	 * @param startPrice - cena z pierwszej tranzakcji lub cena odniesienia
+	 * @param minPrice - minimalna cena w trakcie całego dnia
+	 * @param maxPrice - maksymalna cena w trakcie całego dnia
+	 * @param endPrice - cena z ostatniej tranzakcji
+	 * @param change - zmiana ceny z ostatniej tranzakcji w stosunku do ceny odniesienia
+	*/
 	public CurrentStock(String name, String time, int startPrice, int minPrice, int maxPrice, int endPrice, float change) {
 		super(name,maxPrice,minPrice);
 	
@@ -117,18 +128,26 @@ public class CurrentStock extends ArchivedStock {
 		this.change = change;
 	}
 	
+	/** Metoda zwracająca cenę z pierwszej tranzakcji lub odniesienia.
+	 * @return cena z pierwszej tranzakcji lub odniesienia*/
 	public Integer getStartPrice() {
 	    return startPrice;
 	}
 	
+	/** Metoda zwracająca cenę z ostatniej tranzakcji.
+	 * @return cena z ostatniej tranzakcji */
 	public Integer getEndPrice() {
 	    return endPrice;
 	}
 	
+	/** Metoda zwracająca zmianę ceny z ostatniej tranzakcji w stosunku do ceny odniesienia.
+	 * @return zmiana ceny z ostatniej tranzakcji w stosunku do ceny odniesienia */
 	public Float getChange() {
 	    return change;
 	}
 	
+	/** Metoda zwracająca czas ostatniej tranzakcji.
+	 * @return czas ostatniej tranzakcji*/
 	public String getTime() {
 	    return time;
 	}

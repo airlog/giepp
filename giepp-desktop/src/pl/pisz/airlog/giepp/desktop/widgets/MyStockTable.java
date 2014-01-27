@@ -29,30 +29,42 @@ import pl.pisz.airlog.giepp.desktop.util.CompanySelectedListener;
 import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
 import pl.pisz.airlog.giepp.desktop.util.HelperTools;
 
-/**
- * @author Rafal
+/** Tabela prezentująca posiadane pakiety akcji.
  *
+ * Klasa zapewnia obiekty bezpośrednio wykorzystywane przez tabelę, mające mniejsze lub większe
+ * z nią połączenie. Klasa implementuje także interfejs {@link ActionListener} co umożliwa jej
+ * reagowanie na kliknięcia myszą na pola w tabeli.
+ *
+ * @author Rafal
  */
-public class MyStockTable
-        extends JTable
+public class MyStockTable extends JTable
         implements ActionListener {
 
-    public static class TableModel
-            extends AbstractTableModel {
+    /** Jedyny akceptowalny model tabeli.
+     * @author Rafal
+     */
+    public static final class TableModel extends AbstractTableModel {
 
         public static final int COLUMN_COUNT   = 4;
         public static final String COLUMN_NAMES[] = {
                     "Nazwa", 
                     "Ilość", "Kwota zakupu",
                     "Wartość",
-                    };
+                };
         
         private ArrayList<PlayerStock> mStocks = new ArrayList<PlayerStock>();
         
+        /** Tworzy nowy obiekt.
+         *
+         */
         public TableModel() {
             super();
         }
         
+        /** Dodaje obiekt akcji do tabeli. 
+         * @param stock obiekt akcji
+         * @return  ten obiekt
+         */
         public TableModel add(PlayerStock stock) {
             mStocks.add(stock);
             this.fireTableDataChanged();
@@ -60,6 +72,10 @@ public class MyStockTable
             return this;
         }
         
+        /** Dodaje wszystkie obiekty akcji z danej kolekcji do tabeli.
+         * @param c kolekcja obiektów akcji
+         * @return  ten obiekt
+         */
         public TableModel addAll(Collection<? extends PlayerStock> c) {
             mStocks.addAll(c);
             this.fireTableDataChanged();
@@ -67,6 +83,9 @@ public class MyStockTable
             return this;
         }
 
+        /** Usuwa wszystkie wiersze z tabeli.
+         * @return  ten obiekt
+         */
         public TableModel clear() {
             int size = mStocks.size();
             
@@ -126,10 +145,17 @@ public class MyStockTable
             return COLUMN_NAMES[columnIndex];
         }
 
+        /** Zwraca obiek akcji.
+         * @param row   numer wiersza
+         * @return  obiekt akcji z żądanego wiersza
+         */
         public PlayerStock getStock(int row) {
             return mStocks.get(row);
         }
         
+        /** Sortuje wiersze.
+         * @param comparator    komparator określający porządek
+         */
         public void sort(Comparator<PlayerStock> comparator) {
             Collections.sort(mStocks, comparator);
             
@@ -143,12 +169,17 @@ public class MyStockTable
         }
         
     }
-    
-    public static class TableMouseAdapter
-            extends MouseAdapter {
+
+    /** Implementacja adaptera myszy dla wierszy tabeli.
+     * @author Rafal
+     */
+    public static class TableMouseAdapter extends MouseAdapter {
         
         public MyStockTable mTable;
         
+        /** Tworzy nowy obiekt.
+         * @param table tabela, która nasłuchuje.
+         */
         public TableMouseAdapter(MyStockTable table) {
             super();
             
@@ -172,14 +203,23 @@ public class MyStockTable
         
     }
     
-    public static class HeaderMouseAdapter
-            extends MouseAdapter {
+    /** Implementacja adaptera myszy dla nagłówka tabeli.
+     * 
+     * Kliknięcie w nagłówek tabeli powoduje posortowanie jej zgodnie z określonym porządkiem.
+     * 
+     * @author Rafal
+     */
+    public static class HeaderMouseAdapter extends MouseAdapter {
         
         private MyStockTable mTable;
         private TableModel mTableModel;  
         
         private boolean[] mColumnSorted = new boolean[TableModel.COLUMN_COUNT];
         
+        /** Tworzy nowy obiekt.
+         * @param table tabela
+         * @param model model tabeli
+         */
         public HeaderMouseAdapter(MyStockTable table, TableModel model) {
             super();
             
@@ -187,6 +227,13 @@ public class MyStockTable
             mTableModel = model;
         }
         
+        /** Zmienia stan danej kolumny.
+         * 
+         * Przez stan kolumny rozumiane jest czy tabela jest względem niej posortowana. Umożliwa
+         * to dynamiczny wybór porządku wierszy.
+         * 
+         * @param pos   numer kolumny
+         */
         protected void changeState(int pos) {
             for (int i = 0; i < mColumnSorted.length; i++) {
                 if (i == pos) mColumnSorted[i] = !mColumnSorted[i];
@@ -194,6 +241,9 @@ public class MyStockTable
             }
         }
         
+        /** Sortuje wiersze po nazwie.
+         * @param sorted    jeśli <i>true</i> wiersze zostaną posortowane odwrotnie
+         */
         protected void triggerSortByName(boolean sorted) {
             Comparator<PlayerStock> comparator = PlayerStock.getByNameComparator();
             if (sorted) comparator = HelperTools.getReverseComparator(comparator);
@@ -201,6 +251,9 @@ public class MyStockTable
             mTableModel.sort(comparator);
         }
         
+        /** Sortuje wiersze po ilości akcji.
+         * @param sorted    jeśli <i>true</i> wiersze zostaną posortowane odwrotnie
+         */
         protected void triggerSortByAmount(boolean sorted) {
             Comparator<PlayerStock> comparator = PlayerStock.getByAmountComparator();
             if (sorted) comparator = HelperTools.getReverseComparator(comparator);
@@ -208,6 +261,9 @@ public class MyStockTable
             mTableModel.sort(comparator);
         }
         
+        /** Sortuje wiersze po cenie.
+         * @param sorted    jeśli <i>true</i> wiersze zostaną posortowane odwrotnie
+         */
         protected void triggerSortByPrice(boolean sorted) {
             Comparator<PlayerStock> comparator = PlayerStock.getByPriceComparator();
             if (sorted) comparator = HelperTools.getReverseComparator(comparator);
@@ -215,6 +271,9 @@ public class MyStockTable
             mTableModel.sort(comparator);
         }
         
+        /** Sortuje wiersze po wartości pakietu.
+         * @param sorted    jeśli <i>true</i> wiersze zostaną posortowane odwrotnie
+         */
         protected void triggerSortByValue(boolean sorted) {
             Comparator<PlayerStock> comparator = PlayerStock.getByValueComparator();
             if (sorted) comparator = HelperTools.getReverseComparator(comparator);
@@ -249,8 +308,10 @@ public class MyStockTable
         
     }
     
-    public static class PriceRenderer
-            extends DefaultTableCellRenderer {
+    /** Definiuje sposób wyświetlania cen w tabeli.
+     * @author Rafal
+     */
+    public static class PriceRenderer extends DefaultTableCellRenderer {
                 
         @Override
         protected void setValue(Object value) {            
@@ -272,6 +333,11 @@ public class MyStockTable
     
     private CompanySelectedListener mCompanySelectedListener = null;
     
+    /** Tworzy nowy obiekt.
+     * @param model         model tabeli
+     * @param buyDialog     okno dialogowe zakupu
+     * @param sellDialog    okno dialogowe sprzedaży
+     */
     public MyStockTable(TableModel model,
              BuyStockDialog buyDialog, SellStockDialog sellDialog) {
         super();
@@ -285,7 +351,8 @@ public class MyStockTable
         this.getTableHeader().setReorderingAllowed(false);
         this.getTableHeader().addMouseListener(new HeaderMouseAdapter(this, model));
     }
-        
+    
+    /** Wyświetla okno zakupu. */
     protected void showBuyDialog() {
         if (mBuyDialog.isVisible()) mBuyDialog.setVisible(false);
         
@@ -294,6 +361,7 @@ public class MyStockTable
         mBuyDialog.setVisible(true);
     }
     
+    /** Wyświetla okno sprzedaży. */
     protected void showSellDialog() {
         if (mSellDialog.isVisible()) mSellDialog.setVisible(false);
         
@@ -302,12 +370,14 @@ public class MyStockTable
         mSellDialog.setVisible(true);    
     }
     
+    /** Dodaje zaznaczony wiersz do obserwowanych. */
     protected void observeStock() {
         String company = ((TableModel) this.getModel()).getStock(this.getSelectedRow()).getCompanyName();
         GameUtilities.getInstance().addToObserved(company);
         GameUtilities.refreshObservedTable();
     }
     
+    /** Usuwa zaznaczony wiersz z obserwowanych. */
     protected void unobserveStock() {
         String company = ((TableModel) this.getModel()).getStock(this.getSelectedRow()).getCompanyName();
         GameUtilities.getInstance().removeFromObserved(company);
@@ -327,6 +397,7 @@ public class MyStockTable
         mCompanySelectedListener.onCompanySelected((String) this.getModel().getValueAt(row, 0));
     }
     
+    /** Obsługa kliknięć myszy na menu kontekstowe. */
     @Override
     public void actionPerformed(ActionEvent ae) {
         if (ae.getActionCommand().equals("Kup")) this.showBuyDialog();
@@ -334,11 +405,17 @@ public class MyStockTable
         else if (ae.getActionCommand().equals(CurrentStockPopupMenu.ITEM_OBSERVE)) this.observeStock();
         else if (ae.getActionCommand().equals(CurrentStockPopupMenu.ITEM_UNOBSERVE)) this.unobserveStock();
     }
-        
+    
+    /** Ustawia obiekt nasłuchujący na zmiany wybranego wiersza.
+     * @param l
+     */
     public void setCompanySelectedListener(CompanySelectedListener l) {
         mCompanySelectedListener = l;
     }
     
+    /**
+     * @return  menu kontekstowe tabeli
+     */
     public CurrentStockPopupMenu getPopup() {
         return mPopupMenu;
     }

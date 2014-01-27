@@ -25,12 +25,11 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-/**
+/** Okno dialogowe umożliwiające sprzedanie pakietów akcji.
  * @author Rafal
- *
+ * @see BuyStockDialog
  */
-public class SellStockDialog
-        extends JDialog
+public class SellStockDialog extends JDialog
         implements ActionListener, ChangeListener {    
 
     private CurrentStock mCompanyStock;
@@ -45,6 +44,9 @@ public class SellStockDialog
     private JButton mSellButton = new JButton("Sprzedaj");
     private JButton mCancelButton = new JButton("Anuluj");
     
+    /** Tworzy nowy obiekt.
+     * @param owner okno wywołujące dialog
+     */
     public SellStockDialog(JFrame owner) {
         super(owner, "Sprzedaj akcje");
         
@@ -95,26 +97,43 @@ public class SellStockDialog
         builder.add(insidePanel, cc.xyw(2, 8, 4));
     }
 
+    /** Ustawia cenę w odpowiednim formacie i w odpowiednim polu tekstowym.
+     * @param price cena w groszach
+     */
     protected void setPriceValue(Integer price) {
         mPriceField.setText(HelperTools.getPriceFormat().format(
                 (double) price * 0.01 * (double) ((Integer) mAmountSpinner.getValue()).intValue()));
     }
     
+    /** Ustawia ilość w odpowiednim formacie i odpowiednim polu tekstowym.
+     * @param amount deklarowana ilość
+     */
     protected void setAmountValue(Integer amount) {
         mAmountField.setText(amount.toString());
     }
-       
+   
+    /** Przekierowuje odebrane sygnały zależnie od ich źródła.
+     * @see SellStockDialog#onSellClicked()
+     * @see SellStockDialog#onCancelClicked()
+     */
     @Override
     public void actionPerformed(ActionEvent ae) {
         if (ae.getSource() == mSellButton) this.onSellClicked();
         else if (ae.getSource() == mCancelButton) this.onCancelClicked();
     }
     
+    /** Reagowanie na zmiany stanu ilości sprzedawanych akcji.
+     * 
+     */
     @Override
     public void stateChanged(ChangeEvent ce) {
         this.setPriceValue(mCompanyStock.getEndPrice());
     }
     
+    /** 
+     * @throws IllegalStateException gdy nie ustawiono obiektu akcji
+     * @see SellStockDialog#setCompany(CurrentStock)
+     */
     @Override
     public void setVisible(boolean b) {
         if (mCompanyStock == null) throw new IllegalStateException("Must set stock before showing the dialog");
@@ -142,6 +161,9 @@ public class SellStockDialog
         super.setVisible(b);
     }
     
+    /** Metoda wywoływania po zatwierdzeniu sprzedaży przez użytkownika.
+     * Wybrana ilość akcji jest sprzedawana poprzez klasę {@link Game}.
+     */
     public void onSellClicked() {
         this.stateChanged(null);
         
@@ -161,10 +183,16 @@ public class SellStockDialog
         }
     }
     
+    /** Metoda wywoływana po anulowaniu sprzedaży.
+     * Domyślnie powoduje ukrycie okna dialogowego.
+     */
     public void onCancelClicked() {
         this.setVisible(false);
     }
 
+    /** Ustawia obiekt akcji, którą chcemy sprzedać.
+     * @param stock obiekt akcji do sprzedania
+     */
     public void setCompany(CurrentStock stock) {
         mCompanyStock = stock;
     }

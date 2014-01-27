@@ -1,6 +1,5 @@
 package pl.pisz.airlog.giepp.desktop.dialogs;
 
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -9,27 +8,20 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import pl.pisz.airlog.giepp.data.CurrentStock;
 import pl.pisz.airlog.giepp.desktop.util.GameUtilities;
-import pl.pisz.airlog.giepp.desktop.util.HelperTools;
-import pl.pisz.airlog.giepp.game.ActionException;
-import pl.pisz.airlog.giepp.game.Game;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-/**
+/** Okno dialogowe umożliwiające wybór ilości dni, z których mają zostać pobrane dane archiwalne.
  * @author Rafal
- *
  */
-public class DaysSelectDialog
-        extends JDialog
+public class DaysSelectDialog extends JDialog
         implements ActionListener, ChangeListener {    
     
     private JSpinner mDaysSpinner;
@@ -37,6 +29,9 @@ public class DaysSelectDialog
     private JButton mRefreshButton = new JButton("Odśwież");
     private JButton mCancelButton = new JButton("Anuluj");
     
+    /** Tworzy nowy obiekt.
+     * @param owner okno wywołujące dialog
+     */
     public DaysSelectDialog(JFrame owner) {
         super(owner, "Pobierz dane archiwalne");
         
@@ -73,24 +68,36 @@ public class DaysSelectDialog
         builder.add(insidePanel, cc.xyw(2, 8, 4));
     }
     
+    /** Metoda wywoływana, gdy zostanie kliknięty przycisk podtwierdzający działanie.
+     * Domyślnie rozpoczynane jest pobieranie danych archiwalnych z wybranego okresu.
+     * 
+     * @see GameUtilities#refreshArchival(int)
+     */
+    protected void onConfirmClicked() {
+        GameUtilities.refreshArchival((Integer) mDaysSpinner.getValue());
+        this.setVisible(false);
+    }
+    
+    /** Metoda wywoływana po kliknięciu przycisku anulującego.
+     * Domyśnie powoduje ukrycie okna dialogowego.
+     */
+    protected void onCancelClicked() {
+        this.setVisible(false);
+    }
+    
+    /** Wywołuje odpowiednią metodą, zależnie od źródła eventu.
+     * @see DaysSelectDialog#onConfirmClicked()
+     * @see DaysSelectDialog#onCancelClicked()
+     */
     @Override
     public void actionPerformed(ActionEvent ae) {
-        if (ae.getSource() == mRefreshButton) this.onBuyClicked();
+        if (ae.getSource() == mRefreshButton) this.onConfirmClicked();
         else if (ae.getSource() == mCancelButton) this.onCancelClicked();
     }
     
     @Override
     public void stateChanged(ChangeEvent ce) {
         // TODO
-    }
-        
-    public void onBuyClicked() {
-        GameUtilities.refreshArchival((Integer) mDaysSpinner.getValue());
-        this.setVisible(false);
-    }
-    
-    public void onCancelClicked() {
-        this.setVisible(false);
     }
   
 }

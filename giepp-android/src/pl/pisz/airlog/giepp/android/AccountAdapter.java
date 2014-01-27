@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import pl.pisz.airlog.giepp.data.CurrentStock;
 import pl.pisz.airlog.giepp.data.PlayerStock;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,11 +48,17 @@ public class AccountAdapter extends ArrayAdapter<PlayerStock> {
 		double priceD = priceL*items.get(position).getAmount()/100.0;
 		NumberFormat formatter = new DecimalFormat("#0.00");
 		String priceS = formatter.format(priceD);
-
 		textView3.setText(priceS);
+		
 		double startD = items.get(position).getStartPrice()/100.0;
 		String startS = formatter.format(startD);
 		
+		if (priceD >= startD) {
+			textView3.setTextColor(Color.GREEN);			
+		}
+		else {
+			textView3.setTextColor(Color.RED);			
+		}
 		textView4.setText(startS);
 
 		

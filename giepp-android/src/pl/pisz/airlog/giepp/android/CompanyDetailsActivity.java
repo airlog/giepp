@@ -22,6 +22,7 @@ public class CompanyDetailsActivity extends Activity implements View.OnClickList
 
 	private int maxToBuy = 0;
 	private int maxToSell = 0;
+	private int minToSell = 0;
 	private String companyName;
 	private CheckBox checkBox;
 	private TextView owned;
@@ -85,13 +86,13 @@ public class CompanyDetailsActivity extends Activity implements View.OnClickList
     public void onClick(View v){
     	
     	if(v.getId() == R.id.buy) {
-    		final Dialog dialog = new BuySellDialog(this,companyName,maxToBuy,1);
+    		final Dialog dialog = new BuySellDialog(this,companyName,0,maxToBuy,1);
     		Log.i("giepp","Tworze dialog");
 			dialog.setTitle("Kupno");	 		
 			dialog.show();
 		  }
     	else if (v.getId() == R.id.sell){
-    		final Dialog dialog = new BuySellDialog(this,companyName,maxToSell,2);
+    		final Dialog dialog = new BuySellDialog(this,companyName,minToSell,maxToSell,2);
     		Log.i("tabsfragments","Tworze dialog");
 			dialog.setTitle("Sprzedaż");	 		
 			dialog.show();
@@ -104,18 +105,12 @@ public class CompanyDetailsActivity extends Activity implements View.OnClickList
     }
 
     public void updateMaxToBuySell() {
+    	maxToBuy = GiePPSingleton.getInstance().getMaximumToBuy(companyName);
+    	minToSell = GiePPSingleton.getInstance().getMinimumToSell(companyName);
 		for(PlayerStock ps : GiePPSingleton.getInstance().getOwned()) {
 			if (ps.getCompanyName().equals(companyName)) {
 				this.maxToSell = ps.getAmount();
 				break;				
-			}
-		}
-		for(CurrentStock cs : GiePPSingleton.getInstance().getCurrent()) {
-			if (cs.getName().equals(companyName)) {
-				if(cs.getEndPrice() > 0 ) {
-					this.maxToBuy = (int) (GiePPSingleton.getInstance().getMoney() / cs.getEndPrice());
-				}
-				break;		
 			}
 		}
 		owned.setText(GiePPSingleton.getInstance().getAmount(companyName)+"");
@@ -130,9 +125,9 @@ public class CompanyDetailsActivity extends Activity implements View.OnClickList
 		} else {
 			nameTV.setText(cs.getName());
 			timeTV.setText(cs.getTime());
-			minTV.setText(df.format(cs.getMinPrice()));
-			maxTV.setText(df.format(cs.getMaxPrice()));
-			priceTV.setText(df.format(cs.getEndPrice()));
+			minTV.setText(df.format(cs.getMinPrice()/100.0));
+			maxTV.setText(df.format(cs.getMaxPrice()/100.0));
+			priceTV.setText(df.format(cs.getEndPrice()/100.0));
 			if (cs.getChange() >= 0) {
 				changeTV.setText("+"+df.format(cs.getChange())+"%");
 				changeTV.setTextColor(Color.GREEN);
@@ -146,23 +141,29 @@ public class CompanyDetailsActivity extends Activity implements View.OnClickList
 }
 
 
-class BuySellDialog extends Dialog implements View.OnClickListener, OnValueChangeListener {
+class BuySellDialog extends Dialog implements View.OnClickListener {
 	
 	private NumberPicker np;
 	private Button buttonOK;
 	private Button buttonNO;
-	private int amount;
+//	private int amount;
 	private int max;
+	private int min;
 	private String companyName;
 	private int type;
 	private CompanyDetailsActivity act;
 	
-	public BuySellDialog(CompanyDetailsActivity act, String companyName, int max, int type){
+	public BuySellDialog(CompanyDetailsActivity act, String companyName, int min, int max, int type){
 		super(act);
 		this.act = act;
 		this.companyName = companyName;
+		this.min = min;
 		this.max = max;
 		this.type = type;
+		if (this.min > this.max) {
+			this.min = 0;
+			this.max = 0;
+		}
 	}
 	
 	@Override
@@ -170,33 +171,31 @@ class BuySellDialog extends Dialog implements View.OnClickListener, OnValueChang
         setContentView(R.layout.dialog);
 		np = (NumberPicker) findViewById(R.id.numberPicker1);
 		np.setMaxValue(max);
-        np.setMinValue(0);
+        np.setMinValue(min);
         np.setWrapSelectorWheel(true);
-        np.setOnValueChangedListener(this);
+    //  np.setOnValueChangedListener(this);
         buttonOK = (Button) findViewById(R.id.buttonOK);	
         buttonNO = (Button) findViewById(R.id.buttonNO);
         buttonOK.setOnClickListener(this);
         buttonNO.setOnClickListener(this);
    }
 	
-	public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+/*	public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
 		amount = newVal;
 	    Log.i("value is",""+newVal);
 
 	}
-
+*/
     public void onClick(View v){
     	if(v.getId() == R.id.buttonOK) {
     		switch (type) {
     			default:
     			case 1:
-    				Log.i("giepp","Kupuje " + amount + " akcji " + companyName);
-    				GiePPSingleton.getInstance().buy(companyName,amount);
+    				GiePPSingleton.getInstance().buy(companyName,np.getValue());
     				act.updateMaxToBuySell();
     				break;
     			case 2:
-    				GiePPSingleton.getInstance().sell(companyName,amount);
-    				Log.i("giepp","Sprzedaje " + amount + " akcji " + companyName);
+    				GiePPSingleton.getInstance().sell(companyName,np.getValue());
     				act.updateMaxToBuySell();
     				break;
     		}
