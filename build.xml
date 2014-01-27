@@ -10,7 +10,7 @@
     <property name="desktop.dir" value="giepp-desktop"/>
      
     <target name="doc">
-        <javadoc destdir="${javadoc.dir}">
+        <javadoc destdir="${javadoc.dir}" charset="utf-8">
             <fileset dir="${core.dir}/src">
                 <include name="**/*.java"/>
             </fileset>
