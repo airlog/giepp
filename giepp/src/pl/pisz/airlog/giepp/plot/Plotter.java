@@ -20,13 +20,17 @@ public class Plotter {
 	private int mMin;
 	private int mMarginX;   // ucięcie z lewego boku (legenda)
 	private int mMarginY;   // ucięcie z góry i dołus
+	private int mMarginBottom; //usciecie na legende u dolu
 	
 	private int mLegendCount;
-	
+	private int mDateCount = 2;
+
+	@Deprecated
 	public Plotter(ArrayList<ArchivedStock> archival, int width, int height, int legendCount) {
 		mArchival = archival;
 		mWidth = width;
-		mHeight = height;
+		mMarginBottom = 20;
+		mHeight = height - mMarginBottom;
 		mLegendCount = legendCount;
 		
 		mMarginX = mWidth/10;
@@ -38,7 +42,31 @@ public class Plotter {
 		this.findMin();
 		this.findMax();
 	}
-	 
+
+	/** Tworzy nowy obiekt. Ustawia wartości pól zgodnie z argumentami
+	 * @param archival - dane archiwalne dla danej firmy
+	 * @param width - szerokość prostokąta, na którym ma się znajdować wykres 
+	 * @param height - wysokość prostokąta, na którym ma się znajdować wykres 
+	 * @param legendCount - liczba, na którą podzielona ma być podziałka pionowa wykresu
+	 * */
+	public Plotter(ArrayList<ArchivedStock> archival, int width, int height, int legendVCount, int legendHCount) {
+		mArchival = archival;
+		mWidth = width;
+		mMarginBottom = 20;
+		mHeight = height - mMarginBottom;
+		mLegendCount = legendVCount;
+		mDateCount = legendHCount;
+		
+		mMarginX = mWidth/10;
+		mMarginY = 2;
+		
+		if (mArchival == null || mArchival.size() == 0) {
+			return;
+		}
+		this.findMin();
+		this.findMax();
+	}	
+	
 	private void findMin() {
 		int min = mArchival.get(0).getMinPrice(); 
 		
@@ -69,12 +97,13 @@ public class Plotter {
 			return null;
 		}
 		
-		float[] result = new float[4 * mArchival.size()];
+		float[] result = new float[2 * mArchival.size()];
+//		float[] result = new float[4 * mArchival.size()];
 		
 		int days = mArchival.size();
 
 		int height = mHeight - 2 * mMarginY;
-		int width = mWidth - mMarginX;
+		int width = mWidth - 2 * mMarginX;
 		
 		int deltaX = width/days;
 		
@@ -88,22 +117,24 @@ public class Plotter {
 		float unitY = (float) height/(float) (mMax - mMin);
 		
 		for (int i = 0; i<mArchival.size(); i++) {
-			int startX = mMarginX + width - (i+1)*deltaX;
-			int endX = mMarginX + width - (i)*deltaX;
+			int x = (int) (mMarginX + width - (i+0.5)*deltaX);
+//			int endX = mMarginX + width - (i)*deltaX;
 			
 			int sum = mArchival.get(i).getMaxPrice() + mArchival.get(i).getMinPrice();
 			int y = (int) ((mMax-sum*0.5f)*unitY);
 
-			result[4*i] = endX;
-			result[4*i + 1] = y;
-			result[4*i + 2] = startX;
-			result[4*i + 3] = y;
+			result[2*i] = x;
+			result[2*i+1] = y;			
+//			result[4*i] = endX;
+//			result[4*i + 1] = y;
+//			result[4*i + 2] = startX;
+//			result[4*i + 3] = y;
 		}
 		
 		return result;
 	}
 	
-	/** Zwraca tablicę wartości legendy.
+	/** Zwraca tablicę wartości legendy dla legendy pionowej.
 	 * @return lista stringów [s0, s1 ...]
 	 */
 	public String[] getVerticalLegendValues() {
@@ -121,7 +152,7 @@ public class Plotter {
 		return result;
 	}
 	 
-	/** Zwraca tablicę współrzędnych X, Y dla legendy.
+	/** Zwraca tablicę współrzędnych X, Y dla legendy pionowej.
 	 * @return lista punktów [x0 y0 x1 y1 ...]
 	 */
 	public float[] getVerticalLegendPositions() {
@@ -134,6 +165,33 @@ public class Plotter {
 		
 		return result;
 	}
-	 
-}
+	
+	/** Zwraca tablicę wartości legendy dla legendy poziomej.
+	 * @return lista stringów [s0, s1 ...]
+	 */
+	public String[] getHorizontalLegendValues() {
+		String[] values = new String[mDateCount];
+		int size = mArchival.size();
+		float delta = size*1.0f/(mDateCount+1);
+		for (int i = 0; i < mDateCount-1; i++) {
+			values[i] = mArchival.get(size - 1 - (int)(delta*i)).getDate();
+		}
+		values[mDateCount-1] = mArchival.get(size-1).getDate();
+		return values;
+	}
 
+	/** Zwraca tablicę współrzędnych X, Y dla legendy poziomej.
+	 * @return lista punktów [x0 y0 x1 y1 ...]
+	 */
+	public float[] getHorizontalLegendPosition() {
+		int width = mWidth - 2 * mMarginX;
+		float[] values = new float[2*mDateCount];
+	//	int size = mArchival.size();
+	//	float delta = size*1.0f/(mDateCount+1);
+		for (int i = 0; i < mDateCount; i++) {
+			values[2*i] = mMarginX + width*i/(mDateCount-1); 			
+			values[2*i+1] = mHeight + mMarginBottom; 
+		}
+		return values;	
+	}	
+}
