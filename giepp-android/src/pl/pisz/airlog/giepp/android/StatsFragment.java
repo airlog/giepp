@@ -17,6 +17,12 @@ import android.widget.DatePicker;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+/** Fragment zawierający informacje takie jak: ile razy gracz zaczynał grę od nowa, ile miał
+ * maksymalnie i minimalnie pieniędzy (wliczając akcje) oraz z jakiego dnia pochodzą ostatnie
+ * dane archiwalne. We fragmencie znajdują się przyciski umożliwiające zaczęcie gry od nowa
+ * oraz pobranie archiwalnych danych z wybranych dni. Podczas pobierania danych archiwalnych
+ * we fragmencie widać ProgressBar. 
+*/
 public class StatsFragment extends Fragment implements View.OnClickListener {
 		
 		private TextView textMaxMoney;
@@ -27,6 +33,10 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
 		private Button buttonRefreshArchival;
 		private ProgressBar bar;
 
+		/** W zależności od klikniętego przysku może pojawić się 
+		 * dialog, w którym gracz może potwierdzić chęć zaczęcia gry od nowa
+		 * lub dialog służący do wyboru przedziału czasu, z którego chce się pobrać dane archiwalne.
+		*/
 		@Override
 		public void onClick(View v) {
 			if (v.getId() == R.id.stats_restart_button) {
@@ -44,6 +54,7 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
 			}
 		}
 		
+		/** Na podstawie layoutu stats.xml tworzony jest widok.*/
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -73,6 +84,7 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
 			return rootView;
 		}
 		
+		/** W widoku aktualizowane są wszystkie wyświetlane informacje.*/
 		public void updateView() {
 			NumberFormat formatter = new DecimalFormat("#0.00");
 
@@ -89,6 +101,7 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
 			textRestarts.setText(restarts+"");
 			textLastDate.setText(GiePPSingleton.getInstance().getLastArchivalDate());
 		}
+
 }
 
 class ConfirmDialog extends Dialog implements View.OnClickListener {
@@ -148,11 +161,8 @@ class RefreshArchivalDialog extends Dialog implements View.OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.refresh_archival_buttonOK) {
-	//		bar.setVisibility(View.VISIBLE);
 			GiePPSingleton.getInstance().refreshArchival(bar, start.getDayOfMonth(), start.getMonth(), start.getYear(),
 						end.getDayOfMonth(), end.getMonth(), end.getYear());
-	//		RefreshArchivalTask task = new RefreshArchivalTask();
-	//		task.execute(start.getDayOfMonth(), start.getMonth(), start.getYear(),end.getDayOfMonth(), end.getMonth(), end.getYear());
 		}
 		dismiss();
 	}

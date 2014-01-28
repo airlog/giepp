@@ -25,7 +25,7 @@
 	        android:textColor="#000000"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="Pieniądze na koncie: " />
+	        android:text="Na koncie: " />
 	    <TextView
 	        android:id="@+id/money"
 	        android:textSize = "20dp" 
@@ -43,7 +43,7 @@
 	        android:textColor="#000000"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="Pieniądze w akcjach: " />
+	        android:text="W akcjach: " />
 	    <TextView
 	        android:id="@+id/stock"
 	        android:textSize = "20dp" 
@@ -61,7 +61,7 @@
             android:textColor="#000000"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pieniądze w sumie: " />
+            android:text="W sumie: " />
         <TextView
             android:id="@+id/money_all"
             android:textSize = "20dp" 
@@ -120,15 +120,63 @@
 	        android:layout_weight="0.5"  
 	        android:gravity="right"  
 	        android:singleLine="true"  
-	        android:text="SUMA PLN"  
+	        android:text="TERAZ PLN"  
 	        android:textSize = "24dp" 
 	    />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+    >
+    <TextView  
+            android:layout_width="fill_parent"  
+            android:layout_height="fill_parent"  
+            android:textColor="#000000"  
+            android:background="#D0D0D0"
+            android:layout_weight="0.5"
+            android:gravity="center_vertical"  
+            android:text="RAZEM" 
+            android:textSize = "24dp" 
+        />
+        <TextView  
+            android:layout_width="fill_parent"  
+            android:layout_height="fill_parent"  
+            android:textColor="#000000"  
+            android:background="#D0D0D0"
+            android:layout_weight="0.5"  
+            android:gravity="right"  
+            android:singleLine="true"  
+            android:id="@+id/suma_ilosc"
+            android:textSize = "24dp" 
+        />  
+        <TextView  
+            android:layout_width="fill_parent"  
+            android:layout_height="fill_parent"  
+            android:textColor="#000000"  
+            android:background="#D0D0D0"
+            android:layout_weight="0.5"  
+            android:gravity="right"  
+            android:singleLine="true"  
+            android:id="@+id/suma_zakup"
+            android:textSize = "24dp" 
+        />
+        <TextView  
+            android:layout_width="fill_parent"  
+            android:layout_height="fill_parent"  
+            android:textColor="#000000"  
+            android:background="#D0D0D0"
+            android:layout_weight="0.5"  
+            android:gravity="right"  
+            android:singleLine="true"  
+            android:id="@+id/suma_teraz"
+            android:textSize = "24dp" 
+        />
+    </LinearLayout>
     <ListView
         android:id="@+id/my_account_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
     </ListView>
-
+    
 </LinearLayout>

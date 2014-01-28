@@ -13,6 +13,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+/** Obiekt tej klasy jest wykresem, na którym można zobaczyć jak zmieniała
+ * się cena akcji danej firmy w czasie pewnej liczby dni.*/
 public class CompanyChart extends View {
 	
 	private Paint paint;
@@ -21,18 +23,33 @@ public class CompanyChart extends View {
 	private int min;
 	private int max;
 	
+	/** Tworzy obiekt tej klasy. Wywołuje metodę init(), w której następuje pobranie
+	 * danych dotyczących firmy (pobierane z {@link GiePPSingleton}). Ustalana jest też liczba 
+	 * dni, z których ceny będą przedstawione na wykresie oraz 
+	 * maksymalna i minimalna cena akcji (potrzebne do wyskalowania wykresu).
+	 * */
 	public CompanyChart(Context ctx) {
 		super(ctx);
 		
 		this.init();
 	}
 	
-	public CompanyChart(Context ctx,AttributeSet attr) {
+	/** Tworzy obiekt tej klasy. Wywołuje metodę init(), w której następuje pobranie
+	 * danych dotyczących firmy (pobierane z {@link GiePPSingleton}). Ustalana jest też liczba 
+	 * dni, z których ceny będą przedstawione na wykresie oraz 
+	 * maksymalna i minimalna cena akcji (potrzebne do wyskalowania wykresu).
+	 * */
+	public CompanyChart(Context ctx, AttributeSet attr) {
 		super(ctx,attr);
 		this.init();
 	}
 	
-	public CompanyChart(Context ctx,AttributeSet attr,int styleDef) {
+	/** Tworzy obiekt tej klasy. Wywołuje metodę init(), w której następuje pobranie
+	 * danych dotyczących firmy (pobierane z {@link GiePPSingleton}). Ustalana jest też liczba 
+	 * dni, z których ceny będą przedstawione na wykresie oraz 
+	 * maksymalna i minimalna cena akcji (potrzebne do wyskalowania wykresu).
+	 * */
+	public CompanyChart(Context ctx, AttributeSet attr, int styleDef) {
 		super(ctx,attr,styleDef);
 		this.init();
 	}
@@ -57,6 +74,7 @@ public class CompanyChart extends View {
 		
 	}
 	
+	/** Używając obiektu klasy Plotter rysowany jest wykres dla danej firmy.*/
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);

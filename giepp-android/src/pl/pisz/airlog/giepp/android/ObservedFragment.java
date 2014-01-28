@@ -14,13 +14,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
+/** Fragment zawierający listę z aktualnymi danymi obserwowanych prze gracza firm z notowań ciągłych.*/
 public class ObservedFragment extends Fragment implements OnItemClickListener{
 		
 	private ObservedAdapter adapter2;
 
-	public ObservedFragment() {
-	}
-	
+	/** Po kliknięciu wyświetlane jest {@link CompanyDetailsActivity} dotyczące wybranej firmy
+	 * (firma ta jest zapisywana w {@link GiePPSingleton}).*/	
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Intent intent = new Intent(getActivity(), CompanyDetailsActivity.class);
 		String name = adapter2.getName(position);
@@ -29,6 +29,8 @@ public class ObservedFragment extends Fragment implements OnItemClickListener{
 		
 	}
 	
+	/** Na podstawie layoutu observed.xml tworzony jest widok. Tworzony jest 
+	 * adapter {@link ObservedAdapter}.*/
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState) {

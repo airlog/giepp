@@ -9,15 +9,18 @@ import android.app.Dialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.NumberPicker;
-import android.widget.NumberPicker.OnValueChangeListener;
 import android.widget.TextView;
 
+/**Activity zawierające wykres zawierający dane archiwalne dla danej firmy oraz informacje aktualne.
+ * W tym activity znajduje się też informacja o ilości podiadanych akcji tej firmy przez gracza.
+ * Za pomocą CheckBoxa znajdującego się w tym activity można dodać firmę do obserowanych
+ * albo ją z tamtąd usunąć. Za pomocą przycisków Kup i Sprzedaj można kupić lub sprzedać
+ * akcje danej firmy.*/
 public class CompanyDetailsActivity extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener{
 
 	private int maxToBuy = 0;
@@ -36,6 +39,7 @@ public class CompanyDetailsActivity extends Activity implements View.OnClickList
 	
 	private DecimalFormat df;
 	
+	/** Na podstawie layoutu company_details.xml tworzony jest widok.*/
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);                
@@ -71,42 +75,51 @@ public class CompanyDetailsActivity extends Activity implements View.OnClickList
 		
 	}
 
+	/**W przypadku zaznaczenia CheckBoxa firma dodawana jest do obesrwowanych
+	 * ({@link GiePPSingleton#addToObserved(String)}). W przypadku 
+	 * odznaczenia firma usuwana jest z obserwowanych ({@link GiePPSingleton#removeFromObserved(String)})
+	 * @param isChecked informacja czy CheckBox jest zaznaczony czy nie*/
 	@Override
-	public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		if (isChecked) {
 			GiePPSingleton.getInstance().addToObserved(companyName);
-    		Log.i("giepp","Dodaje do obserwowanych: " + companyName);
-    	}
-    	else {
-    		GiePPSingleton.getInstance().removeFromObserved(companyName);
-    		Log.i("giepp","Usuwam z obserwowanych: " + companyName);    		
-    	}
-    }
+			Log.i("giepp","Dodaje do obserwowanych: " + companyName);
+		}
+		else {
+			GiePPSingleton.getInstance().removeFromObserved(companyName);
+			Log.i("giepp","Usuwam z obserwowanych: " + companyName);    		
+		}
+	}
 
-    public void onClick(View v){
-    	
-    	if(v.getId() == R.id.buy) {
-    		final Dialog dialog = new BuySellDialog(this,companyName,0,maxToBuy,1);
-    		Log.i("giepp","Tworze dialog");
+	/**W przypadku kliknięcia w przycisk Kup wyświetlany jest dialog służący do kupowania
+	 * akcji z możliwością wyboru ilości kupowanych akcji ({@link GiePPSingleton#buy(String, int)}).
+	 * W przypadku kliknięcia w przycisk Sprzedaj wyświetlany jest dialog służący do spzredawania
+	 * akcji z możliwością wyboru ilości sprzedawanych akcji ({@link GiePPSingleton#sell(String, int)}). 
+	 * @param v element, który został kliknięty*/
+	public void onClick(View v){
+		
+		if(v.getId() == R.id.buy) {
+			final Dialog dialog = new BuySellDialog(this,companyName,0,maxToBuy,1);
+			Log.i("giepp","Tworze dialog");
 			dialog.setTitle("Kupno");	 		
 			dialog.show();
-		  }
-    	else if (v.getId() == R.id.sell){
-    		final Dialog dialog = new BuySellDialog(this,companyName,minToSell,maxToSell,2);
-    		Log.i("tabsfragments","Tworze dialog");
+		}
+		else if (v.getId() == R.id.sell){
+			final Dialog dialog = new BuySellDialog(this,companyName,minToSell,maxToSell,2);
+			Log.i("tabsfragments","Tworze dialog");
 			dialog.setTitle("Sprzedaż");	 		
 			dialog.show();
-		  }
-    }
-    
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return true;
-    }
+		}
+	}
 
-    public void updateMaxToBuySell() {
-    	maxToBuy = GiePPSingleton.getInstance().getMaximumToBuy(companyName);
-    	minToSell = GiePPSingleton.getInstance().getMinimumToSell(companyName);
+	/** Uaktualniane są maksymalne i minimalne ilości akcji danej firmy jakie można kupić i sprzedać
+	 * ({@link GiePPSingleton#getMaximumToBuy(String)}, {@link GiePPSingleton#getMinimumToSell(String)}).
+	 * Dodatkowo uaktualniane są wyświetlane we fragmencie informacje o ilości posiadanych akcji
+	 * oraz o aktualnych danych dotyczących firmy.
+	 * */
+	public void updateMaxToBuySell() {
+		maxToBuy = GiePPSingleton.getInstance().getMaximumToBuy(companyName);
+		minToSell = GiePPSingleton.getInstance().getMinimumToSell(companyName);
 		for(PlayerStock ps : GiePPSingleton.getInstance().getOwned()) {
 			if (ps.getCompanyName().equals(companyName)) {
 				this.maxToSell = ps.getAmount();
@@ -137,7 +150,7 @@ public class CompanyDetailsActivity extends Activity implements View.OnClickList
 				changeTV.setTextColor(Color.RED);
 			}
 		}
-    }
+	}
 }
 
 
@@ -167,18 +180,18 @@ class BuySellDialog extends Dialog implements View.OnClickListener {
 	}
 	
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.dialog);
+	public void onCreate(Bundle savedInstanceState) {
+		setContentView(R.layout.dialog);
 		np = (NumberPicker) findViewById(R.id.numberPicker1);
 		np.setMaxValue(max);
-        np.setMinValue(min);
-        np.setWrapSelectorWheel(true);
+		np.setMinValue(min);
+		np.setWrapSelectorWheel(true);
     //  np.setOnValueChangedListener(this);
-        buttonOK = (Button) findViewById(R.id.buttonOK);	
-        buttonNO = (Button) findViewById(R.id.buttonNO);
-        buttonOK.setOnClickListener(this);
-        buttonNO.setOnClickListener(this);
-   }
+		buttonOK = (Button) findViewById(R.id.buttonOK);	
+		buttonNO = (Button) findViewById(R.id.buttonNO);
+		buttonOK.setOnClickListener(this);
+		buttonNO.setOnClickListener(this);
+	}
 	
 /*	public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
 		amount = newVal;
@@ -186,20 +199,20 @@ class BuySellDialog extends Dialog implements View.OnClickListener {
 
 	}
 */
-    public void onClick(View v){
-    	if(v.getId() == R.id.buttonOK) {
-    		switch (type) {
-    			default:
-    			case 1:
-    				GiePPSingleton.getInstance().buy(companyName,np.getValue());
-    				act.updateMaxToBuySell();
-    				break;
-    			case 2:
-    				GiePPSingleton.getInstance().sell(companyName,np.getValue());
-    				act.updateMaxToBuySell();
-    				break;
-    		}
-    	}
-    	dismiss();
-    }
+	public void onClick(View v){
+		if(v.getId() == R.id.buttonOK) {
+			switch (type) {
+				default:
+				case 1:
+					GiePPSingleton.getInstance().buy(companyName,np.getValue());
+					act.updateMaxToBuySell();
+					break;
+				case 2:
+					GiePPSingleton.getInstance().sell(companyName,np.getValue());
+					act.updateMaxToBuySell();
+					break;
+			}
+		}
+		dismiss();
+	}
 }

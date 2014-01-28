@@ -4,8 +4,10 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
+import pl.pisz.airlog.giepp.data.CurrentStock;
 import pl.pisz.airlog.giepp.data.PlayerStock;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -17,16 +19,20 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
+/** Fragment zawierający informacje o posiadanych przez
+ * gracza pieniądzach oraz akcjach.*/
 public class MyAccountFragment extends Fragment implements OnItemClickListener {
 		
 		private AccountAdapter adapter3;
 		private TextView textMoney;
 		private TextView textStock;
 		private TextView textMoneyAll;
+		private TextView suma_ilosc;
+		private TextView suma_zakup;
+		private TextView suma_teraz;
 		
-		public MyAccountFragment() {		
-		}	
-
+		/** Po kliknięciu wyświetlane jest {@link CompanyDetailsActivity} dotyczące wybranej firmy
+		 * (firma ta jest zapisywana w {@link GiePPSingleton}).*/
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 			Intent intent = new Intent(getActivity(), CompanyDetailsActivity.class);
 			String name = adapter3.getName(position);
@@ -35,6 +41,8 @@ public class MyAccountFragment extends Fragment implements OnItemClickListener {
 			
 		}
 		
+		/** Na podstawie layoutu my_account.xml tworzony jest widok. Tworzony jest 
+		 * adapter {@link AccountAdapter}.*/
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -42,7 +50,11 @@ public class MyAccountFragment extends Fragment implements OnItemClickListener {
 			textMoney = (TextView) rootView.findViewById(R.id.money);
 			textMoneyAll = (TextView)  rootView.findViewById(R.id.money_all);
 			textStock = (TextView) rootView.findViewById(R.id.stock);
-		
+
+			suma_ilosc = (TextView) rootView.findViewById(R.id.suma_ilosc);
+			suma_zakup = (TextView)  rootView.findViewById(R.id.suma_zakup);
+			suma_teraz = (TextView) rootView.findViewById(R.id.suma_teraz);
+			
 			updateView();
 
 			ListView list =  (ListView) rootView.findViewById(R.id.my_account_list);
@@ -59,6 +71,7 @@ public class MyAccountFragment extends Fragment implements OnItemClickListener {
 			return rootView;
 		}
 		
+		/** W widoku aktualizowane są informacje o posiadanych przez gracza pieniądzach.*/
 		public void updateView() {
 			NumberFormat formatter = new DecimalFormat("#0.00");
 
@@ -74,5 +87,38 @@ public class MyAccountFragment extends Fragment implements OnItemClickListener {
 			textMoney.setText(moneyS+" PLN");
 			textStock.setText(stockS+" PLN");
 			textMoneyAll.setText(allS+" PLN");
+			
+			ArrayList<PlayerStock> owned = GiePPSingleton.getInstance().getOwned();
+			
+			int ilosc = 0;
+			int zakup = 0;
+			long teraz = 0;
+			
+			ArrayList<CurrentStock> c = GiePPSingleton.getInstance().getCurrent();
+			for (PlayerStock o : owned) {
+				ilosc += o.getAmount();
+				zakup += o.getStartPrice();
+				long terazL = 0;
+				for(int i = 0; i<c.size();i++)
+					if(o.getCompanyName().equals(c.get(i).getName())){
+						terazL = c.get(i).getEndPrice();
+						break;
+					}
+				teraz += terazL*o.getAmount();
+			}
+			suma_ilosc.setText(ilosc+"");
+			double zakupD = zakup/100.0;
+			String zakupS = formatter.format(zakupD);
+			double terazD = teraz/100.0;
+			String terazS = formatter.format(terazD);
+			
+			suma_zakup.setText(zakupS);
+			suma_teraz.setText(terazS);
+			if (zakup <= teraz) {
+				suma_teraz.setTextColor(Color.GREEN);			
+			}
+			else {
+				suma_teraz.setTextColor(Color.RED);			
+			}
 		}
 }

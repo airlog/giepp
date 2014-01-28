@@ -13,17 +13,29 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+/** Adapter, który odpowiada za listę danych o wszystkich firmach z notowań ciągłych.*/
 public class AllRecordsAdapter extends ArrayAdapter<CurrentStock> {
 
 	private ArrayList<CurrentStock> items;
 	private Context context;
-	    
-    public AllRecordsAdapter(Context context, int textViewResourceId,ArrayList<CurrentStock> items) {
-      super(context, textViewResourceId,items);
-      this.items = items;
-      this.context = context;
-    }
+	
 
+	/**Tworzy obiekt na podstawie parametrów wywołując konstruktor klasy ArrayAdapter oraz wypełnia 
+	 * nimi odpowiednie pola tego obiektu.
+	 * @param context Context, do którego należy lista
+	 * @param textViewResourceId layout określający wygląd pojedynczego elementu (wierszu) listy
+	 * @param items lista zawierająca aktualne dane o wszystkich firmach z notowań ciagłych
+	*/
+	public AllRecordsAdapter(Context context, int textViewResourceId,ArrayList<CurrentStock> items) {
+		super(context, textViewResourceId,items);
+		this.items = items;
+		this.context = context;
+	}
+	
+	/**Zwraca View zawierające wypełniony na podstawie danych element (wiersz) ListView.
+	 * @param position numer elementu listy
+	 * @return pojedynczy wiersz w liscie
+	 */
 	public View getView(int position, View convertView, ViewGroup parent) {
 		LayoutInflater inflater = (LayoutInflater) context
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -55,12 +67,21 @@ public class AllRecordsAdapter extends ArrayAdapter<CurrentStock> {
 		}
 		return rowView;
 	}
-	public void zmiana(ArrayList<CurrentStock> it){
+
+	/**Zmienia zawartość listy danych o wszystkich firmach z notowań ciągłych.
+	 * @param it nowa lista posiadanych przez gracza akcji.
+	 * **/
+	public void update(ArrayList<CurrentStock> it){
 		items.clear();
 		for(int i =0;i<it.size(); i++)
 			this.items.add(it.get(i));
 		this.notifyDataSetChanged();
 	}
+
+	/** Zwraca nazwę firmy, znajdującej się na podanej pozycji w liście danych o wszystkich firmach z notowań ciągłych.
+	 * @param index pozycja na liście
+	 * @return nazwa firmy
+	 * */
 	public String getName(int index) {
 		return items.get(index).getName();
 	}
