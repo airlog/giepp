@@ -14,6 +14,9 @@
             <fileset dir="${core.dir}/src">
                 <include name="**/*.java"/>
             </fileset>
+            <fileset dir="${android.dir}/src">
+                <include name="**/*.java"/>
+            </fileset>
             <fileset dir="${desktop.dir}/src">
                 <include name="**/*.java"/>
             </fileset>
