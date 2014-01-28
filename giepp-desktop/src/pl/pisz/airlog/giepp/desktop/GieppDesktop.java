@@ -157,9 +157,6 @@ public class GieppDesktop {
                mmb.setMenuListener(new MainMenuBar.MainMenuListener() {                   
                    @Override
                    public void onFileQuit(ActionEvent ae) {
-                       buyDialog.setVisible(false);
-                       sellDialog.setVisible(false);
-                       daysDialog.setVisible(false);
                        System.exit(0);
                    }
                    
