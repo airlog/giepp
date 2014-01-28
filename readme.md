@@ -18,3 +18,5 @@ signing prior to installing on a device.
 If you want to compile our project from source just enter its main directory and issue the ``ant <target>``
 command, where *target* is either ``desktop`` or ``android``. For more information please see our Wiki
 (currently available only in Polish).
+
+If you have any questions please see our [FAQ](https://github.com/robin92/giepp/wiki/FAQ) and [Wiki](https://github.com/robin92/giepp/wiki).
