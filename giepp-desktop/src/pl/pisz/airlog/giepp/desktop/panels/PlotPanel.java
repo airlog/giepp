@@ -35,14 +35,19 @@ public class PlotPanel extends JPanel {
         if (mCompany == null) return; 
                 
         Plotter plotter = new Plotter(this.getArchiveForCompany(mCompany),
-                this.getWidth(), this.getHeight(), PLOT_LEGEND_COUNT);
+                this.getWidth(), this.getHeight(), PLOT_LEGEND_COUNT, PLOT_LEGEND_COUNT);
         
         int[] points = this.floatArrayToIntArray(plotter.getPoints());  // prawa -> lewa
-        int[] legend = this.floatArrayToIntArray(plotter.getVerticalLegendPositions());  // góra -> dół
-        String[] values = plotter.getVerticalLegendValues();  // góra -> dół
-                
+        
+        int[] legendv = this.floatArrayToIntArray(plotter.getVerticalLegendPositions());  // góra -> dół
+        String[] valuesv = plotter.getVerticalLegendValues();  // góra -> dół
+        
+        int[] legendh = this.floatArrayToIntArray(plotter.getHorizontalLegendPosition());
+        String[] valuesh = plotter.getHorizontalLegendValues();
+        
         this.drawLines(g, points);
-        this.drawLegend(g, legend, values);
+        this.drawLegend(g, legendv, valuesv);
+        this.drawLegend(g, legendh, valuesh);
     }
     
     /** Konwertuje tablicę liczb zmiennoprzecinkowych w tablicę liczb całkowitych.
