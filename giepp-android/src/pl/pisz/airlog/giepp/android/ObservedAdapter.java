@@ -13,17 +13,28 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+/** Adapter, który odpowiada za listę danych o obserwowanych przez gracza firmach z notowań ciągłych.*/
 public class ObservedAdapter extends ArrayAdapter<CurrentStock> {
 
 	private ArrayList<CurrentStock> items;
 	private Context context;
-	    
-    public ObservedAdapter(Context context, int textViewResourceId,ArrayList<CurrentStock> items) {
-      super(context, textViewResourceId,items);
-      this.items = items;
-      this.context = context;
-    }
 
+	/**Tworzy obiekt na podstawie parametrów wywołując konstruktor klasy ArrayAdapter oraz wypełnia 
+	 * nimi odpowiednie pola tego obiektu.
+	 * @param context Context, do którego należy lista
+	 * @param textViewResourceId layout określający wygląd pojedynczego elementu (wierszu) listy
+	 * @param items lista zawierająca aktualne dane o obserwowanych firmach z notowań ciagłych
+	*/
+	public ObservedAdapter(Context context, int textViewResourceId,ArrayList<CurrentStock> items) {
+		super(context, textViewResourceId,items);
+		this.items = items;
+		this.context = context;
+	}
+
+	/**Zwraca View zawierające wypełniony na podstawie danych element (wiersz) ListView.
+	 * @param position numer elementu listy
+	 * @return pojedynczy wiersz w liscie
+	 */
 	public View getView(int position, View convertView, ViewGroup parent) {
 		LayoutInflater inflater = (LayoutInflater) context
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -56,7 +67,10 @@ public class ObservedAdapter extends ArrayAdapter<CurrentStock> {
 		return rowView;
 	}
 	
-	public void zmiana(ArrayList<CurrentStock> it, ArrayList<String> obs){
+	/**Zmienia zawartość listy danych o obserwowanych firmach z notowań ciągłych.
+	 * @param it nowa lista posiadanych przez gracza akcji.
+	 * **/
+	public void update(ArrayList<CurrentStock> it, ArrayList<String> obs){
 		items.clear();
 		for(int i =0;i<it.size(); i++) {
 			if(obs.contains(it.get(i).getName())) {
@@ -65,7 +79,11 @@ public class ObservedAdapter extends ArrayAdapter<CurrentStock> {
 		}
 		this.notifyDataSetChanged();
 	}
-	
+
+	/** Zwraca nazwę firmy, znajdującej się na podanej pozycji w liście danych o obserwowanych firmach z notowań ciągłych.
+	 * @param index pozycja na liście
+	 * @return nazwa firmy
+	 * */	
 	public String getName(int index) {
 		return items.get(index).getName();
 	}

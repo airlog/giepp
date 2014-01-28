@@ -18,13 +18,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+/**Główne Activity aplikacji. */
 public class MainActivity extends FragmentActivity {
 	
 	private SectionsPagerAdapter mSectionsPagerAdapter;
 	private ViewPager mViewPager;
 	private ProgressBar progressBar;
 
-
+	/**Wyświetlany jest obraz na podstawie layoutu activity_main.xml. Tworzone są zakładki służące
+	 * do nawigacji między fragmentami aplikacji. Tworzony jest ProgressBar
+	 * informujący o tym, czy w danej chwili pobierane są aktualne dane o firmach. */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -41,59 +44,62 @@ public class MainActivity extends FragmentActivity {
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 		
 		mViewPager = (ViewPager) findViewById(R.id.pager);
-	    mViewPager.setOnPageChangeListener(
-	            new ViewPager.SimpleOnPageChangeListener() {
-	                @Override
-	                public void onPageSelected(int position) {
-	                    getActionBar().setSelectedNavigationItem(position);
-	                }
-	            }
-	    );
-
+		mViewPager.setOnPageChangeListener(
+			new ViewPager.SimpleOnPageChangeListener() {
+				@Override
+				public void onPageSelected(int position) {
+					getActionBar().setSelectedNavigationItem(position);
+				}
+			}
+		);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 
-	    ActionBar.TabListener tabListener = new ActionBar.TabListener() {
-	        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-	            mViewPager.setCurrentItem(tab.getPosition());
-	        }
+		ActionBar.TabListener tabListener = new ActionBar.TabListener() {
+			public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+				mViewPager.setCurrentItem(tab.getPosition());
+			}
+			public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {}
 
-	        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-	            // hide the given tab
-	        }
-
-	        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-	            // probably ignore this event
-	        }	    
-	    };
-	    actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_tab_account).setTabListener(tabListener));
-	    actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_tab_records).setTabListener(tabListener));
-	    actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_tab_observed).setTabListener(tabListener));
-	    actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_tab_stats).setTabListener(tabListener));
+			public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {}
+		};
+		
+		actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_tab_account).setTabListener(tabListener));
+		actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_tab_records).setTabListener(tabListener));
+		actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_tab_observed).setTabListener(tabListener));
+		actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_tab_stats).setTabListener(tabListener));
 	}
 
+	/** Tworzy menu na podstawie main_menu.xml.*/
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-			    MenuInflater inflater = getMenuInflater();
-			    inflater.inflate(R.menu.main_menu, menu);
-			    return true;
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main_menu, menu);
+		return true;
 	}
 
+	
+	/** Po wybraniu opcji z menu wyświetlane jest activity zawierające informacje 
+	 * o aplikacji {@link AboutActivity} albo odświeżane są aktualne dane o firmach
+	 * ({@link GiePPSingleton#refreshCurrent()})
+	 * @param item opcja w menu, która została wybrana*/
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    // Handle presses on the action bar items
-	    switch (item.getItemId()) {
-	        case R.id.action_refresh:
+		switch (item.getItemId()) {
+			case R.id.action_refresh:
 				GiePPSingleton.getInstance().refreshCurrent();
-	            return true;
-	        case R.id.menu_about:
-	        	Log.i("giepp","info");
+				return true;
+			case R.id.menu_about:
+				Log.i("giepp","info");
 				Intent intent = new Intent(this, AboutActivity.class);
 				startActivity(intent);
-	        	return true;
-	        default:
-	            return super.onOptionsItemSelected(item);
-	    }
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
 	}
 
+	/** Metoda zmieniająca zachowanie się ProgressBaru informującego, czy 
+	 * w danym momencie pobierane są aktualne dane o firmach.*/
 	public void updateProgressBar() {
 		if (GiePPSingleton.getInstance().isRefreshingCurrent()) {
 			progressBar.setVisibility(View.VISIBLE);
@@ -103,8 +109,8 @@ public class MainActivity extends FragmentActivity {
 		}
 
 	}
-	
-	public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+	private class SectionsPagerAdapter extends FragmentPagerAdapter {
 				
 		public SectionsPagerAdapter(FragmentManager fm) {
 			super(fm);

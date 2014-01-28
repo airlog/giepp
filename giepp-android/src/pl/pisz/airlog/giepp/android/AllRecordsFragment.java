@@ -14,21 +14,22 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
+/** Fragment zawierający listę z aktualnymi danymi firm z notowań ciągłych.*/
 public class AllRecordsFragment extends Fragment implements OnItemClickListener {
 		
 		private AllRecordsAdapter adapter1;
-		
-		public AllRecordsFragment() {
-		}
-		
+				
+		/** Po kliknięciu wyświetlane jest {@link CompanyDetailsActivity} dotyczące wybranej firmy
+		 * (firma ta jest zapisywana w {@link GiePPSingleton}).*/
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 			Intent intent = new Intent(getActivity(), CompanyDetailsActivity.class);
 			String name = adapter1.getName(position);
 			GiePPSingleton.getInstance().setName(name);
-			getActivity().startActivity(intent);      
-			
+			getActivity().startActivity(intent);
 		}
 		
+		/** Na podstawie layoutu all_records.xml tworzony jest widok. Tworzony jest 
+		 * adapter {@link AllRecordsAdapter}.*/
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
