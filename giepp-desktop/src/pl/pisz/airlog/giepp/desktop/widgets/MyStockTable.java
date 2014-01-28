@@ -312,17 +312,26 @@ public class MyStockTable extends JTable
      * @author Rafal
      */
     public static class PriceRenderer extends DefaultTableCellRenderer {
-                
-        @Override
-        protected void setValue(Object value) {            
-            super.setValue(value);
-            this.setHorizontalAlignment(SwingConstants.RIGHT);
-            if (!(value instanceof Integer)) return;
-            
+       
+        private void setIntegerValue(Integer value) {
             int i = (Integer) value;
             double price = ((double) i) * 0.01;
             
             this.setText(HelperTools.getPriceFormat().format(price));
+        }
+        
+        private void setDoubleValue(Double value) {
+            // zakładam, że jest to już przeliczone na zł            
+            this.setText(HelperTools.getPriceFormat().format((double) value));
+        }
+       
+        @Override
+        protected void setValue(Object value) {            
+            super.setValue(value);
+            this.setHorizontalAlignment(SwingConstants.RIGHT);
+            
+            if (value instanceof Integer) this.setIntegerValue((Integer) value);
+            else if (value instanceof Double) this.setDoubleValue((Double) value);
         }
         
     }
