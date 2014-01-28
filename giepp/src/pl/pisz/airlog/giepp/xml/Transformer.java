@@ -17,6 +17,11 @@ public interface Transformer<T> {
      */
     public abstract Element transform(T object);
     
+    /** Converts XML node to Java object.
+     * @param node  XML node
+     * @return  Java object
+     * @throws IllegalArgumentException
+     */
     public abstract T transform(Node node)
             throws IllegalArgumentException;
 

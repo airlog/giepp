@@ -37,6 +37,11 @@ public class StatsTransformer
         return this.xmlDocument.createElement(tag);
     }
 
+    /** Parses child node according to its tag.
+     * @param child XML node, child
+     * @param stats statistics class
+     * @throws IllegalArgumentException
+     */
     protected void parseChild(Node child, Stats stats)
             throws IllegalArgumentException {
         if (child.getNodeName().equals("money")) {
