@@ -33,18 +33,14 @@ public class PlotPanel extends JPanel {
         
         super.paintComponent(g);
         if (mCompany == null) return; 
-        
-        System.err.println(String.format("plotting '%s'", mCompany));
-        
+                
         Plotter plotter = new Plotter(this.getArchiveForCompany(mCompany),
                 this.getWidth(), this.getHeight(), PLOT_LEGEND_COUNT);
         
         int[] points = this.floatArrayToIntArray(plotter.getPoints());  // prawa -> lewa
         int[] legend = this.floatArrayToIntArray(plotter.getVerticalLegendPositions());  // góra -> dół
         String[] values = plotter.getVerticalLegendValues();  // góra -> dół
-        
-        System.err.println(String.format("received %d coordinates from the archive", points.length));
-        
+                
         this.drawLines(g, points);
         this.drawLegend(g, legend, values);
     }
@@ -54,6 +50,7 @@ public class PlotPanel extends JPanel {
      * @return  tablica liczb całkowitych powstaych w wyniku zwykłego rzutowania
      */
     protected int[] floatArrayToIntArray(float[] array) {
+        if (array == null) return new int[] {};
         int[] res = new int[array.length];
         
         int k = 0;
