@@ -77,16 +77,14 @@ public class PlotPanel extends JPanel {
      * @param points    tablica punktów w postaci <i>[x0 y0 x1 y1 ...]</i>
      */
     protected void drawLines(Graphics g, int[] points) {
-        int linesCount = points.length>>2;  // podziel przez 4 (4 wartości na narysowanie linii)
-        int[] xPoints = new int[linesCount<<1];
-        int[] yPoints = new int[linesCount<<1];
+        int linesCount = (points.length>>1) - 1;    // ilość linii dla N punktów
+        int[] xPoints = new int[linesCount + 1];    // jeśli mamy M linii to buduje ją (M + 1) punktów
+        int[] yPoints = new int[linesCount + 1];
         
         int xi = 0, yi = 0;
-        for (int i = 0; i < points.length; i += 4) {
+        for (int i = 0; i < points.length; i += 2) {
             xPoints[xi++] = points[i + 0];
             yPoints[yi++] = points[i + 1];
-            xPoints[xi++] = points[i + 2];
-            yPoints[yi++] = points[i + 3];
         }
              
         g.setColor(PLOT_LINE_COLOR);

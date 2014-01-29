@@ -145,6 +145,9 @@ public class Plotter {
 	 * @return lista stringów [s0, s1 ...]
 	 */
 	public String[] getVerticalLegendValues() {
+		if ( mArchival == null || mArchival.size() == 0 ) {
+			return null;
+		}
 		String[] result = new String[mLegendCount];
 		DecimalFormat df = new DecimalFormat("#0.000");
 
@@ -163,6 +166,9 @@ public class Plotter {
 	 * @return lista punktów [x0 y0 x1 y1 ...]
 	 */
 	public float[] getVerticalLegendPositions() {
+		if ( mArchival == null || mArchival.size() == 0) {
+			return null;
+		}
 		float[] result = new float[mLegendCount*2];
 
 		for (int i = 0; i < mLegendCount * 2; i += 2) {
@@ -177,6 +183,9 @@ public class Plotter {
 	 * @return lista stringów [s0, s1 ...]
 	 */
 	public String[] getHorizontalLegendValues() {
+		if ( mArchival == null || mArchival.size() == 0) {
+			return null;
+		}
 		String[] values = new String[mDateCount];
 		int size = mArchival.size();
 		float delta = size*1.0f/(mDateCount+1);
@@ -191,10 +200,11 @@ public class Plotter {
 	 * @return lista punktów [x0 y0 x1 y1 ...]
 	 */
 	public float[] getHorizontalLegendPosition() {
+		if ( mArchival == null || mArchival.size() == 0) {
+			return null;
+		}
 		int width = mWidth - 2 * mMarginX;
 		float[] values = new float[2*mDateCount];
-	//	int size = mArchival.size();
-	//	float delta = size*1.0f/(mDateCount+1);
 		for (int i = 0; i < mDateCount; i++) {
 			values[2*i] = mMarginX + width*i/(mDateCount-1); 			
 			values[2*i+1] = mHeight + mMarginBottom; 
