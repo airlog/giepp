@@ -25,6 +25,12 @@ public class Plotter {
 	private int mLegendCount;
 	private int mDateCount = 2;
 
+	/** Tworzy nowy obiekt. Ustawia wartości pól zgodnie z argumentami
+	 * @param archival - dane archiwalne dla danej firmy
+	 * @param width - szerokość prostokąta, na którym ma się znajdować wykres 
+	 * @param height - wysokość prostokąta, na którym ma się znajdować wykres 
+	 * @param legendCount - liczba, na którą podzielona ma być podziałka pionowa wykresu
+	 * */
 	@Deprecated
 	public Plotter(ArrayList<ArchivedStock> archival, int width, int height, int legendCount) {
 		mArchival = archival;
@@ -47,7 +53,8 @@ public class Plotter {
 	 * @param archival - dane archiwalne dla danej firmy
 	 * @param width - szerokość prostokąta, na którym ma się znajdować wykres 
 	 * @param height - wysokość prostokąta, na którym ma się znajdować wykres 
-	 * @param legendCount - liczba, na którą podzielona ma być podziałka pionowa wykresu
+	 * @param legendVCount - liczba, na którą podzielona ma być podziałka pionowa wykresu
+	 * @param legendHCount - liczba, na którą podzielona ma być podziałka pozioma wykresu
 	 * */
 	public Plotter(ArrayList<ArchivedStock> archival, int width, int height, int legendVCount, int legendHCount) {
 		mArchival = archival;
@@ -176,7 +183,7 @@ public class Plotter {
 		for (int i = 0; i < mDateCount-1; i++) {
 			values[i] = mArchival.get(size - 1 - (int)(delta*i)).getDate();
 		}
-		values[mDateCount-1] = mArchival.get(size-1).getDate();
+		values[mDateCount-1] = mArchival.get(0).getDate();
 		return values;
 	}
 

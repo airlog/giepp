@@ -117,14 +117,14 @@ public class PlayerStock {
 	}
 
 	/** Ustawia sumę pieniędzy wydanych przez gracza na akcje danje firmy.
-	 * @param amount - nowa suma pieniędzy wydanych przez gracza na akcje danje firmy
+	 * @param startPrice - nowa suma pieniędzy wydanych przez gracza na akcje danje firmy
 	 */ 
 	public void setStartPrice(int startPrice) {
 		this.startPrice = startPrice;
 	}
 	
 	/** Ustawia aktualną wartość akcji danej firmy jakie posiada gracz.
-	 * @param amount - nowa aktualna wartość akcji danej firmy jakie posiada gracz
+	 * @param value - nowa aktualna wartość akcji danej firmy jakie posiada gracz
 	 */ 
 	public void setCurrentValue(Double value) {
 	    this.currentValue = value;
