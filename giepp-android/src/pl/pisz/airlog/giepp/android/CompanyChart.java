@@ -88,6 +88,10 @@ public class CompanyChart extends View {
 		canvas.drawLine(0, 0, width, 0, paint);
 		canvas.drawLine(0, height-1, width, height-1, paint);
 		
+		if (days <= 1) {
+			return;
+		}
+		
 		Plotter plotter = new Plotter(history,getWidth(),getHeight(),4,3);
 
 		float[] vLegendXY = plotter.getVerticalLegendPositions();

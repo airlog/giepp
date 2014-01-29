@@ -266,13 +266,13 @@ public class GiePPSingleton {
 		(new Thread() {
 			public void run() {
 				game.refreshArchival(d1,m1+1,y1,d2,m2+1,y2);
-				if (fragment4 != null) {
-					fragment4.updateView();
-				}
 				refreshingArchival = false;
 				try {
 					act.runOnUiThread(new Runnable(){
 						public void run(){
+							if (fragment4 != null) {
+								fragment4.updateView();
+							}
 							if (bar != null) {
 								bar.setVisibility(View.GONE);
 							}
