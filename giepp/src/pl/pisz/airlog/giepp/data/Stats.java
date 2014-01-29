@@ -49,7 +49,7 @@ public class Stats {
 	}
 
 	/** Ustawia najmniejszą liczbę posiadanych pieniędzy (licząc akcje) w trakcie gry.
-	 * @param maxMoney - nowa wartość najmniejszej liczby pięniędzy (licząc akcje)
+	 * @param minMoney - nowa wartość najmniejszej liczby pięniędzy (licząc akcje)
 	 * @return aktualny stan obiektu Stats*/
 	public Stats setMinMoney(long minMoney) {
 		this.minMoney = minMoney;

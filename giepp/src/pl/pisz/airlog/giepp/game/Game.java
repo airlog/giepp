@@ -21,15 +21,21 @@ import pl.pisz.airlog.giepp.data.Stats;
 import pl.pisz.airlog.giepp.data.gpw.GPWDataParser;
 import pl.pisz.airlog.giepp.data.gpw.GPWDataSource;
 
+/**Najważniejsza dla całej paczki klasa. W niej znajdują się pola przechowujące stan gry
+ * oraz metody umożliwiające wykonywanie działań w grze (kupowanie i sprzedawanie akcji) oraz metody
+ * wiążace metody z innych klas (zapisywanie i wczytywanie danych, pobieranie danych z internetu). */
 public class Game {	
 
 	private static final int MAX_TIME = 900000;				//15 minut
 	private static final int DAYS = 5;
-	private static final int MAX_DAYS_IN_MEMORY = 30;
+	private static final int MAX_DAYS_IN_MEMORY = 60;
 	
+	/** Pieniądze jakie dostaje na początku gry gracz*/
 	public static final long MONEY_ON_START = 1000000;		//10 000 zl
 
+	/** Minimalna wartość prowizji*/
 	public static final int MIN_COMMISSION = 500; 			//5 zł
+	/** Wartość prowizji*/
 	public static final double COMMISSION = 0.004;			//0.4%
 		
 	private Stats stats;
@@ -42,7 +48,12 @@ public class Game {
 	
 	private Date lastRefresh;	
 	private Calendar calendar;
-		
+	
+	/** Tworzy obiekt tej klasy. Wczytywane sa zapisane dane dotyczące stanu gry {@link Game#loadDataFromXML()}.
+	 * @param dataSource DataSource jaki ma być wykorzystywany w grze
+	 * @param dataParser DataParser jaki ma być wykorzystywany w grze
+	 * @param localStorage LocalStorage jaki ma być wykorzystywany w grze
+	 * */
 	public Game(DataSource dataSource, DataParser dataParser, LocalStorage localStorage) {
 		this.dataManager = new DataManager(dataSource, dataParser, localStorage);
 		this.current = new ArrayList<CurrentStock>();
@@ -90,9 +101,11 @@ public class Game {
 	    return true;
 	}
 	
-	
 	/** Zwraca największą możliwą ilość akcji danej firmy, jaką można kupić za posiadane
-	 * pieniądze uwzględniając prowizję.**/
+	 * pieniądze uwzględniając prowizję.
+	 * @param companyName nazwa firmy
+	 * @return maksymalna liczba akcji
+	 * **/
 	public int maximumToBuy(String companyName) {
 		int price = (int) getEndPrice(companyName);
 		if (price == 0) return 0;
@@ -102,7 +115,10 @@ public class Game {
 	}
 
 	/** Zwraca najmniejsza możliwą ilość akcji danej firmy, jaką można sprzedać
-	 *  uwzględniając prowizję.**/
+	 *  uwzględniając prowizję.
+	 * @param companyName nazwa firmy
+	 * @return minimalna liczba akcji
+	 * */
 	public int minimumToSell(String companyName) {
 		if (stats.getMoney() >= MIN_COMMISSION) return 0;
 		
@@ -114,6 +130,12 @@ public class Game {
 		return amount;
 	}
 
+	/** Jeśli jest to możliwe to kupowana jest podana liczba akcji podanej firmy. Pobierana jest prowizja.
+	 * Zapisywane są nowe wartości posiadanych pięniędzy oraz nowa zmieniona lista posiadanych akcji.
+	 * @param company nazwa firmy
+	 * @param amount liczba akcji
+	 * @throws ActionException jeśli liczba akcji <= 0, nazwa firmy nie została znaleziona,
+	 * gracz ma za mało pieniędzy lub odświeżenie danych było zbyt dawno*/
 	public void buy(String company, int amount) throws ActionException {
 		if (amount <= 0) throw new ActionException(ActionError.NEGATIVE_AMOUNT);
 	    if (!this.isDataValid()) throw new ActionException(ActionError.TOO_OLD_DATA);
@@ -154,7 +176,14 @@ public class Game {
 	    	System.out.println(e);
 	    }
 	}
-
+	
+	/** Jeśli jest to możliwe to sprzedawana jest podana liczba akcji podanej firmy. Pobierana jest prowizja.
+	 * Zapisywane są nowe wartości posiadanych pięniędzy oraz nowa zmieniona lista posiadanych akcji.
+	 * @param company nazwa firmy
+	 * @param amount liczba akcji
+	 * @throws ActionException jeśli liczba akcji <= 0, nazwa firmy nie została znaleziona,
+	 * gracz ma za mało pieniędzy, gracz nie posiada odpowiedniej liczby akcji
+	 *  lub odświeżenie danych było zbyt dawno*/
 	public void sell(String company, int amount) throws ActionException {
 	    if (amount <= 0) throw new ActionException(ActionError.NEGATIVE_AMOUNT);
 	    if (!this.isDataValid()) throw new ActionException(ActionError.TOO_OLD_DATA);
@@ -342,7 +371,14 @@ public class Game {
 	    	System.out.println(e);
 	    }
 	}
-	
+	/** Pobiera dane archiwalne dla dni z wybranego przedziału i zapisuje je.
+	 * @param startDay najnowszy dzień, z którego mają być dane
+	 * @param startMonth najnowszy miesiąc, z którego mają być dane 
+	 * @param startYear najnowszy rok, z którego mają być dane
+	 * @param endDay najstarszy dzień, z którego mają być dane
+	 * @param endMonth najstarszy miesiąc, z którego mają być dane
+	 * @param endYear najstarszy rok, z którego mają być dane
+	 * */
 	public void refreshArchival(int startDay, int startMonth, int startYear, int endDay, int endMonth, int endYear) {
 		if (startYear >= endYear && startMonth >= endMonth && startDay >= endDay) {
 			return;
@@ -399,8 +435,7 @@ public class Game {
 		dataManager.saveStats(stats);	
 	}
 
-	
-	public void saveFirst(int days){
+	private void saveFirst(int days){
 		Set keys = archived.keySet();
 		for (Iterator i = keys.iterator(); i.hasNext();) {
 			String key = (String) i.next();
@@ -410,15 +445,18 @@ public class Game {
 			}
 		}		
 	}
+/*
 	@Deprecated
 	public void refreshArchival() {
 		this.downloadArchived(DAYS);
 	}
 	
+	
 	public void refreshArchival(int days) {
 		this.downloadArchived(days);
 	}
-	
+	*/
+	/**Pobiera aktualne dane i zapisuje je. */
 	public void refreshCurrent() {
 		this.calendar = Calendar.getInstance();
 		try {
@@ -431,7 +469,8 @@ public class Game {
 		}
 	}
 		
-	/** Ustawia pola zgodnie z danymi z plikow XML  **/
+	/** Ustawia pola klasy zgodnie z danymi z plikow XML. Używa {@link DataManager#getObserved()},{@link DataManager#getStats()},
+	 * {@link DataManager#getOwned()},{@link DataManager#getArchivalFromXML()}.**/
 	public void loadDataFromXML() {
 		this.stats = dataManager.getStats();
 		
@@ -440,7 +479,9 @@ public class Game {
 		
 		archived = dataManager.getArchivalFromXML();
 	}
-		
+	
+	/** Restartuje grę. Usuwane są listy obserwowanych firm oraz posiadanych akcji. Liczba restartów
+	 * zwiększa się o jeden. Wartosci pozostałych pól w klasie {@link Stats} wracają do wartości domyślnych.*/
 	public void restartGame(){
 		this.observed = new ArrayList<String>();
 		this.owned = new ArrayList<PlayerStock>();
@@ -448,26 +489,39 @@ public class Game {
 		stats = (new Stats()).setRestarts(restarts);
 	}
 	
+	/** Zwraca listę danych archiwalnych, które są zapisane, dla podanej firmy.
+	 * @param name nazwa firmy
+	 * @return lista danych archiwalnych*/
 	public ArrayList<ArchivedStock> getArchived(String name) {
 		return archived.get(name);
 	}
 	
+	/** Zwraca listę posiadanych przez gracza akcji.
+	 * @return lista posiadanych akcji*/
 	public ArrayList<PlayerStock> getOwned() {
 		return owned;
 	}
 	
+	/** Zwraca posiadane przez gracza piniądze (nie wliczając pieniędzy w akcjach).
+	 * @return pieniądze gracza*/
 	public long getMoney() {
 		return stats.getMoney();
 	}
 	
+	/** Zwraca dane archiwalne, które są zapisane, dla wszystkich firm.
+	 * @return dane archiwalne wszystkich firm*/
 	public TreeMap<String,ArrayList<ArchivedStock>> getArchived() {
 		return archived;
 	}
 	
+	/** Zwraca listę aktualnych danych, które są zapisane, dla wszystkich firm.
+	 * @return lista aktualnych danych*/
 	public ArrayList<CurrentStock> getCurrent() {
 		return current;
 	}
 	
+	/** Dodaje podaną firmę do listy obserwowanych (jeśli jej jeszcze tam nie było) i zapisuje tą listę.
+	 * @param name nazwa firmy*/
 	public void addToObserved(String name) {
 		if (observed.indexOf(name) == -1) {
 			observed.add(name);
@@ -480,6 +534,8 @@ public class Game {
 		
 	}
 	
+	/** Usuwa podaną firmę z listy obserwowanych i zapisuje tą listę.
+	 * @param name nazwa firmy*/
 	public void removeFromObserved(String name) {
 		observed.remove(name);
 		try {
@@ -489,14 +545,21 @@ public class Game {
 		}
 	}
 	
+	/** Zwraca listę obserwowanych przez gracza firm.
+	 * @return lista obserwowanych firm
+	 * */
 	public ArrayList<String> getObserved() {
 		return observed;
 	}
 	
+	/**Zwraca obiekt klasy {@link Stats} zawierający informacje o grze gracza. 
+	 * @return informacje o grze gracza*/
 	public Stats getStats() {
 		return stats;
 	}
 	
+	/** Zwraca liczbę pieniędzy, jaką w danym momencie kosztują wszystkie posiadane przez gracza akcje.
+	 * @return pieniądze gracza w akcjach*/
 	public long getMoneyInStock() {
 		long sum = 0;
 		for (int i = 0; i < owned.size(); i++) {
@@ -509,6 +572,9 @@ public class Game {
 		return sum;
 	}
 	
+	/** Zwraca cenę ostatniej transakcji dla podanej firmy.
+	 * @param companyName nazwa firmy
+	 * @return cena akcji*/
 	public long getEndPrice(String companyName) {
 		int price = 0;
 
@@ -521,8 +587,8 @@ public class Game {
 		return price;
 	}
 
-	/** do testow **/
-	public static void main(String args[]) throws Exception{
+	/* do testow */
+/*	public static void main(String args[]) throws Exception{
 		System.out.println(System.getProperty("http.agent"));
 		File ownedStocks = File.createTempFile("owned", ".xml");
 		File archiveStocks = File.createTempFile("archived", ".xml");
@@ -556,7 +622,7 @@ public class Game {
 		ArrayList<CurrentStock> cs= g.getCurrent();
 		for (CurrentStock c : cs)
 			System.out.println(c.getName()+": "+c.getEndPrice());
-	*/		
-	}
+		
+	}*/
 
 }

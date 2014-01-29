@@ -1,5 +1,6 @@
 package pl.pisz.airlog.giepp.game;
 
+/** Przechowywane są tu możliwe wartości błędów podczas transakcji z przypisanym im tekstem.*/
 public enum ActionError {
 
     LACK_OF_MONEY      ("not enough money"),
@@ -14,6 +15,8 @@ public enum ActionError {
         mMessage = message;
     }
     
+    /** Zwraca tekst odpowiadający błędowi.
+     * @return tekst odpowiadający błędowi*/
     @Override
     public String toString() {
         return mMessage;
