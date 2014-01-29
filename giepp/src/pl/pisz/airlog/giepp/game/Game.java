@@ -482,11 +482,18 @@ public class Game {
 	
 	/** Restartuje grę. Usuwane są listy obserwowanych firm oraz posiadanych akcji. Liczba restartów
 	 * zwiększa się o jeden. Wartosci pozostałych pól w klasie {@link Stats} wracają do wartości domyślnych.*/
-	public void restartGame(){
+	public void restartGame() {
 		this.observed = new ArrayList<String>();
 		this.owned = new ArrayList<PlayerStock>();
 		int restarts = stats.getRestarts() + 1;
 		stats = (new Stats()).setRestarts(restarts);
+		try{
+			dataManager.saveObserved(observed);
+		} catch (IOException e1) {}
+		try{
+			dataManager.saveOwned(owned);
+		} catch (IOException e1) {}
+		dataManager.saveStats(stats);
 	}
 	
 	/** Zwraca listę danych archiwalnych, które są zapisane, dla podanej firmy.
